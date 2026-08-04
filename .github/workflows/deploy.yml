@@ -59,4 +59,4 @@ jobs:
             docker rm bigbangmadevip-be || true
             docker rmi $(docker images ${{ secrets.DOCKER_REPO }} -q) || true
             docker pull ${{ secrets.DOCKER_REPO }}
-            docker run -d --network docker-network --env-file $HOME/config/.env --name bigbangmadevip-be ${{ secrets.DOCKER_REPO }}
+            docker run -d --network bigbangmadevip-net --env-file $HOME/config/.env --name bigbangmadevip-be ${{ secrets.DOCKER_REPO }}
