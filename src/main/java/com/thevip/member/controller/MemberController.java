@@ -1,0 +1,35 @@
+package com.thevip.member.controller;
+
+import com.thevip.global.response.ApiResponse;
+import com.thevip.member.dto.MemberResponse;
+import com.thevip.member.dto.UpdateNicknameRequest;
+import com.thevip.member.entity.Member;
+import com.thevip.member.service.MemberService;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
+
+@RestController
+@RequiredArgsConstructor
+public class MemberController {
+
+    private final MemberService memberService;
+
+    @GetMapping("/api/v1/me")
+    public ApiResponse<MemberResponse> me(OAuth2AuthenticationToken authentication) {
+        Member member = memberService.getCurrentMember(authentication);
+        return ApiResponse.success(MemberResponse.from(member));
+    }
+
+    @PatchMapping("/api/v1/me")
+    public ApiResponse<MemberResponse> updateNickname(
+            @Valid @RequestBody UpdateNicknameRequest request, OAuth2AuthenticationToken authentication) {
+        Member member = memberService.getCurrentMember(authentication);
+        Member updated = memberService.updateNickname(member.getId(), request.nickname());
+        return ApiResponse.success(MemberResponse.from(updated));
+    }
+}
