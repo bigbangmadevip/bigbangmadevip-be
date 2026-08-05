@@ -15,6 +15,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
 import org.springframework.mock.web.MockHttpServletResponse;
+import tools.jackson.databind.JsonNode;
+import tools.jackson.databind.ObjectMapper;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.oauth2.client.registration.ClientRegistration;
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
@@ -40,6 +42,34 @@ class CsrfFlowTest {
 
     @Autowired
     CheeringItemRepository cheeringItemRepository;
+
+    @Autowired
+    ObjectMapper objectMapper;
+
+    @Test
+    void csrf_token_엔드포인트로_받은_값으로도_쓰기_요청이_통과한다() throws Exception {
+        memberService.findOrCreate(com.thevip.member.entity.Provider.KAKAO, "40003", "csrf엔드포인트테스트");
+        Long itemId = cheeringItemRepository.findByActiveTrueOrderBySortOrder().get(0).getId();
+        RequestPostProcessor login = loginAs("40003");
+
+        MockHttpServletResponse tokenResponse = mockMvc.perform(get("/api/v1/csrf-token").with(login))
+                .andExpect(status().isOk())
+                .andReturn().getResponse();
+
+        Cookie xsrfCookie = tokenResponse.getCookie("XSRF-TOKEN");
+        assertThat(xsrfCookie).isNotNull();
+
+        JsonNode json = objectMapper.readTree(tokenResponse.getContentAsString());
+        String tokenFromBody = json.get("data").get("token").asText();
+        String headerName = json.get("data").get("headerName").asText();
+
+        // 쿠키를 못 읽는 cross-origin 프론트를 흉내: document.cookie 대신 body로 받은 토큰 값을 헤더에 실음
+        mockMvc.perform(post("/api/v1/cheerings/" + itemId)
+                        .with(login)
+                        .cookie(xsrfCookie)
+                        .header(headerName, tokenFromBody))
+                .andExpect(status().isOk());
+    }
 
     @Test
     void 쿠키의_토큰값을_그대로_헤더에_실으면_통과한다() throws Exception {
