@@ -10,7 +10,6 @@ import com.thevip.member.service.MemberService;
 import jakarta.servlet.http.Cookie;
 import java.util.List;
 import java.util.Map;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -28,10 +27,7 @@ import org.springframework.test.web.servlet.request.RequestPostProcessor;
  * .with(csrf())는 토큰 매칭을 우회해서 실제 쿠키<->헤더 왕복 버그(Xor 마스킹 핸들러 이슈)를 잡지 못한다.
  * 여기서는 브라우저/Postman이 하는 것과 똑같이: 서버가 내려준 쿠키 원본 값을 그대로 헤더에 실어 보내 검증한다.
  *
- * CSRF 자체가 SecurityConfig에서 임시로 꺼져있는 동안은(2026-08, cross-origin 쿠키 문제) 이 검증이 의미가 없어
- * 통째로 비활성화해둔다. CSRF 재활성화 시 @Disabled만 지우면 그대로 다시 쓸 수 있다.
  */
-@Disabled("CSRF가 SecurityConfig에서 임시로 꺼져있음 - 재활성화 시 이 클래스도 같이 켤 것")
 @SpringBootTest
 @AutoConfigureMockMvc
 class CsrfFlowTest {

@@ -1,5 +1,8 @@
 package com.thevip.global.config;
 
+import com.thevip.global.security.CsrfCookieFilter;
+import com.thevip.global.security.DynamicRedirectSuccessHandler;
+import com.thevip.global.security.RedirectCaptureFilter;
 import com.thevip.global.security.RestAuthenticationEntryPoint;
 import com.thevip.member.service.CustomOAuth2UserService;
 import java.util.List;
@@ -8,7 +11,11 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.oauth2.client.web.OAuth2AuthorizationRequestRedirectFilter;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.security.web.csrf.CsrfFilter;
+import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -27,12 +34,11 @@ public class SecurityConfig {
         http
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .exceptionHandling(exceptions -> exceptions.authenticationEntryPoint(restAuthenticationEntryPoint))
-                // TODO: 임시로 꺼둠 (2026-08). 프론트(다른 컴퓨터)와 백엔드(ngrok 도메인)가 서로 다른 origin이라
-                // XSRF-TOKEN 쿠키를 프론트 JS가 애초에 읽을 수 없는 구조적 문제 때문에 CSRF 검증 자체를 비활성화.
-                // 실사용자가 붙기 전에 반드시 재활성화할 것 — CookieCsrfTokenRepository 설정과
-                // CsrfCookieFilter(global/security)는 그대로 남겨뒀으니 되돌릴 때 재사용하면 된다.
-                // 재활성화 시 대안: CSRF 토큰을 쿠키가 아니라 API 응답 본문으로 내려주는 방식으로 전환.
-                .csrf(csrf -> csrf.disable())
+                .csrf(csrf -> csrf
+                        .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+                        .csrfTokenRequestHandler(new CsrfTokenRequestAttributeHandler()))
+                .addFilterAfter(new CsrfCookieFilter(), CsrfFilter.class)
+                .addFilterBefore(new RedirectCaptureFilter(), OAuth2AuthorizationRequestRedirectFilter.class)
                 .headers(headers -> headers
                         .frameOptions(frame -> frame.sameOrigin()))
                 .authorizeHttpRequests(auth -> auth
@@ -40,14 +46,16 @@ public class SecurityConfig {
                         .anyRequest().authenticated())
                 .oauth2Login(oauth2 -> oauth2
                         .userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService))
-                        .defaultSuccessUrl(frontUrl));
+                        .successHandler(new DynamicRedirectSuccessHandler(frontUrl)));
         return http.build();
     }
 
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of(frontUrl));
+        config.setAllowedOrigins(frontUrl.equals("http://localhost:3000")
+                ? List.of(frontUrl)
+                : List.of(frontUrl, "http://localhost:3000"));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true);
