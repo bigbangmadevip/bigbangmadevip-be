@@ -13,10 +13,6 @@ public interface CheeringRepository extends JpaRepository<Cheering, Long> {
     @Query("SELECT COUNT(DISTINCT c.memberId) FROM Cheering c WHERE c.cheeringDate = :date")
     long countDistinctMemberByCheeringDate(@Param("date") LocalDate date);
 
-    @Query("SELECT COUNT(DISTINCT c.memberId) FROM Cheering c "
-            + "WHERE c.itemId = :itemId AND c.cheeringDate = :date")
-    long countDistinctMemberByItemIdAndCheeringDate(@Param("itemId") Long itemId, @Param("date") LocalDate date);
-
     @Query("SELECT COUNT(DISTINCT c.memberId) FROM Cheering c, CheeringItem i "
             + "WHERE c.itemId = i.id AND i.category = :category AND c.cheeringDate = :date")
     long countDistinctMemberByCategoryAndCheeringDate(

@@ -44,9 +44,8 @@ class HomeApiTest {
                         .with(loginAs("30001")).with(SecurityMockMvcRequestPostProcessors.csrf()))
                 .andExpect(status().isOk());
 
-        // participantCount는 캐시(TTL 1분)를 타는 전역 집계라, 같은 스프링 컨텍스트를 공유하는
-        // 다른 테스트가 먼저 캐시를 채워두면 이 테스트의 참여 직후 값과 다를 수 있다.
-        // 정확한 증분 검증은 CheeringStatsServiceCacheTest가 담당하고, 여기서는 형태만 확인한다.
+        // participantCount는 캐싱 없이 실시간 집계지만, 같은 스프링 컨텍스트를 공유하는
+        // 다른 테스트도 같은 오늘 날짜로 참여를 남기므로 절대값은 검증하지 않고 형태만 확인한다.
         mockMvc.perform(get("/api/v1/home").with(loginAs("30001")))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.participantCount").value(org.hamcrest.Matchers.greaterThanOrEqualTo(0)))

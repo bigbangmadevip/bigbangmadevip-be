@@ -42,9 +42,8 @@ public class CheeringService {
         cheeringRepository.save(Cheering.of(memberId, item.getId()));
 
         // 캐싱하지 않는다: 방금 참여한 본인에게 보여줄 실시간 피드백이라, 홈 카운터와 달리 지연이 있으면 안 된다.
-        long itemCompletedCount = cheeringRepository.countDistinctMemberByItemIdAndCheeringDate(item.getId(), today);
         long typeCompletedCount = cheeringRepository.countDistinctMemberByCategoryAndCheeringDate(
                 item.getCategory(), today);
-        return new ParticipateResponse(itemCompletedCount, typeCompletedCount);
+        return new ParticipateResponse(typeCompletedCount);
     }
 }

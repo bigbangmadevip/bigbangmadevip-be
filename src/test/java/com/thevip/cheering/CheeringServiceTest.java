@@ -52,12 +52,11 @@ class CheeringServiceTest {
     }
 
     @Test
-    void 참여하면_해당_항목과_타입의_오늘_완료자_수가_1씩_증가한다() {
+    void 참여하면_해당_타입의_오늘_완료자_수가_1_증가한다() {
         Long itemId = anyActiveItemId();
         CheeringItem item = cheeringItemRepository.findById(itemId).orElseThrow();
         LocalDate today = LocalDate.now();
 
-        long itemCountBefore = cheeringRepository.countDistinctMemberByItemIdAndCheeringDate(itemId, today);
         long typeCountBefore = cheeringRepository.countDistinctMemberByCategoryAndCheeringDate(
                 item.getCategory(), today);
 
@@ -65,7 +64,6 @@ class CheeringServiceTest {
         long freshMemberId = System.nanoTime();
         ParticipateResponse response = cheeringService.participate(freshMemberId, itemId);
 
-        assertThat(response.itemCompletedCount()).isEqualTo(itemCountBefore + 1);
         assertThat(response.typeCompletedCount()).isEqualTo(typeCountBefore + 1);
     }
 

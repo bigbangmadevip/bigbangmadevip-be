@@ -1,4 +1,4 @@
 package com.thevip.cheering.dto;
 
-public record ParticipateResponse(long itemCompletedCount, long typeCompletedCount) {
+public record ParticipateResponse(long typeCompletedCount) {
 }
