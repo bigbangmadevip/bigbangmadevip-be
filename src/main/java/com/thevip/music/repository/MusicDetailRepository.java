@@ -6,5 +6,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface MusicDetailRepository extends JpaRepository<MusicDetail, Long> {
 
-    List<MusicDetail> findByHomeUrgentTrueAndActiveTrue();
+    List<MusicDetail> findByMenuUrgentTrueAndActiveTrue();
 }

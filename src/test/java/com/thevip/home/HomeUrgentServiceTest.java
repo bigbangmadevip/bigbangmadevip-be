@@ -4,13 +4,16 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
+import com.thevip.cheering.entity.CheeringCategory;
 import com.thevip.home.dto.HomeUrgentResponse;
 import com.thevip.home.dto.MenuType;
 import com.thevip.home.service.HomeUrgentService;
 import com.thevip.music.entity.MusicDetail;
 import com.thevip.music.repository.MusicDetailRepository;
+import com.thevip.vote.entity.VoteCategory;
 import com.thevip.vote.entity.VoteDetail;
 import com.thevip.vote.repository.VoteDetailRepository;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
@@ -22,18 +25,19 @@ import org.junit.jupiter.api.Test;
 class HomeUrgentServiceTest {
 
     @Test
-    void 음원_상세에_homeUrgent가_있으면_그것을_반환한다() {
+    void 음원만_긴급이면_음원을_반환한다() {
         MusicDetailRepository musicDetailRepository = mock(MusicDetailRepository.class);
         VoteDetailRepository voteDetailRepository = mock(VoteDetailRepository.class);
-        MusicDetail detail = MusicDetail.of("다운로드", "테스트 총공", null, "멜론", null);
-        when(musicDetailRepository.findByHomeUrgentTrueAndActiveTrue()).thenReturn(List.of(detail));
+        MusicDetail detail = MusicDetail.of(CheeringCategory.DOWNLOAD, "테스트 총공", null, null, null, 0);
+        when(musicDetailRepository.findByMenuUrgentTrueAndActiveTrue()).thenReturn(List.of(detail));
+        when(voteDetailRepository.findByMenuUrgentTrueAndActiveTrue()).thenReturn(List.of());
 
         HomeUrgentService service = new HomeUrgentService(musicDetailRepository, voteDetailRepository);
         Optional<HomeUrgentResponse> result = service.getCurrentUrgent();
 
         assertThat(result).isPresent();
         assertThat(result.get().menuType()).isEqualTo(MenuType.MUSIC);
-        assertThat(result.get().category()).isEqualTo("다운로드");
+        assertThat(result.get().category()).isEqualTo("DOWNLOAD");
         assertThat(result.get().title()).isEqualTo("테스트 총공");
     }
 
@@ -41,9 +45,9 @@ class HomeUrgentServiceTest {
     void 음원이_없고_투표만_있으면_투표를_반환한다() {
         MusicDetailRepository musicDetailRepository = mock(MusicDetailRepository.class);
         VoteDetailRepository voteDetailRepository = mock(VoteDetailRepository.class);
-        when(musicDetailRepository.findByHomeUrgentTrueAndActiveTrue()).thenReturn(List.of());
-        VoteDetail detail = VoteDetail.of("테스트 투표", null, "하이어", null, null);
-        when(voteDetailRepository.findByHomeUrgentTrueAndActiveTrue()).thenReturn(List.of(detail));
+        when(musicDetailRepository.findByMenuUrgentTrueAndActiveTrue()).thenReturn(List.of());
+        VoteDetail detail = VoteDetail.of(VoteCategory.MUSIC_SHOW, "테스트 투표", null, null, null, null, 0);
+        when(voteDetailRepository.findByMenuUrgentTrueAndActiveTrue()).thenReturn(List.of(detail));
 
         HomeUrgentService service = new HomeUrgentService(musicDetailRepository, voteDetailRepository);
         Optional<HomeUrgentResponse> result = service.getCurrentUrgent();
@@ -54,11 +58,29 @@ class HomeUrgentServiceTest {
     }
 
     @Test
+    void 음원_투표_둘다_있으면_날짜가_더_임박한_쪽을_반환한다() {
+        MusicDetailRepository musicDetailRepository = mock(MusicDetailRepository.class);
+        VoteDetailRepository voteDetailRepository = mock(VoteDetailRepository.class);
+        MusicDetail music = MusicDetail.of(CheeringCategory.DOWNLOAD, "음원", null, null,
+                LocalDateTime.of(2026, 8, 10, 0, 0), 0);
+        VoteDetail vote = VoteDetail.of(VoteCategory.MUSIC_SHOW, "투표", null, null, null,
+                LocalDateTime.of(2026, 8, 5, 0, 0), 0);
+        when(musicDetailRepository.findByMenuUrgentTrueAndActiveTrue()).thenReturn(List.of(music));
+        when(voteDetailRepository.findByMenuUrgentTrueAndActiveTrue()).thenReturn(List.of(vote));
+
+        HomeUrgentService service = new HomeUrgentService(musicDetailRepository, voteDetailRepository);
+        Optional<HomeUrgentResponse> result = service.getCurrentUrgent();
+
+        assertThat(result).isPresent();
+        assertThat(result.get().menuType()).isEqualTo(MenuType.VOTE);
+    }
+
+    @Test
     void 둘_다_없으면_빈값을_반환한다() {
         MusicDetailRepository musicDetailRepository = mock(MusicDetailRepository.class);
         VoteDetailRepository voteDetailRepository = mock(VoteDetailRepository.class);
-        when(musicDetailRepository.findByHomeUrgentTrueAndActiveTrue()).thenReturn(List.of());
-        when(voteDetailRepository.findByHomeUrgentTrueAndActiveTrue()).thenReturn(List.of());
+        when(musicDetailRepository.findByMenuUrgentTrueAndActiveTrue()).thenReturn(List.of());
+        when(voteDetailRepository.findByMenuUrgentTrueAndActiveTrue()).thenReturn(List.of());
 
         HomeUrgentService service = new HomeUrgentService(musicDetailRepository, voteDetailRepository);
 

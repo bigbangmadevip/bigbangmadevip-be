@@ -12,8 +12,7 @@ public record HomeUrgentResponse(
         String category,
         String title,
         String songName,
-        String content,
-        String platform,
+        Long platformId,
         List<String> checklist,
         String imageUrl,
         LocalDateTime eventEndAt) {
@@ -24,13 +23,14 @@ public record HomeUrgentResponse(
         // LazyInitializationException이 난다. 여기서(트랜잭션 안) 바로 복사해서 담아둔다.
         List<String> checklist = List.copyOf(detail.getChecklist());
         // 음원 총공은 마감 개념이 없어 eventEndAt은 항상 null -> 프론트는 "지금 바로 참여해주세요" 고정 문구를 쓴다.
-        return new HomeUrgentResponse(MenuType.MUSIC, detail.getId(), detail.getCategory(), detail.getTitle(),
-                detail.getSongName(), null, detail.getPlatform(), checklist, firstImageUrl, null);
+        return new HomeUrgentResponse(MenuType.MUSIC, detail.getId(), detail.getCategory().name(), detail.getTitle(),
+                detail.getSongName(), detail.getPlatformId(), checklist, firstImageUrl, null);
     }
 
     public static HomeUrgentResponse fromVote(VoteDetail detail) {
-        return new HomeUrgentResponse(MenuType.VOTE, detail.getId(), null, detail.getTitle(),
-                null, detail.getContent(), detail.getPlatform(), List.of(), detail.getImageUrl(),
-                detail.getEventEndAt());
+        String firstImageUrl = detail.getImageUrls().isEmpty() ? null : detail.getImageUrls().get(0);
+        List<String> checklist = List.copyOf(detail.getChecklist());
+        return new HomeUrgentResponse(MenuType.VOTE, detail.getId(), detail.getCategory().name(), detail.getTitle(),
+                null, detail.getPlatformId(), checklist, firstImageUrl, detail.getEventEndAt());
     }
 }

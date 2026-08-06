@@ -25,10 +25,6 @@ public class VoteNotice {
     @Column(columnDefinition = "TEXT")
     private String content;
 
-    // 투표 메뉴 상단 고정 여부. 메뉴당 (VoteDetail + VoteNotice 통틀어) 하나만 켜져 있어야 한다.
-    @Column(nullable = false)
-    private boolean menuUrgent;
-
     @Column(nullable = false)
     private boolean active;
 
@@ -39,13 +35,8 @@ public class VoteNotice {
         VoteNotice notice = new VoteNotice();
         notice.title = title;
         notice.content = content;
-        notice.menuUrgent = false;
         notice.active = true;
         notice.createdAt = LocalDateTime.now();
         return notice;
-    }
-
-    public void updateMenuUrgent(boolean menuUrgent) {
-        this.menuUrgent = menuUrgent;
     }
 }

@@ -2,8 +2,11 @@ package com.thevip.home.service;
 
 import com.thevip.global.config.CacheConfig;
 import com.thevip.home.dto.HomeUrgentResponse;
+import com.thevip.music.entity.MusicDetail;
 import com.thevip.music.repository.MusicDetailRepository;
+import com.thevip.vote.entity.VoteDetail;
 import com.thevip.vote.repository.VoteDetailRepository;
+import java.time.LocalDateTime;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.cache.annotation.Cacheable;
@@ -11,9 +14,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * 홈 화면 긴급 배너의 소스는 MusicDetail/VoteDetail의 homeUrgent 플래그다.
- * 두 도메인 중 homeUrgent가 켜진 항목은 항상 하나여야 하는 불변식은
- * (지금은 없는) 어드민 토글 서비스가 강제하는 책임이며, 여기서는 조회만 한다.
+ * 홈 화면 긴급 배너의 소스는 MusicDetail/VoteDetail의 menuUrgent 플래그다 (메뉴당 최대 하나, 없을 수도 있음).
+ * 이 불변식(메뉴당 최대 하나)은 어드민 서비스가 강제하는 책임이며, 여기서는 조회 후
+ * 음원/투표 후보가 둘 다 있으면 날짜(eventAt/eventEndAt)가 더 임박한 쪽을 고르기만 한다.
  */
 @Service
 @RequiredArgsConstructor
@@ -25,15 +28,30 @@ public class HomeUrgentService {
     @Transactional(readOnly = true)
     @Cacheable(CacheConfig.HOME_URGENT)
     public Optional<HomeUrgentResponse> getCurrentUrgent() {
-        Optional<HomeUrgentResponse> music = musicDetailRepository.findByHomeUrgentTrueAndActiveTrue().stream()
-                .findFirst()
-                .map(HomeUrgentResponse::fromMusic);
-        if (music.isPresent()) {
-            return music;
-        }
+        Optional<MusicDetail> music = musicDetailRepository.findByMenuUrgentTrueAndActiveTrue().stream().findFirst();
+        Optional<VoteDetail> vote = voteDetailRepository.findByMenuUrgentTrueAndActiveTrue().stream().findFirst();
 
-        return voteDetailRepository.findByHomeUrgentTrueAndActiveTrue().stream()
-                .findFirst()
-                .map(HomeUrgentResponse::fromVote);
+        if (music.isPresent() && vote.isPresent()) {
+            return isMusicSooner(music.get(), vote.get())
+                    ? music.map(HomeUrgentResponse::fromMusic)
+                    : vote.map(HomeUrgentResponse::fromVote);
+        }
+        if (music.isPresent()) {
+            return music.map(HomeUrgentResponse::fromMusic);
+        }
+        return vote.map(HomeUrgentResponse::fromVote);
+    }
+
+    // 날짜가 없는 쪽은 비교 대상에서 밀려난다: 둘 다 없으면 투표를, 한쪽만 있으면 그쪽을 우선한다.
+    private boolean isMusicSooner(MusicDetail music, VoteDetail vote) {
+        LocalDateTime musicAt = music.getEventAt();
+        LocalDateTime voteAt = vote.getEventEndAt();
+        if (musicAt == null) {
+            return false;
+        }
+        if (voteAt == null) {
+            return true;
+        }
+        return musicAt.isBefore(voteAt);
     }
 }

@@ -6,5 +6,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface VoteDetailRepository extends JpaRepository<VoteDetail, Long> {
 
-    List<VoteDetail> findByHomeUrgentTrueAndActiveTrue();
+    List<VoteDetail> findByMenuUrgentTrueAndActiveTrue();
 }

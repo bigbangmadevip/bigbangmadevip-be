@@ -1,7 +1,11 @@
 package com.thevip.music.config;
 
+import com.thevip.cheering.entity.CheeringCategory;
 import com.thevip.music.entity.MusicDetail;
 import com.thevip.music.repository.MusicDetailRepository;
+import com.thevip.platform.entity.Platform;
+import com.thevip.platform.entity.PlatformRegion;
+import com.thevip.platform.repository.PlatformRepository;
 import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.ApplicationArguments;
@@ -18,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class MusicDataInitializer implements ApplicationRunner {
 
     private final MusicDetailRepository musicDetailRepository;
+    private final PlatformRepository platformRepository;
 
     @Override
     @Transactional
@@ -26,15 +31,19 @@ public class MusicDataInitializer implements ApplicationRunner {
             return;
         }
 
+        Platform platform = platformRepository.findByName("멜론")
+                .orElseGet(() -> platformRepository.save(Platform.of("멜론", PlatformRegion.DOMESTIC, null)));
+
         MusicDetail detail = MusicDetail.of(
-                "다운로드",
+                CheeringCategory.DOWNLOAD,
                 "오늘 저녁 8시 30분 멜론 개별곡 다운로드 총공",
                 "타이틀 곡 <봄여름가을겨울>",
-                "멜론",
-                LocalDateTime.of(2026, 7, 14, 20, 30));
+                platform.getId(),
+                LocalDateTime.of(2026, 7, 14, 20, 30),
+                0);
         detail.addChecklistItem("Too Bad, Home sweet Home, Live Fast Die Slow 스트리밍 필수");
         detail.addChecklistItem("다운로드 파일 삭제 확인 후 진행");
-        detail.updateHomeUrgent(true);
+        detail.updateMenuUrgent(true);
         musicDetailRepository.save(detail);
     }
 }
