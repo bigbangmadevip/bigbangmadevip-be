@@ -34,9 +34,14 @@ public class SecurityConfig {
         http
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .exceptionHandling(exceptions -> exceptions.authenticationEntryPoint(restAuthenticationEntryPoint))
-                .csrf(csrf -> csrf
-                        .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-                        .csrfTokenRequestHandler(new CsrfTokenRequestAttributeHandler()))
+                .csrf(csrf -> {
+                    CookieCsrfTokenRepository csrfTokenRepository = CookieCsrfTokenRepository.withHttpOnlyFalse();
+                    // 세션 쿠키(same-site: none)와 달리 이 쿠키는 명시 안 하면 브라우저 기본값(Lax)로 내려가서
+                    // cross-site 쓰기 요청에 아예 안 실려간다. 세션 쿠키와 동일하게 None으로 맞춰줌.
+                    csrfTokenRepository.setCookieCustomizer(cookie -> cookie.sameSite("None").secure(true));
+                    csrf.csrfTokenRepository(csrfTokenRepository)
+                            .csrfTokenRequestHandler(new CsrfTokenRequestAttributeHandler());
+                })
                 .addFilterAfter(new CsrfCookieFilter(), CsrfFilter.class)
                 .addFilterBefore(new RedirectCaptureFilter(), OAuth2AuthorizationRequestRedirectFilter.class)
                 .headers(headers -> headers
