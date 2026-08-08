@@ -3,7 +3,9 @@ server:
   forward-headers-strategy: framework  # 프록시의 X-Forwarded-* 헤더를 신뢰 (콜백 URL을 https 도메인 기준으로 생성)
   servlet:
     session:
+      timeout: 60d      # 활동하면 매 요청마다 갱신되는 슬라이딩 타임아웃 (절대 상한 90일은 SessionRenewalFilter가 별도 체크)
       cookie:
+        max-age: 60d      # 최초 발급 시 만료기간. 이후 SessionRenewalFilter가 매 요청마다 60일로 다시 갱신
         same-site: none   # 크로스 사이트 fetch에도 쿠키 전송 허용
         secure: true      # SameSite=None은 HTTPS 필수 (localhost는 예외적으로 동작)
 
