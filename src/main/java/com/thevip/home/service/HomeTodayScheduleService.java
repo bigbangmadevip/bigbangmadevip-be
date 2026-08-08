@@ -12,6 +12,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
@@ -41,7 +42,7 @@ public class HomeTodayScheduleService {
         LocalDateTime startOfTomorrow = startOfToday.plusDays(1);
 
         List<MusicDetail> musicDetails = musicDetailRepository.findTodayExposed(now, startOfToday, startOfTomorrow);
-        List<VoteDetail> voteDetails = voteDetailRepository.findTodayExposed(now, startOfToday, startOfTomorrow);
+        List<VoteDetail> voteDetails = voteDetailRepository.findTodayExposed(now);
 
         Stream<HomeScheduleItemResponse> musicItems = musicDetails.stream()
                 .map(detail -> HomeScheduleItemResponse.fromMusic(detail, platformNames(detail.getPlatformIds())));
@@ -55,7 +56,10 @@ public class HomeTodayScheduleService {
     }
 
     private List<String> platformNames(List<Long> platformIds) {
+        // @OrderColumn 컬렉션은 sort_order가 연속이 아니면 빈 인덱스를 null로 채운다
+        // (수동 SQL로 데이터를 넣을 때 흔히 발생). null은 걸러내고 진행한다.
         return platformIds.stream()
+                .filter(Objects::nonNull)
                 .map(platformRepository::findById)
                 .flatMap(Optional::stream)
                 .map(Platform::getName)

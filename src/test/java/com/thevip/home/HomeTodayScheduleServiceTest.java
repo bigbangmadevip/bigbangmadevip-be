@@ -44,7 +44,7 @@ class HomeTodayScheduleServiceTest {
         detail.addPlatformId(1L);
         detail.updateUrgentContent("긴급 배너 문구");
         when(musicDetailRepository.findTodayExposed(any(), any(), any())).thenReturn(List.of(detail));
-        when(voteDetailRepository.findTodayExposed(any(), any(), any())).thenReturn(List.of());
+        when(voteDetailRepository.findTodayExposed(any())).thenReturn(List.of());
         when(platformRepository.findById(eq(1L))).thenReturn(Optional.of(MELON));
 
         HomeTodayScheduleService service = new HomeTodayScheduleService(
@@ -69,7 +69,7 @@ class HomeTodayScheduleServiceTest {
         detail.addPlatformId(2L);
         detail.updateUrgentContent("멜론, 벅스 flac 16bit 다운");
         when(musicDetailRepository.findTodayExposed(any(), any(), any())).thenReturn(List.of(detail));
-        when(voteDetailRepository.findTodayExposed(any(), any(), any())).thenReturn(List.of());
+        when(voteDetailRepository.findTodayExposed(any())).thenReturn(List.of());
         when(platformRepository.findById(eq(1L))).thenReturn(Optional.of(MELON));
         when(platformRepository.findById(eq(2L))).thenReturn(Optional.of(BUGS));
 
@@ -94,7 +94,7 @@ class HomeTodayScheduleServiceTest {
                 null, LocalDateTime.of(2026, 8, 8, 23, 59), 0);
         vote.addPlatformId(1L);
         when(musicDetailRepository.findTodayExposed(any(), any(), any())).thenReturn(List.of(music));
-        when(voteDetailRepository.findTodayExposed(any(), any(), any())).thenReturn(List.of(vote));
+        when(voteDetailRepository.findTodayExposed(any())).thenReturn(List.of(vote));
         when(platformRepository.findById(eq(1L))).thenReturn(Optional.of(MELON));
 
         HomeTodayScheduleService service = new HomeTodayScheduleService(
@@ -112,7 +112,7 @@ class HomeTodayScheduleServiceTest {
         VoteDetailRepository voteDetailRepository = mock(VoteDetailRepository.class);
         PlatformRepository platformRepository = mock(PlatformRepository.class);
         when(musicDetailRepository.findTodayExposed(any(), any(), any())).thenReturn(List.of());
-        when(voteDetailRepository.findTodayExposed(any(), any(), any())).thenReturn(List.of());
+        when(voteDetailRepository.findTodayExposed(any())).thenReturn(List.of());
 
         HomeTodayScheduleService service = new HomeTodayScheduleService(
                 musicDetailRepository, voteDetailRepository, platformRepository);
@@ -136,7 +136,7 @@ class HomeTodayScheduleServiceTest {
                 })
                 .toList();
         when(musicDetailRepository.findTodayExposed(any(), any(), any())).thenReturn(details);
-        when(voteDetailRepository.findTodayExposed(any(), any(), any())).thenReturn(List.of());
+        when(voteDetailRepository.findTodayExposed(any())).thenReturn(List.of());
         when(platformRepository.findById(eq(1L))).thenReturn(Optional.of(MELON));
 
         HomeTodayScheduleService service = new HomeTodayScheduleService(
