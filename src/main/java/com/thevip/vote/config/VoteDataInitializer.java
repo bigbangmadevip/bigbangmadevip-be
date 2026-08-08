@@ -6,7 +6,7 @@ import com.thevip.platform.repository.PlatformRepository;
 import com.thevip.vote.entity.VoteCategory;
 import com.thevip.vote.entity.VoteDetail;
 import com.thevip.vote.repository.VoteDetailRepository;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
@@ -34,10 +34,12 @@ public class VoteDataInitializer implements ApplicationRunner {
         Platform platform = platformRepository.findByName("하이어(Higher)")
                 .orElseGet(() -> platformRepository.save(Platform.of("하이어(Higher)", PlatformRegion.DOMESTIC, null)));
 
-        // menuUrgent는 기본값 false 유지 - 지금은 음원 쪽만 홈 배너 후보
+        // menuUrgent는 기본값 false 유지 - 지금은 음원 쪽만 긴급 배너 후보
         VoteDetail detail = VoteDetail.of(
-                VoteCategory.MUSIC_SHOW, "인기가요 생방송 투표", null, platform.getId(),
-                null, LocalDateTime.of(2026, 7, 30, 23, 59), 0);
+                VoteCategory.MUSIC_SHOW, "인기가요 생방송 투표", null,
+                null, LocalDate.now().atTime(23, 59), 0);
+        detail.addPlatformId(platform.getId());
+        detail.updateTodayExposed(true);
         voteDetailRepository.save(detail);
     }
 }

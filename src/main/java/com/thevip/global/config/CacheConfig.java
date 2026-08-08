@@ -15,6 +15,7 @@ public class CacheConfig {
 
     public static final String CHEERING_CATALOG = "cheeringCatalog";
     public static final String HOME_URGENT = "homeUrgent";
+    public static final String HOME_TODAY_SCHEDULE = "homeTodaySchedule";
 
     @Bean
     public CacheManager cacheManager() {
@@ -22,9 +23,10 @@ public class CacheConfig {
         manager.setCaches(List.of(
                 // 카탈로그는 TTL 없이 어드민 변경 시점에만 @CacheEvict로 갱신 (어드민 API는 추후 구현)
                 new CaffeineCache(CHEERING_CATALOG, Caffeine.newBuilder().build()),
-                // homeUrgent는 단순 boolean 플래그라 관리자가 토글할 때만 값이 바뀐다.
+                // homeUrgent/homeTodaySchedule은 단순 boolean 플래그라 관리자가 토글할 때만 값이 바뀐다.
                 // TTL 없이 어드민 토글 시점에 @CacheEvict로 갱신 (어드민 API는 추후 구현)
-                new CaffeineCache(HOME_URGENT, Caffeine.newBuilder().build())));
+                new CaffeineCache(HOME_URGENT, Caffeine.newBuilder().build()),
+                new CaffeineCache(HOME_TODAY_SCHEDULE, Caffeine.newBuilder().build())));
         return manager;
     }
 }

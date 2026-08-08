@@ -12,27 +12,29 @@ public record HomeUrgentResponse(
         String category,
         String title,
         String songName,
-        Long platformId,
+        List<Long> platformIds,
         List<String> checklist,
         String imageUrl,
         LocalDateTime eventEndAt) {
 
     public static HomeUrgentResponse fromMusic(MusicDetail detail) {
         String firstImageUrl = detail.getImageUrls().isEmpty() ? null : detail.getImageUrls().get(0);
-        // checklist는 지연 로딩 컬렉션이라, 트랜잭션이 끝나고 나중에 직렬화될 때 접근하면
+        // checklist/platformIds는 지연 로딩 컬렉션이라, 트랜잭션이 끝나고 나중에 직렬화될 때 접근하면
         // LazyInitializationException이 난다. 여기서(트랜잭션 안) 바로 복사해서 담아둔다.
         List<String> checklist = List.copyOf(detail.getChecklist());
+        List<Long> platformIds = List.copyOf(detail.getPlatformIds());
         // 음원 총공은 마감 개념이 없어 eventEndAt은 항상 null -> 프론트는 "지금 바로 참여해주세요" 고정 문구를 쓴다.
         // 배너에는 title(관리용 제목)이 아니라 urgentContent(배너 노출용 문구)를 쓴다.
         return new HomeUrgentResponse(MenuType.MUSIC, detail.getId(), detail.getCategory().name(),
-                detail.getUrgentContent(), detail.getSongName(), detail.getPlatformId(), checklist, firstImageUrl,
+                detail.getUrgentContent(), detail.getSongName(), platformIds, checklist, firstImageUrl,
                 null);
     }
 
     public static HomeUrgentResponse fromVote(VoteDetail detail) {
         String firstImageUrl = detail.getImageUrls().isEmpty() ? null : detail.getImageUrls().get(0);
         List<String> checklist = List.copyOf(detail.getChecklist());
+        List<Long> platformIds = List.copyOf(detail.getPlatformIds());
         return new HomeUrgentResponse(MenuType.VOTE, detail.getId(), detail.getCategory().name(), detail.getTitle(),
-                null, detail.getPlatformId(), checklist, firstImageUrl, detail.getEventEndAt());
+                null, platformIds, checklist, firstImageUrl, detail.getEventEndAt());
     }
 }

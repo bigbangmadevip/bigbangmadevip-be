@@ -38,3 +38,6 @@ out/
 
 ### Local secrets
 secrets.properties
+
+### Claude Code local hook state
+.claude/.notion-doc-sync-marker

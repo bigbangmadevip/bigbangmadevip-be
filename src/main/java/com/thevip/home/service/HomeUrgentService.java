@@ -30,7 +30,8 @@ public class HomeUrgentService {
     public Optional<HomeUrgentResponse> getCurrentUrgent() {
         Optional<MusicDetail> music = musicDetailRepository.findVisibleMenuUrgent(LocalDateTime.now())
                 .stream().findFirst();
-        Optional<VoteDetail> vote = voteDetailRepository.findByMenuUrgentTrueAndActiveTrue().stream().findFirst();
+        Optional<VoteDetail> vote = voteDetailRepository.findVisibleMenuUrgent(LocalDateTime.now())
+                .stream().findFirst();
 
         if (music.isPresent() && vote.isPresent()) {
             return isMusicSooner(music.get(), vote.get())

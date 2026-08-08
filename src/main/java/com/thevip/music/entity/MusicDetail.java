@@ -40,7 +40,12 @@ public class MusicDetail {
     @Column(length = 100)
     private String songName;
 
-    private Long platformId;
+    // 관련 플랫폼(Platform) id 참조 목록. FK 없이 ID 참조 방식. 예: 멜론+벅스 동시 총공.
+    @ElementCollection
+    @CollectionTable(name = "music_detail_platform", joinColumns = @JoinColumn(name = "music_detail_id"))
+    @OrderColumn(name = "sort_order")
+    @Column(name = "platform_id")
+    private List<Long> platformIds = new ArrayList<>();
 
     @Column(columnDefinition = "TEXT")
     private String platformUrl;
@@ -80,6 +85,11 @@ public class MusicDetail {
     @Column(nullable = false)
     private boolean menuUrgent;
 
+    // 홈 화면 "오늘의 총공 일정" 노출 대상 여부. menuUrgent(긴급 배너, 최대 1개)와는 별개로,
+    // 여기 해당하는 것들을 오늘 날짜 기준으로 시간순 최대 5개까지 리스트로 보여준다.
+    @Column(nullable = false)
+    private boolean todayExposed;
+
     // 긴급 배너에 노출할 때 쓰는 문구. title과 별개 (title은 관리용 제목, 이건 배너 노출용 짧은 문구).
     @Column(length = 26)
     private String urgentContent;
@@ -99,16 +109,16 @@ public class MusicDetail {
 
     private LocalDateTime updatedAt;
 
-    public static MusicDetail of(CheeringCategory category, String title, String songName, Long platformId,
+    public static MusicDetail of(CheeringCategory category, String title, String songName,
             LocalDateTime eventAt, int sortOrder) {
         MusicDetail detail = new MusicDetail();
         detail.category = category;
         detail.title = title;
         detail.songName = songName;
-        detail.platformId = platformId;
         detail.eventAt = eventAt;
         detail.sortOrder = sortOrder;
         detail.menuUrgent = false;
+        detail.todayExposed = false;
         detail.active = true;
         detail.createdAt = LocalDateTime.now();
         return detail;
@@ -126,6 +136,10 @@ public class MusicDetail {
         this.guideIds.add(guideId);
     }
 
+    public void addPlatformId(Long platformId) {
+        this.platformIds.add(platformId);
+    }
+
     public void updateDescription(String description) {
         this.description = description;
     }
@@ -140,6 +154,10 @@ public class MusicDetail {
 
     public void updateMenuUrgent(boolean menuUrgent) {
         this.menuUrgent = menuUrgent;
+    }
+
+    public void updateTodayExposed(boolean todayExposed) {
+        this.todayExposed = todayExposed;
     }
 
     public void updateUrgentContent(String urgentContent) {

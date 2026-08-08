@@ -6,7 +6,7 @@ import com.thevip.music.repository.MusicDetailRepository;
 import com.thevip.platform.entity.Platform;
 import com.thevip.platform.entity.PlatformRegion;
 import com.thevip.platform.repository.PlatformRepository;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
@@ -31,19 +31,23 @@ public class MusicDataInitializer implements ApplicationRunner {
             return;
         }
 
-        Platform platform = platformRepository.findByName("멜론")
+        Platform melon = platformRepository.findByName("멜론")
                 .orElseGet(() -> platformRepository.save(Platform.of("멜론", PlatformRegion.DOMESTIC, null)));
+        Platform bugs = platformRepository.findByName("벅스(Bugs)")
+                .orElseGet(() -> platformRepository.save(Platform.of("벅스(Bugs)", PlatformRegion.DOMESTIC, null)));
 
         MusicDetail detail = MusicDetail.of(
                 CheeringCategory.DOWNLOAD,
                 "오늘 저녁 8시 30분 멜론 개별곡 다운로드 총공",
                 "타이틀 곡 <봄여름가을겨울>",
-                platform.getId(),
-                LocalDateTime.of(2026, 7, 14, 20, 30),
+                LocalDate.now().atTime(20, 30),
                 0);
+        detail.addPlatformId(melon.getId());
+        detail.addPlatformId(bugs.getId());
         detail.addChecklistItem("Too Bad, Home sweet Home, Live Fast Die Slow 스트리밍 필수");
         detail.addChecklistItem("다운로드 파일 삭제 확인 후 진행");
         detail.updateMenuUrgent(true);
+        detail.updateTodayExposed(true);
         detail.updateUrgentContent("오늘 저녁 8시 30분 멜론 다운로드 총공");
         musicDetailRepository.save(detail);
     }

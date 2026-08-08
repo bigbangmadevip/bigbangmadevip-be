@@ -38,7 +38,12 @@ public class VoteDetail {
     @Column(columnDefinition = "TEXT")
     private String rewardDescription;
 
-    private Long platformId;
+    // 관련 플랫폼(Platform) id 참조 목록. FK 없이 ID 참조 방식.
+    @ElementCollection
+    @CollectionTable(name = "vote_detail_platform", joinColumns = @JoinColumn(name = "vote_detail_id"))
+    @OrderColumn(name = "sort_order")
+    @Column(name = "platform_id")
+    private List<Long> platformIds = new ArrayList<>();
 
     @Column(columnDefinition = "TEXT")
     private String platformUrl;
@@ -79,8 +84,17 @@ public class VoteDetail {
     @Column(nullable = false)
     private boolean menuUrgent;
 
+    // 홈 화면 "오늘의 총공 일정" 노출 대상 여부. menuUrgent(긴급 배너, 최대 1개)와는 별개로,
+    // 여기 해당하는 것들을 오늘 날짜 기준으로 시간순 최대 5개까지 리스트로 보여준다.
+    @Column(nullable = false)
+    private boolean todayExposed;
+
     @Column(nullable = false)
     private boolean active;
+
+    // 지정하면 이 시각이 지나기 전까지는 active=true여도 노출 대상에서 제외한다 (예약 등록).
+    // 배치 없이 조회 시점에 계산하는 방식(VoteDetailRepository 참고).
+    private LocalDateTime scheduledAt;
 
     @Column(nullable = false)
     private int sortOrder;
@@ -90,17 +104,17 @@ public class VoteDetail {
 
     private LocalDateTime updatedAt;
 
-    public static VoteDetail of(VoteCategory category, String title, String rewardDescription, Long platformId,
+    public static VoteDetail of(VoteCategory category, String title, String rewardDescription,
             LocalDateTime eventStartAt, LocalDateTime eventEndAt, int sortOrder) {
         VoteDetail detail = new VoteDetail();
         detail.category = category;
         detail.title = title;
         detail.rewardDescription = rewardDescription;
-        detail.platformId = platformId;
         detail.eventStartAt = eventStartAt;
         detail.eventEndAt = eventEndAt;
         detail.sortOrder = sortOrder;
         detail.menuUrgent = false;
+        detail.todayExposed = false;
         detail.active = true;
         detail.createdAt = LocalDateTime.now();
         return detail;
@@ -118,6 +132,10 @@ public class VoteDetail {
         this.guideIds.add(guideId);
     }
 
+    public void addPlatformId(Long platformId) {
+        this.platformIds.add(platformId);
+    }
+
     public void updatePlatformUrl(String platformUrl) {
         this.platformUrl = platformUrl;
     }
@@ -132,6 +150,14 @@ public class VoteDetail {
 
     public void updateMenuUrgent(boolean menuUrgent) {
         this.menuUrgent = menuUrgent;
+    }
+
+    public void updateTodayExposed(boolean todayExposed) {
+        this.todayExposed = todayExposed;
+    }
+
+    public void updateScheduledAt(LocalDateTime scheduledAt) {
+        this.scheduledAt = scheduledAt;
     }
 
     @PreUpdate
