@@ -31,7 +31,8 @@ public class HomeService {
         List<CheeringItemResponse> items = catalog.stream()
                 .map(item -> CheeringItemResponse.from(item, completedItemIds.contains(item.id())))
                 .toList();
+        long completedCheeringCount = items.stream().filter(CheeringItemResponse::completed).count();
 
-        return new HomeResponse(participantCount, urgentDetail, items);
+        return new HomeResponse(participantCount, urgentDetail, items.size(), completedCheeringCount, items);
     }
 }
