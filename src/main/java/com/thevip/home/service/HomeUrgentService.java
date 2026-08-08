@@ -28,7 +28,8 @@ public class HomeUrgentService {
     @Transactional(readOnly = true)
     @Cacheable(CacheConfig.HOME_URGENT)
     public Optional<HomeUrgentResponse> getCurrentUrgent() {
-        Optional<MusicDetail> music = musicDetailRepository.findByMenuUrgentTrueAndActiveTrue().stream().findFirst();
+        Optional<MusicDetail> music = musicDetailRepository.findVisibleMenuUrgent(LocalDateTime.now())
+                .stream().findFirst();
         Optional<VoteDetail> vote = voteDetailRepository.findByMenuUrgentTrueAndActiveTrue().stream().findFirst();
 
         if (music.isPresent() && vote.isPresent()) {

@@ -51,7 +51,7 @@ class HomeApiTest {
                 .andExpect(jsonPath("$.data.participantCount").value(org.hamcrest.Matchers.greaterThanOrEqualTo(0)))
                 .andExpect(jsonPath("$.data.urgentDetail.menuType").value("MUSIC"))
                 .andExpect(jsonPath("$.data.urgentDetail.category").value("DOWNLOAD"))
-                .andExpect(jsonPath("$.data.urgentDetail.title").value("오늘 저녁 8시 30분 멜론 개별곡 다운로드 총공"))
+                .andExpect(jsonPath("$.data.urgentDetail.title").value("오늘 저녁 8시 30분 멜론 다운로드 총공"))
                 .andExpect(jsonPath("$.data.urgentDetail.songName").value("타이틀 곡 <봄여름가을겨울>"))
                 .andExpect(jsonPath("$.data.urgentDetail.checklist.length()").value(2))
                 .andExpect(jsonPath("$.data.cheeringItems.length()").value(8))

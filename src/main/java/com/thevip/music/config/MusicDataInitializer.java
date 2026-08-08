@@ -44,6 +44,7 @@ public class MusicDataInitializer implements ApplicationRunner {
         detail.addChecklistItem("Too Bad, Home sweet Home, Live Fast Die Slow 스트리밍 필수");
         detail.addChecklistItem("다운로드 파일 삭제 확인 후 진행");
         detail.updateMenuUrgent(true);
+        detail.updateUrgentContent("오늘 저녁 8시 30분 멜론 다운로드 총공");
         musicDetailRepository.save(detail);
     }
 }

@@ -23,8 +23,10 @@ public record HomeUrgentResponse(
         // LazyInitializationException이 난다. 여기서(트랜잭션 안) 바로 복사해서 담아둔다.
         List<String> checklist = List.copyOf(detail.getChecklist());
         // 음원 총공은 마감 개념이 없어 eventEndAt은 항상 null -> 프론트는 "지금 바로 참여해주세요" 고정 문구를 쓴다.
-        return new HomeUrgentResponse(MenuType.MUSIC, detail.getId(), detail.getCategory().name(), detail.getTitle(),
-                detail.getSongName(), detail.getPlatformId(), checklist, firstImageUrl, null);
+        // 배너에는 title(관리용 제목)이 아니라 urgentContent(배너 노출용 문구)를 쓴다.
+        return new HomeUrgentResponse(MenuType.MUSIC, detail.getId(), detail.getCategory().name(),
+                detail.getUrgentContent(), detail.getSongName(), detail.getPlatformId(), checklist, firstImageUrl,
+                null);
     }
 
     public static HomeUrgentResponse fromVote(VoteDetail detail) {

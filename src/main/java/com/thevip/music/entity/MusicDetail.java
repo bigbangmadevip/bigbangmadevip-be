@@ -80,8 +80,16 @@ public class MusicDetail {
     @Column(nullable = false)
     private boolean menuUrgent;
 
+    // 긴급 배너에 노출할 때 쓰는 문구. title과 별개 (title은 관리용 제목, 이건 배너 노출용 짧은 문구).
+    @Column(length = 26)
+    private String urgentContent;
+
     @Column(nullable = false)
     private boolean active;
+
+    // 지정하면 이 시각이 지나기 전까지는 active=true여도 노출 대상에서 제외한다 (예약 등록).
+    // 배치 없이 조회 시점에 계산하는 방식(MusicDetailRepository 참고).
+    private LocalDateTime scheduledAt;
 
     @Column(nullable = false)
     private int sortOrder;
@@ -132,6 +140,14 @@ public class MusicDetail {
 
     public void updateMenuUrgent(boolean menuUrgent) {
         this.menuUrgent = menuUrgent;
+    }
+
+    public void updateUrgentContent(String urgentContent) {
+        this.urgentContent = urgentContent;
+    }
+
+    public void updateScheduledAt(LocalDateTime scheduledAt) {
+        this.scheduledAt = scheduledAt;
     }
 
     @PreUpdate
