@@ -1,12 +1,6 @@
 package com.thevip.platform.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -27,6 +21,12 @@ public class Platform {
     @Column(nullable = false, length = 50)
     private String name;
 
+    // 음원 상세/원클릭 스트리밍용 플랫폼인지, 투표 상세용 플랫폼인지 구분. 한 플랫폼이 둘 다 겸하는
+    // 경우는 아직 없어서 단일 값으로 둔다.
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
+    private PlatformType type;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     private PlatformRegion region;
@@ -34,9 +34,10 @@ public class Platform {
     @Column(columnDefinition = "TEXT")
     private String iconUrl;
 
-    public static Platform of(String name, PlatformRegion region, String iconUrl) {
+    public static Platform of(String name, PlatformType type, PlatformRegion region, String iconUrl) {
         Platform platform = new Platform();
         platform.name = name;
+        platform.type = type;
         platform.region = region;
         platform.iconUrl = iconUrl;
         return platform;

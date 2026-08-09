@@ -5,6 +5,7 @@ import com.thevip.music.entity.MusicDetail;
 import com.thevip.music.repository.MusicDetailRepository;
 import com.thevip.platform.entity.Platform;
 import com.thevip.platform.entity.PlatformRegion;
+import com.thevip.platform.entity.PlatformType;
 import com.thevip.platform.repository.PlatformRepository;
 import java.time.LocalDate;
 import lombok.RequiredArgsConstructor;
@@ -32,9 +33,11 @@ public class MusicDataInitializer implements ApplicationRunner {
         }
 
         Platform melon = platformRepository.findByName("멜론")
-                .orElseGet(() -> platformRepository.save(Platform.of("멜론", PlatformRegion.DOMESTIC, null)));
+                .orElseGet(() -> platformRepository.save(
+                        Platform.of("멜론", PlatformType.MUSIC, PlatformRegion.DOMESTIC, null)));
         Platform bugs = platformRepository.findByName("벅스(Bugs)")
-                .orElseGet(() -> platformRepository.save(Platform.of("벅스(Bugs)", PlatformRegion.DOMESTIC, null)));
+                .orElseGet(() -> platformRepository.save(
+                        Platform.of("벅스(Bugs)", PlatformType.MUSIC, PlatformRegion.DOMESTIC, null)));
 
         MusicDetail detail = MusicDetail.of(
                 CheeringCategory.DOWNLOAD,

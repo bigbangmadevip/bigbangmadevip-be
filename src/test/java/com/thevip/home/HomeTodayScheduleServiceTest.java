@@ -14,6 +14,7 @@ import com.thevip.music.entity.MusicDetail;
 import com.thevip.music.repository.MusicDetailRepository;
 import com.thevip.platform.entity.Platform;
 import com.thevip.platform.entity.PlatformRegion;
+import com.thevip.platform.entity.PlatformType;
 import com.thevip.platform.repository.PlatformRepository;
 import com.thevip.vote.entity.VoteCategory;
 import com.thevip.vote.entity.VoteDetail;
@@ -30,8 +31,8 @@ import org.junit.jupiter.api.Test;
  */
 class HomeTodayScheduleServiceTest {
 
-    private static final Platform MELON = Platform.of("멜론", PlatformRegion.DOMESTIC, null);
-    private static final Platform BUGS = Platform.of("벅스(Bugs)", PlatformRegion.DOMESTIC, null);
+    private static final Platform MELON = Platform.of("멜론", PlatformType.MUSIC, PlatformRegion.DOMESTIC, null);
+    private static final Platform BUGS = Platform.of("벅스(Bugs)", PlatformType.MUSIC, PlatformRegion.DOMESTIC, null);
 
     @Test
     void 음원만_노출이면_음원_하나짜리_리스트를_반환한다() {

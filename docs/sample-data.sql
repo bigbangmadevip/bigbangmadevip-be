@@ -7,15 +7,66 @@
 -- ============================================================
 -- platform
 -- ============================================================
--- region: DOMESTIC | GLOBAL
-INSERT INTO platform (name, region, icon_url) VALUES ('멜론', 'DOMESTIC', NULL);
+-- type: MUSIC | VOTE, region: DOMESTIC | GLOBAL
+INSERT INTO platform (name, type, region, icon_url) VALUES ('멜론', 'MUSIC', 'DOMESTIC', NULL);
 SET @platform_melon_id = LAST_INSERT_ID();
 
-INSERT INTO platform (name, region, icon_url) VALUES ('하이어(Higher)', 'DOMESTIC', NULL);
+INSERT INTO platform (name, type, region, icon_url) VALUES ('하이어(Higher)', 'VOTE', 'DOMESTIC', NULL);
 SET @platform_higher_id = LAST_INSERT_ID();
 
-INSERT INTO platform (name, region, icon_url) VALUES ('벅스(Bugs)', 'DOMESTIC', NULL);
+INSERT INTO platform (name, type, region, icon_url) VALUES ('벅스(Bugs)', 'MUSIC', 'DOMESTIC', NULL);
 SET @platform_bugs_id = LAST_INSERT_ID();
+
+INSERT INTO platform (name, type, region, icon_url) VALUES ('지니', 'MUSIC', 'DOMESTIC', NULL);
+SET @platform_genie_id = LAST_INSERT_ID();
+
+INSERT INTO platform (name, type, region, icon_url) VALUES ('플로', 'MUSIC', 'DOMESTIC', NULL);
+SET @platform_flo_id = LAST_INSERT_ID();
+
+INSERT INTO platform (name, type, region, icon_url) VALUES ('바이브', 'MUSIC', 'DOMESTIC', NULL);
+SET @platform_vibe_id = LAST_INSERT_ID();
+
+INSERT INTO platform (name, type, region, icon_url) VALUES ('스포티파이', 'MUSIC', 'GLOBAL', NULL);
+SET @platform_spotify_id = LAST_INSERT_ID();
+
+INSERT INTO platform (name, type, region, icon_url) VALUES ('애플뮤직', 'MUSIC', 'GLOBAL', NULL);
+SET @platform_apple_music_id = LAST_INSERT_ID();
+
+INSERT INTO platform (name, type, region, icon_url) VALUES ('유튜브뮤직', 'MUSIC', 'GLOBAL', NULL);
+SET @platform_youtube_music_id = LAST_INSERT_ID();
+
+-- ============================================================
+-- music_streaming_link (원클릭 스트리밍: 플랫폼 -> 운영체제 -> 링크 목록)
+-- ============================================================
+-- os: ANDROID | IPHONE | IPAD | WINDOWS | MAC
+-- 같은 platform_id + os 조합에 링크를 여러 개 넣을 수 있다 (sort_order로 정렬).
+-- 앱 스킴/URL은 전부 예시 placeholder다 - 실제 배포 전에 각 앱의 실제 딥링크로 검증/교체 필요.
+INSERT INTO music_streaming_link (platform_id, os, label, url, active, sort_order, created_at) VALUES
+  (@platform_melon_id, 'ANDROID', '멜론 앱으로 스트리밍', 'melonapp://streaming', 1, 0, NOW()),
+  (@platform_melon_id, 'ANDROID', '멜론 웹으로 스트리밍', 'https://www.melon.com/', 1, 1, NOW()),
+  (@platform_melon_id, 'IPHONE', '멜론 앱으로 스트리밍', 'melonapp://streaming', 1, 0, NOW()),
+  (@platform_melon_id, 'IPAD', '멜론 앱으로 스트리밍', 'melonapp://streaming', 1, 0, NOW()),
+
+  (@platform_genie_id, 'ANDROID', '지니 앱으로 스트리밍', 'geniemusic://streaming', 1, 0, NOW()),
+  (@platform_genie_id, 'IPHONE', '지니 앱으로 스트리밍', 'geniemusic://streaming', 1, 0, NOW()),
+
+  (@platform_bugs_id, 'ANDROID', '벅스 앱으로 스트리밍', 'bugsapp://streaming', 1, 0, NOW()),
+  (@platform_bugs_id, 'IPHONE', '벅스 앱으로 스트리밍', 'bugsapp://streaming', 1, 0, NOW()),
+
+  (@platform_flo_id, 'ANDROID', '플로 앱으로 스트리밍', 'flomusic://streaming', 1, 0, NOW()),
+  (@platform_flo_id, 'IPHONE', '플로 앱으로 스트리밍', 'flomusic://streaming', 1, 0, NOW()),
+
+  (@platform_vibe_id, 'ANDROID', '바이브 앱으로 스트리밍', 'vibe://streaming', 1, 0, NOW()),
+  (@platform_vibe_id, 'IPHONE', '바이브 앱으로 스트리밍', 'vibe://streaming', 1, 0, NOW()),
+
+  (@platform_spotify_id, 'ANDROID', '스포티파이 앱으로 스트리밍', 'spotify://', 1, 0, NOW()),
+  (@platform_spotify_id, 'IPHONE', '스포티파이 앱으로 스트리밍', 'spotify://', 1, 0, NOW()),
+
+  (@platform_apple_music_id, 'IPHONE', '애플뮤직 앱으로 스트리밍', 'https://music.apple.com/', 1, 0, NOW()),
+  (@platform_apple_music_id, 'MAC', '애플뮤직 앱으로 스트리밍', 'https://music.apple.com/', 1, 0, NOW()),
+
+  (@platform_youtube_music_id, 'ANDROID', '유튜브뮤직 앱으로 스트리밍', 'https://music.youtube.com/', 1, 0, NOW()),
+  (@platform_youtube_music_id, 'IPHONE', '유튜브뮤직 앱으로 스트리밍', 'https://music.youtube.com/', 1, 0, NOW());
 
 -- ============================================================
 -- guide (+ guide_image)
