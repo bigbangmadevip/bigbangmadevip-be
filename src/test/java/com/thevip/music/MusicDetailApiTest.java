@@ -6,6 +6,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 import com.thevip.member.entity.Provider;
 import com.thevip.member.service.MemberService;
+import com.thevip.music.repository.MusicDetailRepository;
 import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
@@ -22,7 +23,7 @@ import org.springframework.test.web.servlet.request.RequestPostProcessor;
 
 @SpringBootTest
 @AutoConfigureMockMvc
-class MusicStreamingApiTest {
+class MusicDetailApiTest {
 
     @Autowired
     MockMvc mockMvc;
@@ -30,24 +31,31 @@ class MusicStreamingApiTest {
     @Autowired
     MemberService memberService;
 
-    @Test
-    void 원클릭_스트리밍은_플랫폼별_운영체제별_링크_구조로_내려준다() throws Exception {
-        memberService.findOrCreate(Provider.KAKAO, "40001", "스트리밍테스트");
+    @Autowired
+    MusicDetailRepository musicDetailRepository;
 
-        mockMvc.perform(get("/api/v1/music/streaming").with(loginAs("40001")))
+    @Test
+    void 음원_상세를_조회하면_플랫폼명과_체크리스트를_내려준다() throws Exception {
+        memberService.findOrCreate(Provider.KAKAO, "50001", "상세테스트");
+        Long detailId = musicDetailRepository.findAll().get(0).getId();
+
+        mockMvc.perform(get("/api/v1/music/detail/" + detailId).with(loginAs("50001")))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.urgent.urgentContent").value("오늘 저녁 8시 30분 멜론 다운로드 총공"))
-                .andExpect(jsonPath("$.data.streamingImageUrls.length()").value(1))
-                .andExpect(jsonPath("$.data.imagesUpdatedAt").exists())
-                .andExpect(jsonPath("$.data.platforms.length()").value(2))
-                .andExpect(jsonPath("$.data.platforms[0].name").value("멜론"))
-                .andExpect(jsonPath("$.data.platforms[0].region").value("DOMESTIC"))
-                .andExpect(jsonPath("$.data.platforms[0].osGroups.length()").value(3))
-                .andExpect(jsonPath("$.data.platforms[0].osGroups[0].os").value("ANDROID"))
-                .andExpect(jsonPath("$.data.platforms[0].osGroups[0].links.length()").value(2))
-                .andExpect(jsonPath("$.data.platforms[0].osGroups[0].links[0].label").value("멜론 앱으로 스트리밍"))
-                .andExpect(jsonPath("$.data.platforms[1].name").value("지니"))
-                .andExpect(jsonPath("$.data.platforms[1].osGroups.length()").value(2));
+                .andExpect(jsonPath("$.data.title").value("오늘 저녁 8시 30분 멜론 개별곡 다운로드 총공"))
+                .andExpect(jsonPath("$.data.songName").value("타이틀 곡 <봄여름가을겨울>"))
+                .andExpect(jsonPath("$.data.platformNames.length()").value(2))
+                .andExpect(jsonPath("$.data.platformNames[0]").value("멜론"))
+                .andExpect(jsonPath("$.data.platformNames[1]").value("벅스(Bugs)"))
+                .andExpect(jsonPath("$.data.checklist.length()").value(2));
+    }
+
+    @Test
+    void 존재하지_않는_상세를_조회하면_404가_반환된다() throws Exception {
+        memberService.findOrCreate(Provider.KAKAO, "50002", "존재안함테스트");
+
+        mockMvc.perform(get("/api/v1/music/detail/999999").with(loginAs("50002")))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.error.code").value("C004"));
     }
 
     private RequestPostProcessor loginAs(String kakaoId) {

@@ -4,6 +4,7 @@ import com.thevip.global.config.CacheConfig;
 import com.thevip.home.dto.HomeUrgentResponse;
 import com.thevip.music.entity.MusicDetail;
 import com.thevip.music.repository.MusicDetailRepository;
+import com.thevip.platform.repository.PlatformRepository;
 import com.thevip.vote.entity.VoteDetail;
 import com.thevip.vote.repository.VoteDetailRepository;
 import java.time.LocalDateTime;
@@ -24,6 +25,7 @@ public class HomeUrgentService {
 
     private final MusicDetailRepository musicDetailRepository;
     private final VoteDetailRepository voteDetailRepository;
+    private final PlatformRepository platformRepository;
 
     @Transactional(readOnly = true)
     @Cacheable(CacheConfig.HOME_URGENT)
@@ -35,13 +37,21 @@ public class HomeUrgentService {
 
         if (music.isPresent() && vote.isPresent()) {
             return isMusicSooner(music.get(), vote.get())
-                    ? music.map(HomeUrgentResponse::fromMusic)
-                    : vote.map(HomeUrgentResponse::fromVote);
+                    ? music.map(this::toResponse)
+                    : vote.map(this::toResponse);
         }
         if (music.isPresent()) {
-            return music.map(HomeUrgentResponse::fromMusic);
+            return music.map(this::toResponse);
         }
-        return vote.map(HomeUrgentResponse::fromVote);
+        return vote.map(this::toResponse);
+    }
+
+    private HomeUrgentResponse toResponse(MusicDetail detail) {
+        return HomeUrgentResponse.fromMusic(detail, platformRepository.findNamesByIds(detail.getPlatformIds()));
+    }
+
+    private HomeUrgentResponse toResponse(VoteDetail detail) {
+        return HomeUrgentResponse.fromVote(detail, platformRepository.findNamesByIds(detail.getPlatformIds()));
     }
 
     // 날짜가 없는 쪽은 비교 대상에서 밀려난다: 둘 다 없으면 투표를, 한쪽만 있으면 그쪽을 우선한다.

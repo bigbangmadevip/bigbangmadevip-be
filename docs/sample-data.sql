@@ -69,6 +69,13 @@ INSERT INTO music_streaming_link (platform_id, os, label, url, active, sort_orde
   (@platform_youtube_music_id, 'IPHONE', '유튜브뮤직 앱으로 스트리밍', 'https://music.youtube.com/', 1, 0, NOW());
 
 -- ============================================================
+-- music_streaming_image (원클릭 스트리밍 화면 하단 "스트리밍 리스트" 추천 플레이리스트 이미지)
+-- ============================================================
+-- 특정 총공(music_detail)과 무관한 탭 공용 콘텐츠. 이미지 URL은 예시 placeholder다.
+INSERT INTO music_streaming_image (image_url, active, sort_order, created_at) VALUES
+  ('https://example.com/music/streaming/playlist-1.png', 1, 0, NOW());
+
+-- ============================================================
 -- guide (+ guide_image)
 -- ============================================================
 -- guide_type: STREAMING | DOWNLOAD | MV_REPEAT_PLAY | ID_CREATION

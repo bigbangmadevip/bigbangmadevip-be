@@ -5,38 +5,24 @@ import com.thevip.vote.entity.VoteDetail;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Objects;
 
 public record HomeUrgentResponse(
         MenuType menuType,
         Long detailId,
         String category,
         String title,
-        String songName,
-        List<Long> platformIds,
-        List<String> checklist,
-        String imageUrl,
+        List<String> platformNames,
         LocalDateTime eventEndAt) {
 
-    public static HomeUrgentResponse fromMusic(MusicDetail detail) {
-        String firstImageUrl = detail.getImageUrls().isEmpty() ? null : detail.getImageUrls().get(0);
-        // checklist/platformIds는 지연 로딩 컬렉션이라, 트랜잭션이 끝나고 나중에 직렬화될 때 접근하면
-        // LazyInitializationException이 난다. 여기서(트랜잭션 안) 바로 복사해서 담아둔다.
-        // @OrderColumn 컬렉션은 sort_order가 연속이 아니면 빈 인덱스를 null로 채우므로 걸러낸다.
-        List<String> checklist = detail.getChecklist().stream().filter(Objects::nonNull).toList();
-        List<Long> platformIds = detail.getPlatformIds().stream().filter(Objects::nonNull).toList();
-        // 음원 총공은 마감 개념이 없어 eventEndAt은 항상 null -> 프론트는 "지금 바로 참여해주세요" 고정 문구를 쓴다.
+    public static HomeUrgentResponse fromMusic(MusicDetail detail, List<String> platformNames) {
         // 배너에는 title(관리용 제목)이 아니라 urgentContent(배너 노출용 문구)를 쓴다.
+        // 음원 총공은 마감 개념이 없어 eventEndAt은 항상 null -> 프론트는 "지금 바로 참여해주세요" 고정 문구를 쓴다.
         return new HomeUrgentResponse(MenuType.MUSIC, detail.getId(), detail.getCategory().name(),
-                detail.getUrgentContent(), detail.getSongName(), platformIds, checklist, firstImageUrl,
-                null);
+                detail.getUrgentContent(), platformNames, null);
     }
 
-    public static HomeUrgentResponse fromVote(VoteDetail detail) {
-        String firstImageUrl = detail.getImageUrls().isEmpty() ? null : detail.getImageUrls().get(0);
-        List<String> checklist = detail.getChecklist().stream().filter(Objects::nonNull).toList();
-        List<Long> platformIds = detail.getPlatformIds().stream().filter(Objects::nonNull).toList();
+    public static HomeUrgentResponse fromVote(VoteDetail detail, List<String> platformNames) {
         return new HomeUrgentResponse(MenuType.VOTE, detail.getId(), detail.getCategory().name(), detail.getTitle(),
-                null, platformIds, checklist, firstImageUrl, detail.getEventEndAt());
+                platformNames, detail.getEventEndAt());
     }
 }
