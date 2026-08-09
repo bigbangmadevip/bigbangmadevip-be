@@ -132,10 +132,16 @@ INSERT INTO music_detail_guide (music_detail_id, sort_order, guide_id) VALUES
   (@music_detail_id, 0, @guide_id);
 
 -- ============================================================
--- music_notice
+-- notice (음원/투표 메뉴 공용, menu_type으로 구분. + notice_image)
 -- ============================================================
-INSERT INTO music_notice (title, content, active, created_at)
-VALUES ('음원 공지 제목', '음원 공지 내용', 1, NOW());
+-- menu_type: MUSIC | VOTE
+-- updated_by/updated_at은 화면에 노출하지 않는 관리용 이력 (누가 마지막으로 고쳤는지).
+INSERT INTO notice (menu_type, title, content, active, created_at)
+VALUES ('MUSIC', '음원 공지 제목', '음원 공지 내용', 1, NOW());
+SET @music_notice_id = LAST_INSERT_ID();
+
+INSERT INTO notice_image (notice_id, sort_order, image_url) VALUES
+  (@music_notice_id, 0, 'https://example.com/music/notice/1.png');
 
 -- ============================================================
 -- vote_detail (+ vote_detail_checklist / vote_detail_image / vote_detail_guide)
@@ -170,10 +176,10 @@ INSERT INTO vote_detail_guide (vote_detail_id, sort_order, guide_id) VALUES
   (@vote_detail_id, 0, @guide_id);
 
 -- ============================================================
--- vote_notice
+-- notice (VOTE)
 -- ============================================================
-INSERT INTO vote_notice (title, content, active, created_at)
-VALUES ('투표 공지 제목', '투표 공지 내용', 1, NOW());
+INSERT INTO notice (menu_type, title, content, active, created_at)
+VALUES ('VOTE', '투표 공지 제목', '투표 공지 내용', 1, NOW());
 
 -- ============================================================
 -- member (보통 카카오/구글/네이버 로그인 시 자동 생성되므로 수동 삽입은 테스트용)
