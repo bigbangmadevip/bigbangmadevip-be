@@ -22,4 +22,25 @@ public interface CheeringRepository extends JpaRepository<Cheering, Long> {
     List<Long> findItemIdsByMemberIdAndCheeringDate(@Param("memberId") Long memberId, @Param("date") LocalDate date);
 
     boolean existsByMemberIdAndItemIdAndCheeringDate(Long memberId, Long itemId, LocalDate date);
+
+    // 마이페이지 "내 응원 기록" 요약용.
+    long countByMemberId(Long memberId);
+
+    @Query("SELECT COUNT(DISTINCT c.cheeringDate) FROM Cheering c WHERE c.memberId = :memberId")
+    long countDistinctCheeringDateByMemberId(@Param("memberId") Long memberId);
+
+    @Query("SELECT COUNT(DISTINCT c.cheeringDate) FROM Cheering c WHERE c.memberId = :memberId "
+            + "AND c.cheeringDate BETWEEN :start AND :end")
+    long countDistinctCheeringDateByMemberIdAndCheeringDateBetween(
+            @Param("memberId") Long memberId, @Param("start") LocalDate start, @Param("end") LocalDate end);
+
+    // 참여 기록이 없으면 null.
+    @Query("SELECT MIN(c.cheeringDate) FROM Cheering c WHERE c.memberId = :memberId")
+    LocalDate findFirstCheeringDateByMemberId(@Param("memberId") Long memberId);
+
+    // 마이페이지 응원 기록 캘린더용 (해당 월에 참여한 날짜 목록).
+    @Query("SELECT DISTINCT c.cheeringDate FROM Cheering c WHERE c.memberId = :memberId "
+            + "AND c.cheeringDate BETWEEN :start AND :end ORDER BY c.cheeringDate ASC")
+    List<LocalDate> findDistinctCheeringDateByMemberIdAndCheeringDateBetween(
+            @Param("memberId") Long memberId, @Param("start") LocalDate start, @Param("end") LocalDate end);
 }
