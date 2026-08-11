@@ -23,4 +23,13 @@ public interface MusicDetailRepository extends JpaRepository<MusicDetail, Long> 
     List<MusicDetail> findTodayExposed(@Param("now") LocalDateTime now,
             @Param("startOfToday") LocalDateTime startOfToday,
             @Param("startOfTomorrow") LocalDateTime startOfTomorrow);
+
+    // "일정" 탭 캘린더/일별 리스트용. todayExposed와 무관하게 활성 상태인 항목 전부를 대상으로 하고,
+    // 지난 일정도 조회할 수 있어야 해서 만료 여부는 걸러내지 않는다.
+    @Query("SELECT m FROM MusicDetail m WHERE m.active = true "
+            + "AND (m.scheduledAt IS NULL OR m.scheduledAt <= :now) "
+            + "AND m.eventAt >= :rangeStart AND m.eventAt < :rangeEnd "
+            + "ORDER BY m.eventAt ASC")
+    List<MusicDetail> findActiveInRange(@Param("now") LocalDateTime now,
+            @Param("rangeStart") LocalDateTime rangeStart, @Param("rangeEnd") LocalDateTime rangeEnd);
 }

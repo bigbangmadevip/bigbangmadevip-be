@@ -22,4 +22,26 @@ public interface VoteDetailRepository extends JpaRepository<VoteDetail, Long> {
             + "AND v.eventEndAt >= :now "
             + "ORDER BY v.eventEndAt ASC")
     List<VoteDetail> findTodayExposed(@Param("now") LocalDateTime now);
+
+    // "일정" 탭 캘린더/일별 리스트용(EVERY_DAY 모드). todayExposed와 무관하게 활성 상태인 항목 전부를
+    // 대상으로 하고, 지난 일정도 조회할 수 있어야 해서 만료 여부는 걸러내지 않는다. 투표는
+    // [eventStartAt(없으면 scheduledAt, 그것도 없으면 createdAt), eventEndAt] 구간을 "진행 중"으로 보고,
+    // 이 구간이 요청한 [rangeStart, rangeEnd) 범위와 겹치는 항목을 반환한다
+    // (구간을 날짜별로 펼치는 건 서비스에서).
+    @Query("SELECT v FROM VoteDetail v WHERE v.active = true "
+            + "AND (v.scheduledAt IS NULL OR v.scheduledAt <= :now) "
+            + "AND COALESCE(v.eventStartAt, v.scheduledAt, v.createdAt) < :rangeEnd "
+            + "AND v.eventEndAt >= :rangeStart "
+            + "ORDER BY v.eventEndAt ASC")
+    List<VoteDetail> findActiveOverlapping(@Param("now") LocalDateTime now,
+            @Param("rangeStart") LocalDateTime rangeStart, @Param("rangeEnd") LocalDateTime rangeEnd);
+
+    // "일정" 탭 캘린더/일별 리스트용(DEADLINE_ONLY 모드). 시작일과 무관하게 마감일(eventEndAt) 하루에만
+    // 노출하고 싶을 때 쓴다. MusicDetail.findActiveInRange와 동일한 형태(단일 시점 기준 범위 조회).
+    @Query("SELECT v FROM VoteDetail v WHERE v.active = true "
+            + "AND (v.scheduledAt IS NULL OR v.scheduledAt <= :now) "
+            + "AND v.eventEndAt >= :rangeStart AND v.eventEndAt < :rangeEnd "
+            + "ORDER BY v.eventEndAt ASC")
+    List<VoteDetail> findActiveByDeadlineInRange(@Param("now") LocalDateTime now,
+            @Param("rangeStart") LocalDateTime rangeStart, @Param("rangeEnd") LocalDateTime rangeEnd);
 }
