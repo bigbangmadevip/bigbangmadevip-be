@@ -4,6 +4,7 @@ import com.thevip.global.security.CsrfCookieFilter;
 import com.thevip.global.security.DynamicRedirectSuccessHandler;
 import com.thevip.global.security.RedirectCaptureFilter;
 import com.thevip.global.security.RestAuthenticationEntryPoint;
+import com.thevip.global.security.RestLogoutSuccessHandler;
 import com.thevip.member.service.CustomOAuth2UserService;
 import java.time.Duration;
 import java.util.List;
@@ -33,10 +34,16 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http,
             CustomOAuth2UserService customOAuth2UserService,
-            RestAuthenticationEntryPoint restAuthenticationEntryPoint) throws Exception {
+            RestAuthenticationEntryPoint restAuthenticationEntryPoint,
+            RestLogoutSuccessHandler restLogoutSuccessHandler) throws Exception {
         http
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .exceptionHandling(exceptions -> exceptions.authenticationEntryPoint(restAuthenticationEntryPoint))
+                .logout(logout -> logout
+                        .logoutUrl("/api/v1/logout")
+                        .invalidateHttpSession(true)
+                        .deleteCookies("JSESSIONID")
+                        .logoutSuccessHandler(restLogoutSuccessHandler))
                 .csrf(csrf -> {
                     CookieCsrfTokenRepository csrfTokenRepository = CookieCsrfTokenRepository.withHttpOnlyFalse();
                     // 세션 쿠키(same-site: none)와 달리 이 쿠키는 명시 안 하면 브라우저 기본값(Lax)로 내려가서

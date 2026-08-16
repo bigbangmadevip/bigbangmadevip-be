@@ -26,12 +26,19 @@ public class NoticeDataInitializer implements ApplicationRunner {
             return;
         }
 
-        Notice notice = Notice.of(NoticeMenuType.MUSIC,
+        Notice musicNotice = Notice.of(NoticeMenuType.MUSIC,
                 "[수정] 스트리밍 리스트 ver.2로 업데이트 됐어요.",
                 "안녕하세요, 음원총공팀입니다.\n\n"
                         + "스트리밍 리스트 일부 구성이 수정되어 ver.2로 업데이트 되었습니다.\n\n"
                         + "기존 리스트를 사용 중이셨던 VIP분들은 최신 리스트로 다시 확인 후 스트리밍에 참여해주세요.");
-        notice.addImageUrl("https://example.com/music/notice/1.png");
-        noticeRepository.save(notice);
+        musicNotice.addImageUrl("https://example.com/music/notice/1.png");
+        noticeRepository.save(musicNotice);
+
+        Notice voteNotice = Notice.of(NoticeMenuType.VOTE,
+                "투표 총공팀 공지사항입니다.",
+                "안녕하세요, 투표총공팀입니다.\n\n"
+                        + "이번 주 총공 일정 안내드립니다.\n\n"
+                        + "많은 참여 부탁드립니다.");
+        noticeRepository.save(voteNotice);
     }
 }

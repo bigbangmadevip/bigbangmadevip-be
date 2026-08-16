@@ -43,4 +43,7 @@ public interface CheeringRepository extends JpaRepository<Cheering, Long> {
             + "AND c.cheeringDate BETWEEN :start AND :end ORDER BY c.cheeringDate ASC")
     List<LocalDate> findDistinctCheeringDateByMemberIdAndCheeringDateBetween(
             @Param("memberId") Long memberId, @Param("start") LocalDate start, @Param("end") LocalDate end);
+
+    // 회원탈퇴 시 응원 기록도 함께 삭제한다 (Member를 FK 없이 ID로만 참조하므로 DB가 대신 지워주지 않는다).
+    void deleteByMemberId(Long memberId);
 }

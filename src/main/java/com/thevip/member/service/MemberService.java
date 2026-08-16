@@ -1,5 +1,6 @@
 package com.thevip.member.service;
 
+import com.thevip.cheering.repository.CheeringRepository;
 import com.thevip.global.exception.BusinessException;
 import com.thevip.global.exception.ErrorCode;
 import com.thevip.member.entity.Member;
@@ -15,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class MemberService {
 
     private final MemberRepository memberRepository;
+    private final CheeringRepository cheeringRepository;
 
     @Transactional(readOnly = true)
     public Member getByProviderId(Provider provider, String providerId) {
@@ -52,5 +54,11 @@ public class MemberService {
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND, "회원을 찾을 수 없습니다."));
         member.agreeToTerms();
         return member;
+    }
+
+    @Transactional
+    public void withdraw(Long memberId) {
+        cheeringRepository.deleteByMemberId(memberId);
+        memberRepository.deleteById(memberId);
     }
 }

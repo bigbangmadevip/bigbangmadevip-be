@@ -1,5 +1,7 @@
 package com.thevip.member;
 
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.delete;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.options;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
@@ -8,8 +10,11 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.thevip.cheering.repository.CheeringItemRepository;
+import com.thevip.cheering.repository.CheeringRepository;
 import com.thevip.member.entity.Member;
 import com.thevip.member.entity.Provider;
+import com.thevip.member.repository.MemberRepository;
 import com.thevip.member.service.MemberService;
 import java.util.List;
 import java.util.Map;
@@ -35,6 +40,15 @@ class MeApiTest {
 
     @Autowired
     MemberService memberService;
+
+    @Autowired
+    MemberRepository memberRepository;
+
+    @Autowired
+    CheeringItemRepository cheeringItemRepository;
+
+    @Autowired
+    CheeringRepository cheeringRepository;
 
     @Test
     void 로그인한_회원의_정보를_조회한다() throws Exception {
@@ -116,6 +130,33 @@ class MeApiTest {
         mockMvc.perform(get("/"))
                 .andExpect(status().isNotFound())
                 .andExpect(jsonPath("$.error.code").value("C004"));
+    }
+
+    @Test
+    void 로그아웃하면_200이_반환된다() throws Exception {
+        memberService.findOrCreate(Provider.KAKAO, "20005", "로그아웃테스트");
+
+        mockMvc.perform(post("/api/v1/logout")
+                        .with(loginAs("20005")).with(SecurityMockMvcRequestPostProcessors.csrf()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true));
+    }
+
+    @Test
+    void 회원탈퇴하면_회원과_응원기록이_함께_삭제된다() throws Exception {
+        Member member = memberService.findOrCreate(Provider.KAKAO, "20006", "탈퇴테스트");
+        Long itemId = cheeringItemRepository.findByActiveTrueOrderBySortOrder().get(0).getId();
+        mockMvc.perform(post("/api/v1/cheerings/" + itemId)
+                        .with(loginAs("20006")).with(SecurityMockMvcRequestPostProcessors.csrf()))
+                .andExpect(status().isOk());
+
+        mockMvc.perform(delete("/api/v1/me")
+                        .with(loginAs("20006")).with(SecurityMockMvcRequestPostProcessors.csrf()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true));
+
+        assertThat(memberRepository.findByProviderAndProviderId(Provider.KAKAO, "20006")).isEmpty();
+        assertThat(cheeringRepository.countByMemberId(member.getId())).isZero();
     }
 
     private RequestPostProcessor loginAs(String kakaoId) {

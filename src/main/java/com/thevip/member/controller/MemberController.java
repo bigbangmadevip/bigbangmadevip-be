@@ -5,9 +5,14 @@ import com.thevip.member.dto.MemberResponse;
 import com.thevip.member.dto.UpdateNicknameRequest;
 import com.thevip.member.entity.Member;
 import com.thevip.member.service.MemberService;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
+import org.springframework.security.web.authentication.logout.CookieClearingLogoutHandler;
+import org.springframework.security.web.authentication.logout.SecurityContextLogoutHandler;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -39,5 +44,15 @@ public class MemberController {
         Member member = memberService.getCurrentMember(authentication);
         Member updated = memberService.agreeToTerms(member.getId());
         return ApiResponse.success(MemberResponse.from(updated));
+    }
+
+    @DeleteMapping("/api/v1/me")
+    public ApiResponse<Void> withdraw(OAuth2AuthenticationToken authentication,
+            HttpServletRequest request, HttpServletResponse response) {
+        Member member = memberService.getCurrentMember(authentication);
+        memberService.withdraw(member.getId());
+        new SecurityContextLogoutHandler().logout(request, response, authentication);
+        new CookieClearingLogoutHandler("JSESSIONID").logout(request, response, authentication);
+        return ApiResponse.success();
     }
 }
