@@ -5,6 +5,7 @@ import com.thevip.global.security.DynamicRedirectSuccessHandler;
 import com.thevip.global.security.RedirectCaptureFilter;
 import com.thevip.global.security.RestAuthenticationEntryPoint;
 import com.thevip.member.service.CustomOAuth2UserService;
+import java.time.Duration;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -16,6 +17,8 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.csrf.CsrfFilter;
 import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
+import org.springframework.session.web.http.CookieSerializer;
+import org.springframework.session.web.http.DefaultCookieSerializer;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -68,5 +71,19 @@ public class SecurityConfig {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
         return source;
+    }
+
+    // Spring Session의 기본 세션 쿠키명(SESSION)을 그대로 두면 기존 클라이언트가 쓰던
+    // JSESSIONID와 어긋나서 세션 인식이 끊긴다. 이름/속성을 기존 쿠키와 동일하게 맞춘다.
+    // 이 빈을 직접 정의하면 server.servlet.session.cookie.* 프로퍼티 기반 자동 설정은 적용되지 않는다.
+    @Bean
+    public CookieSerializer cookieSerializer() {
+        DefaultCookieSerializer serializer = new DefaultCookieSerializer();
+        serializer.setCookieName("JSESSIONID");
+        serializer.setUseHttpOnlyCookie(true);
+        serializer.setUseSecureCookie(true);
+        serializer.setSameSite("None");
+        serializer.setCookieMaxAge((int) Duration.ofDays(60).toSeconds());
+        return serializer;
     }
 }

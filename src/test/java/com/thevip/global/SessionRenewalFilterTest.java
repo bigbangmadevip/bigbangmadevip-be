@@ -1,6 +1,5 @@
 package com.thevip.global;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.never;
@@ -15,7 +14,6 @@ import jakarta.servlet.http.HttpSession;
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
 
 class SessionRenewalFilterTest {
 
@@ -51,24 +49,19 @@ class SessionRenewalFilterTest {
     }
 
     @Test
-    void 상한_이내면_60일짜리_쿠키로_갱신한다() throws Exception {
+    void 상한_이내면_세션을_그대로_두고_쿠키는_직접_내려주지_않는다() throws Exception {
         HttpServletRequest request = mock(HttpServletRequest.class);
         HttpServletResponse response = mock(HttpServletResponse.class);
         FilterChain chain = mock(FilterChain.class);
         HttpSession session = mock(HttpSession.class);
         when(request.getSession(false)).thenReturn(session);
         when(session.getAttribute("SESSION_CREATED_AT")).thenReturn(Instant.now().minus(10, ChronoUnit.DAYS));
-        when(session.getId()).thenReturn("test-session-id");
 
         filter.doFilter(request, response, chain);
 
-        ArgumentCaptor<String> headerValue = ArgumentCaptor.forClass(String.class);
-        verify(response).addHeader(org.mockito.ArgumentMatchers.eq("Set-Cookie"), headerValue.capture());
-        assertThat(headerValue.getValue())
-                .contains("JSESSIONID=test-session-id")
-                .contains("Max-Age=" + (60L * 24 * 60 * 60))
-                .contains("SameSite=None");
+        verify(response, never()).addHeader(anyString(), anyString());
         verify(session, never()).invalidate();
+        verify(chain).doFilter(request, response);
     }
 
     @Test
