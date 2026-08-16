@@ -58,6 +58,19 @@ class ScheduleApiTest {
                 .andExpect(jsonPath("$.data.items[1].menuType").value("VOTE"));
     }
 
+    @Test
+    void 초기_진입_조회는_파라미터_생략시_이번달_오늘_기준으로_월과_일을_함께_반환한다() throws Exception {
+        memberService.findOrCreate(Provider.KAKAO, "80003", "일정테스트3");
+        LocalDate today = LocalDate.now();
+
+        mockMvc.perform(get("/api/v1/schedule").with(loginAs("80003")))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.month.days.length()").value(1))
+                .andExpect(jsonPath("$.data.month.days[0].date").value(today.toString()))
+                .andExpect(jsonPath("$.data.day.date").value(today.toString()))
+                .andExpect(jsonPath("$.data.day.items.length()").value(2));
+    }
+
     private RequestPostProcessor loginAs(String kakaoId) {
         ClientRegistration kakao = ClientRegistration.withRegistrationId("kakao")
                 .clientId("test")

@@ -12,6 +12,7 @@ import com.thevip.platform.repository.PlatformRepository;
 import com.thevip.schedule.dto.ScheduleCategory;
 import com.thevip.schedule.dto.ScheduleDayCountResponse;
 import com.thevip.schedule.dto.ScheduleDayResponse;
+import com.thevip.schedule.dto.ScheduleInitialResponse;
 import com.thevip.schedule.dto.ScheduleMonthResponse;
 import com.thevip.schedule.dto.VoteDisplayMode;
 import com.thevip.schedule.service.ScheduleService;
@@ -147,5 +148,27 @@ class ScheduleServiceTest {
 
         assertThat(result.items()).hasSize(1);
         assertThat(result.items().get(0).title()).isEqualTo("투표");
+    }
+
+    @Test
+    void 초기_조회는_월_카운트와_선택_날짜_리스트를_함께_반환한다() {
+        MusicDetailRepository musicDetailRepository = mock(MusicDetailRepository.class);
+        VoteDetailRepository voteDetailRepository = mock(VoteDetailRepository.class);
+        PlatformRepository platformRepository = mock(PlatformRepository.class);
+
+        MusicDetail music = MusicDetail.of(CheeringCategory.DOWNLOAD, "총공", null,
+                LocalDateTime.of(2026, 8, 9, 19, 0), 0);
+        when(musicDetailRepository.findActiveInRange(any(), any(), any())).thenReturn(List.of(music));
+        when(voteDetailRepository.findActiveOverlapping(any(), any(), any())).thenReturn(List.of());
+        when(platformRepository.findNamesByIds(any())).thenReturn(List.of());
+
+        ScheduleService service = new ScheduleService(musicDetailRepository, voteDetailRepository, platformRepository);
+        ScheduleInitialResponse result = service.getInitial(YearMonth.of(2026, 8), LocalDate.of(2026, 8, 9),
+                ScheduleCategory.ALL, VoteDisplayMode.EVERY_DAY);
+
+        assertThat(result.month().days()).hasSize(1);
+        assertThat(result.month().days().get(0).date()).isEqualTo(LocalDate.of(2026, 8, 9));
+        assertThat(result.day().date()).isEqualTo(LocalDate.of(2026, 8, 9));
+        assertThat(result.day().items()).hasSize(1);
     }
 }

@@ -5,6 +5,7 @@ import com.thevip.platform.repository.PlatformRepository;
 import com.thevip.schedule.dto.ScheduleCategory;
 import com.thevip.schedule.dto.ScheduleDayCountResponse;
 import com.thevip.schedule.dto.ScheduleDayResponse;
+import com.thevip.schedule.dto.ScheduleInitialResponse;
 import com.thevip.schedule.dto.ScheduleItemResponse;
 import com.thevip.schedule.dto.ScheduleMonthResponse;
 import com.thevip.schedule.dto.VoteDisplayMode;
@@ -29,6 +30,16 @@ public class ScheduleService {
     private final MusicDetailRepository musicDetailRepository;
     private final VoteDetailRepository voteDetailRepository;
     private final PlatformRepository platformRepository;
+
+    // 일정 화면 첫 진입용. 월(캘린더 점)과 날짜(리스트)를 한 번에 내려줘서 초기 호출을 1번으로 줄인다.
+    // 이후 월/날짜 이동은 각각 getMonth/getDay를 따로 호출하면 된다.
+    @Transactional(readOnly = true)
+    public ScheduleInitialResponse getInitial(YearMonth yearMonth, LocalDate date, ScheduleCategory category,
+            VoteDisplayMode voteDisplayMode) {
+        ScheduleMonthResponse month = getMonth(yearMonth, category, voteDisplayMode);
+        ScheduleDayResponse day = getDay(date, category, voteDisplayMode);
+        return new ScheduleInitialResponse(month, day);
+    }
 
     @Transactional(readOnly = true)
     public ScheduleMonthResponse getMonth(YearMonth yearMonth, ScheduleCategory category, VoteDisplayMode voteDisplayMode) {
