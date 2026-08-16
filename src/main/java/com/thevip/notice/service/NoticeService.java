@@ -20,7 +20,7 @@ public class NoticeService {
 
     @Transactional(readOnly = true)
     public List<NoticeListItemResponse> getNotices(NoticeMenuType menuType) {
-        return noticeRepository.findByMenuTypeAndActiveTrueOrderByCreatedAtDesc(menuType).stream()
+        return noticeRepository.findByMenuTypeAndActiveTrueOrderByPinnedDescCreatedAtDesc(menuType).stream()
                 .map(NoticeListItemResponse::from)
                 .toList();
     }

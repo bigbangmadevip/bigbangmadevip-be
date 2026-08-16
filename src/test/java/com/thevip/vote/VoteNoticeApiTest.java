@@ -48,7 +48,7 @@ class VoteNoticeApiTest {
     @Test
     void 투표_공지_상세를_조회한다() throws Exception {
         memberService.findOrCreate(Provider.KAKAO, "70002", "공지상세테스트");
-        Long noticeId = noticeRepository.findByMenuTypeAndActiveTrueOrderByCreatedAtDesc(NoticeMenuType.VOTE)
+        Long noticeId = noticeRepository.findByMenuTypeAndActiveTrueOrderByPinnedDescCreatedAtDesc(NoticeMenuType.VOTE)
                 .get(0).getId();
 
         mockMvc.perform(get("/api/v1/vote/notices/" + noticeId).with(loginAs("70002")))

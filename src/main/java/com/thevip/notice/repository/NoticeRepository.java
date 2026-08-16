@@ -8,7 +8,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 public interface NoticeRepository extends JpaRepository<Notice, Long> {
 
-    List<Notice> findByMenuTypeAndActiveTrueOrderByCreatedAtDesc(NoticeMenuType menuType);
+    // 고정된 공지가 먼저, 그다음 최신순.
+    List<Notice> findByMenuTypeAndActiveTrueOrderByPinnedDescCreatedAtDesc(NoticeMenuType menuType);
 
     Optional<Notice> findByIdAndMenuType(Long id, NoticeMenuType menuType);
 }

@@ -20,13 +20,27 @@ class NoticeServiceTest {
     void 메뉴타입으로_목록을_조회한다() {
         NoticeRepository noticeRepository = mock(NoticeRepository.class);
         Notice notice = Notice.of(NoticeMenuType.MUSIC, "제목", "내용");
-        when(noticeRepository.findByMenuTypeAndActiveTrueOrderByCreatedAtDesc(NoticeMenuType.MUSIC))
+        when(noticeRepository.findByMenuTypeAndActiveTrueOrderByPinnedDescCreatedAtDesc(NoticeMenuType.MUSIC))
                 .thenReturn(List.of(notice));
 
         NoticeService service = new NoticeService(noticeRepository);
         List<?> result = service.getNotices(NoticeMenuType.MUSIC);
 
         assertThat(result).hasSize(1);
+    }
+
+    @Test
+    void 목록_조회_결과에_고정_여부가_반영된다() {
+        NoticeRepository noticeRepository = mock(NoticeRepository.class);
+        Notice notice = Notice.of(NoticeMenuType.MUSIC, "제목", "내용");
+        notice.updatePinned(true);
+        when(noticeRepository.findByMenuTypeAndActiveTrueOrderByPinnedDescCreatedAtDesc(NoticeMenuType.MUSIC))
+                .thenReturn(List.of(notice));
+
+        NoticeService service = new NoticeService(noticeRepository);
+        var result = service.getNotices(NoticeMenuType.MUSIC);
+
+        assertThat(result.get(0).pinned()).isTrue();
     }
 
     @Test

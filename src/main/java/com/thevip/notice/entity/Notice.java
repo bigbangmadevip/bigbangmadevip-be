@@ -51,6 +51,10 @@ public class Notice {
     @Column(nullable = false)
     private boolean active;
 
+    // 목록 상단 고정 여부. 여러 개 켜져 있으면 고정 항목끼리는 최신순으로 노출된다.
+    @Column(nullable = false)
+    private boolean pinned;
+
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
@@ -71,6 +75,10 @@ public class Notice {
 
     public void addImageUrl(String imageUrl) {
         this.imageUrls.add(imageUrl);
+    }
+
+    public void updatePinned(boolean pinned) {
+        this.pinned = pinned;
     }
 
     public void update(String title, String content, String updatedBy) {
