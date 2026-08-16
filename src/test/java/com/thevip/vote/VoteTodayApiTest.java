@@ -37,9 +37,10 @@ class VoteTodayApiTest {
         mockMvc.perform(get("/api/v1/vote/today").with(loginAs("100001")))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.urgent").doesNotExist())
-                .andExpect(jsonPath("$.data.votes.length()").value(1))
-                .andExpect(jsonPath("$.data.votes[0].title").value("인기가요 생방송 투표"))
-                .andExpect(jsonPath("$.data.votes[0].platformNames").value(org.hamcrest.Matchers.contains("하이어(Higher)")));
+                .andExpect(jsonPath("$.data.dueSoonVotes.length()").value(1))
+                .andExpect(jsonPath("$.data.dueSoonVotes[0].title").value("인기가요 생방송 투표"))
+                .andExpect(jsonPath("$.data.dueSoonVotes[0].platformNames").value(org.hamcrest.Matchers.contains("하이어(Higher)")))
+                .andExpect(jsonPath("$.data.votes.length()").value(0));
     }
 
     private RequestPostProcessor loginAs(String kakaoId) {

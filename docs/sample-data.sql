@@ -160,6 +160,52 @@ INSERT INTO music_show_platform (music_show_id, sort_order, platform_id) VALUES
   (@music_show_id, 0, @platform_mubeat_id),
   (@music_show_id, 1, @platform_muniverse_id);
 
+INSERT INTO platform (name, type, region, icon_url) VALUES ('쿠궁', 'VOTE', 'DOMESTIC', NULL);
+SET @platform_koocon_id = LAST_INSERT_ID();
+
+INSERT INTO music_show (name, active, sort_order, created_at) VALUES ('뮤직뱅크', 1, 1, NOW());
+SET @music_show_id = LAST_INSERT_ID();
+
+INSERT INTO music_show_platform (music_show_id, sort_order, platform_id) VALUES
+  (@music_show_id, 0, @platform_koocon_id);
+
+INSERT INTO platform (name, type, region, icon_url) VALUES ('링크', 'VOTE', 'DOMESTIC', NULL);
+SET @platform_ling_id = LAST_INSERT_ID();
+
+INSERT INTO music_show (name, active, sort_order, created_at) VALUES ('인기가요', 1, 2, NOW());
+SET @music_show_id = LAST_INSERT_ID();
+
+INSERT INTO music_show_platform (music_show_id, sort_order, platform_id) VALUES
+  (@music_show_id, 0, @platform_ling_id),
+  (@music_show_id, 1, @platform_higher_id);
+
+INSERT INTO platform (name, type, region, icon_url) VALUES ('아이돌챔프', 'VOTE', 'DOMESTIC', NULL);
+SET @platform_idolchamp_id = LAST_INSERT_ID();
+
+INSERT INTO music_show (name, active, sort_order, created_at) VALUES ('쇼챔피언', 1, 3, NOW());
+SET @music_show_id = LAST_INSERT_ID();
+
+INSERT INTO music_show_platform (music_show_id, sort_order, platform_id) VALUES
+  (@music_show_id, 0, @platform_idolchamp_id);
+
+INSERT INTO platform (name, type, region, icon_url) VALUES ('엠넷플러스', 'VOTE', 'DOMESTIC', NULL);
+SET @platform_mnetplus_id = LAST_INSERT_ID();
+
+INSERT INTO music_show (name, active, sort_order, created_at) VALUES ('엠카운트다운', 1, 4, NOW());
+SET @music_show_id = LAST_INSERT_ID();
+
+INSERT INTO music_show_platform (music_show_id, sort_order, platform_id) VALUES
+  (@music_show_id, 0, @platform_mnetplus_id);
+
+INSERT INTO platform (name, type, region, icon_url) VALUES ('빅크', 'VOTE', 'DOMESTIC', NULL);
+SET @platform_vick_id = LAST_INSERT_ID();
+
+INSERT INTO music_show (name, active, sort_order, created_at) VALUES ('더쇼', 1, 5, NOW());
+SET @music_show_id = LAST_INSERT_ID();
+
+INSERT INTO music_show_platform (music_show_id, sort_order, platform_id) VALUES
+  (@music_show_id, 0, @platform_vick_id);
+
 -- ============================================================
 -- vote_detail (+ vote_detail_checklist / vote_detail_image / vote_detail_guide)
 -- ============================================================
@@ -196,6 +242,105 @@ INSERT INTO vote_detail_image (vote_detail_id, sort_order, image_url) VALUES
 
 INSERT INTO vote_detail_guide (vote_detail_id, sort_order, guide_id) VALUES
   (@vote_detail_id, 0, @guide_id);
+
+-- ============================================================
+-- vote_detail 추가 예시 (오늘의 투표 탭 마감임박/진행중 섹션 확인용)
+-- ============================================================
+INSERT INTO platform (name, type, region, icon_url) VALUES ('포도알', 'VOTE', 'DOMESTIC', NULL);
+SET @platform_grapealbum_id = LAST_INSERT_ID();
+
+INSERT INTO platform (name, type, region, icon_url) VALUES ('벅스', 'VOTE', 'DOMESTIC', NULL);
+SET @platform_bugs_vote_id = LAST_INSERT_ID();
+
+-- 마감임박(24시간 이내) 예시 1: 음악방송, 01:08:19 남음
+INSERT INTO vote_detail (
+    category, title, music_show_id, reward_description, platform_url,
+    event_start_at, event_end_at, cta_button_label,
+    cheering_item_id, menu_urgent, urgent_content, today_exposed, active, scheduled_at, sort_order,
+    push_enabled, push_send_at, push_title, push_body,
+    created_at
+) VALUES (
+    'MUSIC_SHOW', '인기가요 [1317회] 핫스테이지 투표', NULL, NULL, NULL,
+    NULL, DATE_ADD(NOW(), INTERVAL '1:08:19' HOUR_SECOND), NULL,
+    NULL, 0, NULL, 0, 1, NULL, 0,
+    0, NULL, NULL, NULL,
+    NOW()
+);
+SET @vote_detail_id = LAST_INSERT_ID();
+INSERT INTO vote_detail_platform (vote_detail_id, sort_order, platform_id) VALUES
+  (@vote_detail_id, 0, @platform_higher_id);
+
+-- 마감임박(24시간 이내) 예시 2: 기념일, 16:28:19 남음
+INSERT INTO vote_detail (
+    category, title, music_show_id, reward_description, platform_url,
+    event_start_at, event_end_at, cta_button_label,
+    cheering_item_id, menu_urgent, urgent_content, today_exposed, active, scheduled_at, sort_order,
+    push_enabled, push_send_at, push_title, push_body,
+    created_at
+) VALUES (
+    'ANNIVERSARY', '포도알 데뷔 카페 이벤트', NULL, NULL, NULL,
+    NULL, DATE_ADD(NOW(), INTERVAL '16:28:19' HOUR_SECOND), NULL,
+    NULL, 0, NULL, 0, 1, NULL, 0,
+    0, NULL, NULL, NULL,
+    NOW()
+);
+SET @vote_detail_id = LAST_INSERT_ID();
+INSERT INTO vote_detail_platform (vote_detail_id, sort_order, platform_id) VALUES
+  (@vote_detail_id, 0, @platform_grapealbum_id);
+
+-- 진행 중인 투표 예시 1: 기타, 4일 남음
+INSERT INTO vote_detail (
+    category, title, music_show_id, reward_description, platform_url,
+    event_start_at, event_end_at, cta_button_label,
+    cheering_item_id, menu_urgent, urgent_content, today_exposed, active, scheduled_at, sort_order,
+    push_enabled, push_send_at, push_title, push_body,
+    created_at
+) VALUES (
+    'ETC', '포브스코리아 여름 휴가 패션을 기대하게 만드는 아티스트 어쩌고야', NULL, NULL, NULL,
+    NULL, DATE_ADD(NOW(), INTERVAL 4 DAY), NULL,
+    NULL, 0, NULL, 0, 1, NULL, 0,
+    0, NULL, NULL, NULL,
+    NOW()
+);
+SET @vote_detail_id = LAST_INSERT_ID();
+INSERT INTO vote_detail_platform (vote_detail_id, sort_order, platform_id) VALUES
+  (@vote_detail_id, 0, @platform_mnetplus_id);
+
+-- 진행 중인 투표 예시 2: 시상식, 5일 남음
+INSERT INTO vote_detail (
+    category, title, music_show_id, reward_description, platform_url,
+    event_start_at, event_end_at, cta_button_label,
+    cheering_item_id, menu_urgent, urgent_content, today_exposed, active, scheduled_at, sort_order,
+    push_enabled, push_send_at, push_title, push_body,
+    created_at
+) VALUES (
+    'AWARDS', '벅스 8월 아티스트', NULL, NULL, NULL,
+    NULL, DATE_ADD(NOW(), INTERVAL 5 DAY), NULL,
+    NULL, 0, NULL, 0, 1, NULL, 0,
+    0, NULL, NULL, NULL,
+    NOW()
+);
+SET @vote_detail_id = LAST_INSERT_ID();
+INSERT INTO vote_detail_platform (vote_detail_id, sort_order, platform_id) VALUES
+  (@vote_detail_id, 0, @platform_bugs_vote_id);
+
+-- 진행 중인 투표 예시 3: 음악방송, 8일 남음
+INSERT INTO vote_detail (
+    category, title, music_show_id, reward_description, platform_url,
+    event_start_at, event_end_at, cta_button_label,
+    cheering_item_id, menu_urgent, urgent_content, today_exposed, active, scheduled_at, sort_order,
+    push_enabled, push_send_at, push_title, push_body,
+    created_at
+) VALUES (
+    'MUSIC_SHOW', '포도알 8월 데뷔 아티스트', NULL, NULL, NULL,
+    NULL, DATE_ADD(NOW(), INTERVAL 8 DAY), NULL,
+    NULL, 0, NULL, 0, 1, NULL, 0,
+    0, NULL, NULL, NULL,
+    NOW()
+);
+SET @vote_detail_id = LAST_INSERT_ID();
+INSERT INTO vote_detail_platform (vote_detail_id, sort_order, platform_id) VALUES
+  (@vote_detail_id, 0, @platform_grapealbum_id);
 
 -- ============================================================
 -- notice (VOTE)
