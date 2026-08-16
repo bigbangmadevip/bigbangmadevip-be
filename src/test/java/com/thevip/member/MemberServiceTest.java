@@ -59,4 +59,15 @@ class MemberServiceTest {
 
         assertThat(profile.name()).isEqualTo("VIP");
     }
+
+    @Test
+    void 가입_직후에는_약관동의_전이고_동의하면_동의시각이_기록된다() {
+        Member member = memberService.findOrCreate(Provider.KAKAO, "10003", "종식");
+        assertThat(member.isTermsAgreed()).isFalse();
+
+        Member agreed = memberService.agreeToTerms(member.getId());
+
+        assertThat(agreed.isTermsAgreed()).isTrue();
+        assertThat(agreed.getTermsAgreedAt()).isNotNull();
+    }
 }

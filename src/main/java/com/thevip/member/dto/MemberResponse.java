@@ -2,7 +2,8 @@ package com.thevip.member.dto;
 
 import com.thevip.member.entity.Member;
 
-public record MemberResponse(Long id, String name, String nickname, String provider, String role) {
+public record MemberResponse(Long id, String name, String nickname, String provider, String role,
+        boolean termsAgreed) {
 
     public static MemberResponse from(Member member) {
         return new MemberResponse(
@@ -10,6 +11,7 @@ public record MemberResponse(Long id, String name, String nickname, String provi
                 member.getName(),
                 member.getNickname(),
                 member.getProvider().name(),
-                member.getRole().name());
+                member.getRole().name(),
+                member.isTermsAgreed());
     }
 }

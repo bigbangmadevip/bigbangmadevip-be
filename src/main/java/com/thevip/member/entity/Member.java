@@ -44,6 +44,12 @@ public class Member {
     @Column(nullable = false, length = 20)
     private Role role;
 
+    // 로그인 직후 약관동의 화면을 띄울지 프론트가 판단하는 기준. 항목이 하나(전체 동의)라 단일 플래그로 둔다.
+    @Column(nullable = false)
+    private boolean termsAgreed;
+
+    private LocalDateTime termsAgreedAt;
+
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
@@ -54,6 +60,7 @@ public class Member {
         member.name = name;
         member.nickname = name;
         member.role = Role.USER;
+        member.termsAgreed = false;
         member.createdAt = LocalDateTime.now();
         return member;
     }
@@ -64,5 +71,10 @@ public class Member {
 
     public void updateNickname(String nickname) {
         this.nickname = nickname;
+    }
+
+    public void agreeToTerms() {
+        this.termsAgreed = true;
+        this.termsAgreedAt = LocalDateTime.now();
     }
 }

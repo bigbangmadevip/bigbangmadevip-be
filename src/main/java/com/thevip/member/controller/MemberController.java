@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.oauth2.client.authentication.OAuth2AuthenticationToken;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -30,6 +31,13 @@ public class MemberController {
             @Valid @RequestBody UpdateNicknameRequest request, OAuth2AuthenticationToken authentication) {
         Member member = memberService.getCurrentMember(authentication);
         Member updated = memberService.updateNickname(member.getId(), request.nickname());
+        return ApiResponse.success(MemberResponse.from(updated));
+    }
+
+    @PostMapping("/api/v1/me/terms-agreement")
+    public ApiResponse<MemberResponse> agreeToTerms(OAuth2AuthenticationToken authentication) {
+        Member member = memberService.getCurrentMember(authentication);
+        Member updated = memberService.agreeToTerms(member.getId());
         return ApiResponse.success(MemberResponse.from(updated));
     }
 }

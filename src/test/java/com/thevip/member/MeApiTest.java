@@ -3,6 +3,7 @@ package com.thevip.member;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.options;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.header;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -45,7 +46,21 @@ class MeApiTest {
                 .andExpect(jsonPath("$.data.id").value(member.getId()))
                 .andExpect(jsonPath("$.data.name").value("종식"))
                 .andExpect(jsonPath("$.data.nickname").value("종식"))
-                .andExpect(jsonPath("$.data.role").value("USER"));
+                .andExpect(jsonPath("$.data.role").value("USER"))
+                .andExpect(jsonPath("$.data.termsAgreed").value(false));
+    }
+
+    @Test
+    void 약관에_동의하면_이후_조회에_반영된다() throws Exception {
+        memberService.findOrCreate(Provider.KAKAO, "20004", "약관테스트");
+
+        mockMvc.perform(post("/api/v1/me/terms-agreement")
+                        .with(loginAs("20004")).with(SecurityMockMvcRequestPostProcessors.csrf()))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.termsAgreed").value(true));
+
+        mockMvc.perform(get("/api/v1/me").with(loginAs("20004")))
+                .andExpect(jsonPath("$.data.termsAgreed").value(true));
     }
 
     @Test

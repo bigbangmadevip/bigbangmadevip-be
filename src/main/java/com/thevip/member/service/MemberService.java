@@ -45,4 +45,12 @@ public class MemberService {
         member.updateNickname(nickname);
         return member;
     }
+
+    @Transactional
+    public Member agreeToTerms(Long memberId) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND, "회원을 찾을 수 없습니다."));
+        member.agreeToTerms();
+        return member;
+    }
 }
