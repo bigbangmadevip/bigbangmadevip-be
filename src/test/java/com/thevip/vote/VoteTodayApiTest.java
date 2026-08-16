@@ -1,0 +1,63 @@
+package com.thevip.vote;
+
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
+import com.thevip.member.entity.Provider;
+import com.thevip.member.service.MemberService;
+import java.util.List;
+import java.util.Map;
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.webmvc.test.autoconfigure.AutoConfigureMockMvc;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.oauth2.client.registration.ClientRegistration;
+import org.springframework.security.oauth2.core.AuthorizationGrantType;
+import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
+import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.RequestPostProcessor;
+
+@SpringBootTest
+@AutoConfigureMockMvc
+class VoteTodayApiTest {
+
+    @Autowired
+    MockMvc mockMvc;
+
+    @Autowired
+    MemberService memberService;
+
+    @Test
+    void 오늘의_투표는_시드된_진행중인_투표를_반환한다() throws Exception {
+        memberService.findOrCreate(Provider.KAKAO, "100001", "투표테스트");
+
+        mockMvc.perform(get("/api/v1/vote/today").with(loginAs("100001")))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.urgent").doesNotExist())
+                .andExpect(jsonPath("$.data.votes.length()").value(1))
+                .andExpect(jsonPath("$.data.votes[0].title").value("인기가요 생방송 투표"))
+                .andExpect(jsonPath("$.data.votes[0].platformNames").value(org.hamcrest.Matchers.contains("하이어(Higher)")));
+    }
+
+    private RequestPostProcessor loginAs(String kakaoId) {
+        ClientRegistration kakao = ClientRegistration.withRegistrationId("kakao")
+                .clientId("test")
+                .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
+                .redirectUri("{baseUrl}/login/oauth2/code/kakao")
+                .authorizationUri("https://kauth.kakao.com/oauth/authorize")
+                .tokenUri("https://kauth.kakao.com/oauth/token")
+                .userInfoUri("https://kapi.kakao.com/v2/user/me")
+                .userNameAttributeName("id")
+                .build();
+        DefaultOAuth2User principal = new DefaultOAuth2User(
+                List.of(new SimpleGrantedAuthority("ROLE_USER")),
+                Map.of("id", Long.parseLong(kakaoId)),
+                "id");
+        return SecurityMockMvcRequestPostProcessors.oauth2Login()
+                .clientRegistration(kakao)
+                .oauth2User(principal);
+    }
+}
