@@ -7,6 +7,7 @@ import com.thevip.music.repository.MusicDetailRepository;
 import com.thevip.platform.repository.PlatformRepository;
 import com.thevip.vote.entity.VoteDetail;
 import com.thevip.vote.repository.VoteDetailRepository;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
@@ -30,9 +31,14 @@ public class HomeUrgentService {
     @Transactional(readOnly = true)
     @Cacheable(CacheConfig.HOME_URGENT)
     public Optional<HomeUrgentResponse> getCurrentUrgent() {
-        Optional<MusicDetail> music = musicDetailRepository.findVisibleMenuUrgent(LocalDateTime.now())
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime startOfToday = LocalDate.now().atStartOfDay();
+        LocalDateTime startOfTomorrow = startOfToday.plusDays(1);
+
+        Optional<MusicDetail> music = musicDetailRepository
+                .findVisibleMenuUrgent(now, startOfToday, startOfTomorrow)
                 .stream().findFirst();
-        Optional<VoteDetail> vote = voteDetailRepository.findVisibleMenuUrgent(LocalDateTime.now())
+        Optional<VoteDetail> vote = voteDetailRepository.findVisibleMenuUrgent(now)
                 .stream().findFirst();
 
         if (music.isPresent() && vote.isPresent()) {

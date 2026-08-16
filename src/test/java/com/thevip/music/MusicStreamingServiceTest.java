@@ -33,7 +33,7 @@ class MusicStreamingServiceTest {
         MusicStreamingLinkRepository linkRepository = mock(MusicStreamingLinkRepository.class);
         MusicStreamingImageRepository imageRepository = mock(MusicStreamingImageRepository.class);
         PlatformRepository platformRepository = mock(PlatformRepository.class);
-        when(musicDetailRepository.findVisibleMenuUrgent(any(LocalDateTime.class))).thenReturn(List.of());
+        when(musicDetailRepository.findVisibleMenuUrgent(any(LocalDateTime.class), any(LocalDateTime.class), any(LocalDateTime.class))).thenReturn(List.of());
         when(imageRepository.findByActiveTrueOrderBySortOrderAsc()).thenReturn(List.of());
 
         MusicStreamingLink androidLink1 = MusicStreamingLink.of(1L, OperatingSystem.ANDROID, "앱으로 열기", "melon://a", 0);
@@ -65,7 +65,7 @@ class MusicStreamingServiceTest {
         MusicStreamingLinkRepository linkRepository = mock(MusicStreamingLinkRepository.class);
         MusicStreamingImageRepository imageRepository = mock(MusicStreamingImageRepository.class);
         PlatformRepository platformRepository = mock(PlatformRepository.class);
-        when(musicDetailRepository.findVisibleMenuUrgent(any(LocalDateTime.class))).thenReturn(List.of());
+        when(musicDetailRepository.findVisibleMenuUrgent(any(LocalDateTime.class), any(LocalDateTime.class), any(LocalDateTime.class))).thenReturn(List.of());
         when(imageRepository.findByActiveTrueOrderBySortOrderAsc()).thenReturn(List.of());
 
         MusicStreamingLink link = MusicStreamingLink.of(999L, OperatingSystem.ANDROID, "앱으로 열기", "melon://a", 0);
@@ -85,7 +85,7 @@ class MusicStreamingServiceTest {
         MusicStreamingLinkRepository linkRepository = mock(MusicStreamingLinkRepository.class);
         MusicStreamingImageRepository imageRepository = mock(MusicStreamingImageRepository.class);
         PlatformRepository platformRepository = mock(PlatformRepository.class);
-        when(musicDetailRepository.findVisibleMenuUrgent(any(LocalDateTime.class))).thenReturn(List.of());
+        when(musicDetailRepository.findVisibleMenuUrgent(any(LocalDateTime.class), any(LocalDateTime.class), any(LocalDateTime.class))).thenReturn(List.of());
         when(imageRepository.findByActiveTrueOrderBySortOrderAsc()).thenReturn(List.of());
         when(linkRepository.findByActiveTrueOrderByPlatformIdAscSortOrderAsc()).thenReturn(List.of());
 
@@ -104,7 +104,7 @@ class MusicStreamingServiceTest {
 
         MusicDetail detail = MusicDetail.of(MusicCategory.DOWNLOAD, "테스트 총공", null, null, 0);
         detail.updateUrgentContent("오늘 저녁 12시 30분 멜론 개별곡 다운로드 총공");
-        when(musicDetailRepository.findVisibleMenuUrgent(any(LocalDateTime.class))).thenReturn(List.of(detail));
+        when(musicDetailRepository.findVisibleMenuUrgent(any(LocalDateTime.class), any(LocalDateTime.class), any(LocalDateTime.class))).thenReturn(List.of(detail));
         when(linkRepository.findByActiveTrueOrderByPlatformIdAscSortOrderAsc()).thenReturn(List.of());
         when(imageRepository.findByActiveTrueOrderBySortOrderAsc()).thenReturn(List.of());
 
@@ -122,7 +122,7 @@ class MusicStreamingServiceTest {
         MusicStreamingLinkRepository linkRepository = mock(MusicStreamingLinkRepository.class);
         MusicStreamingImageRepository imageRepository = mock(MusicStreamingImageRepository.class);
         PlatformRepository platformRepository = mock(PlatformRepository.class);
-        when(musicDetailRepository.findVisibleMenuUrgent(any(LocalDateTime.class))).thenReturn(List.of());
+        when(musicDetailRepository.findVisibleMenuUrgent(any(LocalDateTime.class), any(LocalDateTime.class), any(LocalDateTime.class))).thenReturn(List.of());
         when(linkRepository.findByActiveTrueOrderByPlatformIdAscSortOrderAsc()).thenReturn(List.of());
         when(imageRepository.findByActiveTrueOrderBySortOrderAsc()).thenReturn(List.of());
 
@@ -138,7 +138,7 @@ class MusicStreamingServiceTest {
         MusicStreamingLinkRepository linkRepository = mock(MusicStreamingLinkRepository.class);
         MusicStreamingImageRepository imageRepository = mock(MusicStreamingImageRepository.class);
         PlatformRepository platformRepository = mock(PlatformRepository.class);
-        when(musicDetailRepository.findVisibleMenuUrgent(any(LocalDateTime.class))).thenReturn(List.of());
+        when(musicDetailRepository.findVisibleMenuUrgent(any(LocalDateTime.class), any(LocalDateTime.class), any(LocalDateTime.class))).thenReturn(List.of());
         when(linkRepository.findByActiveTrueOrderByPlatformIdAscSortOrderAsc()).thenReturn(List.of());
 
         MusicStreamingImage image = MusicStreamingImage.of("https://example.com/playlist.png", 0);

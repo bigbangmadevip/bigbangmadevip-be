@@ -13,6 +13,7 @@ import com.thevip.music.repository.MusicStreamingImageRepository;
 import com.thevip.music.repository.MusicStreamingLinkRepository;
 import com.thevip.platform.entity.Platform;
 import com.thevip.platform.repository.PlatformRepository;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Comparator;
 import java.util.LinkedHashMap;
@@ -38,7 +39,12 @@ public class MusicStreamingService {
 
     @Transactional(readOnly = true)
     public MusicStreamingResponse getStreamingPlatforms() {
-        MusicStreamingUrgentResponse urgent = musicDetailRepository.findVisibleMenuUrgent(LocalDateTime.now())
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime startOfToday = LocalDate.now().atStartOfDay();
+        LocalDateTime startOfTomorrow = startOfToday.plusDays(1);
+
+        MusicStreamingUrgentResponse urgent = musicDetailRepository
+                .findVisibleMenuUrgent(now, startOfToday, startOfTomorrow)
                 .stream().findFirst()
                 .map(MusicStreamingUrgentResponse::from)
                 .orElse(null);
