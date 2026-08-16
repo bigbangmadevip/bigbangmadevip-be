@@ -5,7 +5,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import com.thevip.cheering.entity.CheeringCategory;
+import com.thevip.music.entity.MusicCategory;
 import com.thevip.music.entity.MusicDetail;
 import com.thevip.music.repository.MusicDetailRepository;
 import com.thevip.platform.repository.PlatformRepository;
@@ -33,7 +33,7 @@ class ScheduleServiceTest {
         VoteDetailRepository voteDetailRepository = mock(VoteDetailRepository.class);
         PlatformRepository platformRepository = mock(PlatformRepository.class);
 
-        MusicDetail music = MusicDetail.of(CheeringCategory.DOWNLOAD, "총공", null,
+        MusicDetail music = MusicDetail.of(MusicCategory.DOWNLOAD, "총공", null,
                 LocalDateTime.of(2026, 8, 9, 19, 0), 0);
         when(musicDetailRepository.findActiveInRange(any(), any(), any())).thenReturn(List.of(music));
 
@@ -96,7 +96,7 @@ class ScheduleServiceTest {
         VoteDetailRepository voteDetailRepository = mock(VoteDetailRepository.class);
         PlatformRepository platformRepository = mock(PlatformRepository.class);
 
-        MusicDetail music = MusicDetail.of(CheeringCategory.DOWNLOAD, "총공", null,
+        MusicDetail music = MusicDetail.of(MusicCategory.DOWNLOAD, "총공", null,
                 LocalDateTime.of(2026, 8, 9, 19, 0), 0);
         when(musicDetailRepository.findActiveInRange(any(), any(), any())).thenReturn(List.of(music));
 
@@ -113,10 +113,10 @@ class ScheduleServiceTest {
         VoteDetailRepository voteDetailRepository = mock(VoteDetailRepository.class);
         PlatformRepository platformRepository = mock(PlatformRepository.class);
 
-        MusicDetail late = MusicDetail.of(CheeringCategory.DOWNLOAD, "늦은 총공", null,
+        MusicDetail late = MusicDetail.of(MusicCategory.DOWNLOAD, "늦은 총공", null,
                 LocalDateTime.of(2026, 8, 9, 20, 0), 0);
         late.updateUrgentContent("벅스 다운로드 총공");
-        MusicDetail early = MusicDetail.of(CheeringCategory.DOWNLOAD, "이른 총공", null,
+        MusicDetail early = MusicDetail.of(MusicCategory.DOWNLOAD, "이른 총공", null,
                 LocalDateTime.of(2026, 8, 9, 19, 0), 0);
         early.updateUrgentContent("멜론 다운로드 총공");
         when(musicDetailRepository.findActiveInRange(any(), any(), any())).thenReturn(List.of(late, early));
@@ -156,7 +156,7 @@ class ScheduleServiceTest {
         VoteDetailRepository voteDetailRepository = mock(VoteDetailRepository.class);
         PlatformRepository platformRepository = mock(PlatformRepository.class);
 
-        MusicDetail music = MusicDetail.of(CheeringCategory.DOWNLOAD, "총공", null,
+        MusicDetail music = MusicDetail.of(MusicCategory.DOWNLOAD, "총공", null,
                 LocalDateTime.of(2026, 8, 9, 19, 0), 0);
         when(musicDetailRepository.findActiveInRange(any(), any(), any())).thenReturn(List.of(music));
         when(voteDetailRepository.findActiveOverlapping(any(), any(), any())).thenReturn(List.of());

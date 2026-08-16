@@ -98,7 +98,7 @@ SET @cheering_item_id = LAST_INSERT_ID();
 -- ============================================================
 -- music_detail (+ music_detail_checklist / music_detail_image / music_detail_guide)
 -- ============================================================
--- category: STREAMING | DOWNLOAD | VOTE | YOUTUBE | VOTECOIN | REPORT | HASHTAG
+-- category: DOWNLOAD | STREAMING | ETC
 -- menu_urgent=1로 하면 홈 화면 긴급 배너 후보가 된다 (음원/투표 통틀어 최대 1개만 켜져 있어야 함, 어드민이 직접 관리).
 -- today_exposed=1로 하면 홈 화면 "오늘의 총공 일정" 리스트에 노출된다 (eventAt이 오늘 날짜일 때만, 최대 5개).
 -- 이 둘은 완전히 별개 필드라 필요에 따라 하나만 켜거나 둘 다 켜도 된다.
@@ -144,21 +144,43 @@ INSERT INTO notice_image (notice_id, sort_order, image_url) VALUES
   (@music_notice_id, 0, 'https://example.com/music/notice/1.png');
 
 -- ============================================================
+-- music_show (+ music_show_platform) — 투표 총공 등록 화면의 "총공 구분"(음악방송 프로그램).
+-- 이 방송을 고르면 여기 등록된 platform_id들이 "총공 플랫폼" 선택지로 노출된다.
+-- ============================================================
+INSERT INTO platform (name, type, region, icon_url) VALUES ('뮤빗', 'VOTE', 'DOMESTIC', NULL);
+SET @platform_mubeat_id = LAST_INSERT_ID();
+
+INSERT INTO platform (name, type, region, icon_url) VALUES ('뮤니버스', 'VOTE', 'DOMESTIC', NULL);
+SET @platform_muniverse_id = LAST_INSERT_ID();
+
+INSERT INTO music_show (name, active, sort_order, created_at) VALUES ('쇼! 음악중심', 1, 0, NOW());
+SET @music_show_id = LAST_INSERT_ID();
+
+INSERT INTO music_show_platform (music_show_id, sort_order, platform_id) VALUES
+  (@music_show_id, 0, @platform_mubeat_id),
+  (@music_show_id, 1, @platform_muniverse_id);
+
+-- ============================================================
 -- vote_detail (+ vote_detail_checklist / vote_detail_image / vote_detail_guide)
 -- ============================================================
--- category: AWARDS | MUSIC_SHOW
+-- category: AWARDS | MUSIC_SHOW | ANNIVERSARY | ETC
+-- music_show_id는 category=MUSIC_SHOW일 때 "총공 구분"으로 고른 music_show를 가리킨다 (선택, ID 참조).
 -- menu_urgent=1로 하면 홈 화면 긴급 배너 후보가 된다 (음원/투표 통틀어 최대 1개만, 어드민이 직접 관리).
+-- urgent_content는 최대 26자, 긴급 배너에 보여줄 짧은 문구 (title과 별개). menu_urgent=1일 때만 의미 있음.
 -- today_exposed=1로 하면 홈 화면 "오늘의 총공 일정" 리스트에 노출된다 (eventEndAt이 오늘 날짜일 때만, 최대 5개).
 -- platform_id는 단일 컬럼이 아니라 vote_detail_platform 조인 테이블로 여러 개 등록 가능.
+-- push_*는 설정값만 저장한다 (실제 푸시 발송 연동은 아직 없음). push_send_at이 NULL이면 "게시 즉시" 의미.
 INSERT INTO vote_detail (
-    category, title, reward_description, platform_url,
+    category, title, music_show_id, reward_description, platform_url,
     event_start_at, event_end_at, cta_button_label,
-    cheering_item_id, menu_urgent, today_exposed, active, scheduled_at, sort_order,
+    cheering_item_id, menu_urgent, urgent_content, today_exposed, active, scheduled_at, sort_order,
+    push_enabled, push_send_at, push_title, push_body,
     created_at
 ) VALUES (
-    'MUSIC_SHOW', '인기가요 생방송 투표', '1위 시 팬사인회 진행', 'https://example.com/vote',
+    'MUSIC_SHOW', '인기가요 생방송 투표', NULL, '1위 시 팬사인회 진행', 'https://example.com/vote',
     NULL, CONCAT(CURDATE(), ' 23:59:00'), '투표하러 가기',
-    NULL, 0, 1, 1, NULL, 0,
+    NULL, 0, NULL, 1, 1, NULL, 0,
+    0, NULL, NULL, NULL,
     NOW()
 );
 SET @vote_detail_id = LAST_INSERT_ID();

@@ -5,7 +5,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import com.thevip.cheering.entity.CheeringCategory;
+import com.thevip.music.entity.MusicCategory;
 import com.thevip.home.dto.HomeScheduleItemResponse;
 import com.thevip.home.dto.MenuType;
 import com.thevip.home.service.HomeTodayScheduleService;
@@ -32,7 +32,7 @@ class HomeTodayScheduleServiceTest {
         VoteDetailRepository voteDetailRepository = mock(VoteDetailRepository.class);
         PlatformRepository platformRepository = mock(PlatformRepository.class);
 
-        MusicDetail detail = MusicDetail.of(CheeringCategory.DOWNLOAD, "테스트 총공", null,
+        MusicDetail detail = MusicDetail.of(MusicCategory.DOWNLOAD, "테스트 총공", null,
                 LocalDateTime.now(), 0);
         detail.addPlatformId(1L);
         detail.updateUrgentContent("긴급 배너 문구");
@@ -56,7 +56,7 @@ class HomeTodayScheduleServiceTest {
         VoteDetailRepository voteDetailRepository = mock(VoteDetailRepository.class);
         PlatformRepository platformRepository = mock(PlatformRepository.class);
 
-        MusicDetail detail = MusicDetail.of(CheeringCategory.DOWNLOAD, "멜론, 벅스 flac 16bit 다운", null,
+        MusicDetail detail = MusicDetail.of(MusicCategory.DOWNLOAD, "멜론, 벅스 flac 16bit 다운", null,
                 LocalDateTime.now(), 0);
         detail.addPlatformId(1L);
         detail.addPlatformId(2L);
@@ -79,7 +79,7 @@ class HomeTodayScheduleServiceTest {
         VoteDetailRepository voteDetailRepository = mock(VoteDetailRepository.class);
         PlatformRepository platformRepository = mock(PlatformRepository.class);
 
-        MusicDetail music = MusicDetail.of(CheeringCategory.DOWNLOAD, "음원", null,
+        MusicDetail music = MusicDetail.of(MusicCategory.DOWNLOAD, "음원", null,
                 LocalDateTime.of(2026, 8, 8, 20, 30), 0);
         music.addPlatformId(1L);
         VoteDetail vote = VoteDetail.of(VoteCategory.MUSIC_SHOW, "투표", null,
@@ -121,7 +121,7 @@ class HomeTodayScheduleServiceTest {
         LocalDateTime base = LocalDateTime.of(2026, 8, 8, 0, 0);
         List<MusicDetail> details = IntStream.range(0, 6)
                 .mapToObj(i -> {
-                    MusicDetail detail = MusicDetail.of(CheeringCategory.DOWNLOAD, "총공" + i, null,
+                    MusicDetail detail = MusicDetail.of(MusicCategory.DOWNLOAD, "총공" + i, null,
                             base.plusHours(i), 0);
                     detail.addPlatformId(1L);
                     return detail;

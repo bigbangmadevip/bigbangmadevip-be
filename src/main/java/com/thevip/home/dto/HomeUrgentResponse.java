@@ -22,7 +22,8 @@ public record HomeUrgentResponse(
     }
 
     public static HomeUrgentResponse fromVote(VoteDetail detail, List<String> platformNames) {
-        return new HomeUrgentResponse(MenuType.VOTE, detail.getId(), detail.getCategory().name(), detail.getTitle(),
-                platformNames, detail.getEventEndAt());
+        // 배너에는 title(관리용 제목)이 아니라 urgentContent(배너 노출용 문구)를 쓴다 (음원과 동일).
+        return new HomeUrgentResponse(MenuType.VOTE, detail.getId(), detail.getCategory().name(),
+                detail.getUrgentContent(), platformNames, detail.getEventEndAt());
     }
 }

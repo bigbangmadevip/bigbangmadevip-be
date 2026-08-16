@@ -5,7 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import com.thevip.cheering.entity.CheeringCategory;
+import com.thevip.music.entity.MusicCategory;
 import com.thevip.global.exception.BusinessException;
 import com.thevip.guide.entity.Guide;
 import com.thevip.guide.entity.GuideType;
@@ -28,7 +28,7 @@ class MusicDetailServiceTest {
         PlatformRepository platformRepository = mock(PlatformRepository.class);
         GuideRepository guideRepository = mock(GuideRepository.class);
 
-        MusicDetail detail = MusicDetail.of(CheeringCategory.DOWNLOAD, "테스트 총공", "테스트 곡",
+        MusicDetail detail = MusicDetail.of(MusicCategory.DOWNLOAD, "테스트 총공", "테스트 곡",
                 LocalDateTime.of(2026, 8, 9, 20, 30), 0);
         detail.addPlatformId(1L);
         detail.addChecklistItem("체크1");
@@ -66,7 +66,7 @@ class MusicDetailServiceTest {
         PlatformRepository platformRepository = mock(PlatformRepository.class);
         GuideRepository guideRepository = mock(GuideRepository.class);
 
-        MusicDetail detail = MusicDetail.of(CheeringCategory.DOWNLOAD, "테스트 총공", null, null, 0);
+        MusicDetail detail = MusicDetail.of(MusicCategory.DOWNLOAD, "테스트 총공", null, null, 0);
         detail.updateScheduledAt(LocalDateTime.now().plusDays(1));
         when(musicDetailRepository.findById(1L)).thenReturn(Optional.of(detail));
 

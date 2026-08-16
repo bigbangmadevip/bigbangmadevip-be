@@ -5,7 +5,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import com.thevip.cheering.entity.CheeringCategory;
+import com.thevip.music.entity.MusicCategory;
 import com.thevip.home.dto.HomeUrgentResponse;
 import com.thevip.home.dto.MenuType;
 import com.thevip.home.service.HomeUrgentService;
@@ -31,7 +31,7 @@ class HomeUrgentServiceTest {
         MusicDetailRepository musicDetailRepository = mock(MusicDetailRepository.class);
         VoteDetailRepository voteDetailRepository = mock(VoteDetailRepository.class);
         PlatformRepository platformRepository = mock(PlatformRepository.class);
-        MusicDetail detail = MusicDetail.of(CheeringCategory.DOWNLOAD, "테스트 총공", null, null, 0);
+        MusicDetail detail = MusicDetail.of(MusicCategory.DOWNLOAD, "테스트 총공", null, null, 0);
         detail.addPlatformId(1L);
         detail.updateUrgentContent("긴급 배너 문구");
         when(musicDetailRepository.findVisibleMenuUrgent(any(LocalDateTime.class))).thenReturn(List.of(detail));
@@ -56,6 +56,7 @@ class HomeUrgentServiceTest {
         PlatformRepository platformRepository = mock(PlatformRepository.class);
         when(musicDetailRepository.findVisibleMenuUrgent(any(LocalDateTime.class))).thenReturn(List.of());
         VoteDetail detail = VoteDetail.of(VoteCategory.MUSIC_SHOW, "테스트 투표", null, null, null, 0);
+        detail.updateUrgentContent("긴급 배너 문구");
         when(voteDetailRepository.findVisibleMenuUrgent(any(LocalDateTime.class))).thenReturn(List.of(detail));
         when(platformRepository.findNamesByIds(List.of())).thenReturn(List.of());
 
@@ -65,7 +66,7 @@ class HomeUrgentServiceTest {
 
         assertThat(result).isPresent();
         assertThat(result.get().menuType()).isEqualTo(MenuType.VOTE);
-        assertThat(result.get().title()).isEqualTo("테스트 투표");
+        assertThat(result.get().title()).isEqualTo("긴급 배너 문구");
     }
 
     @Test
@@ -73,7 +74,7 @@ class HomeUrgentServiceTest {
         MusicDetailRepository musicDetailRepository = mock(MusicDetailRepository.class);
         VoteDetailRepository voteDetailRepository = mock(VoteDetailRepository.class);
         PlatformRepository platformRepository = mock(PlatformRepository.class);
-        MusicDetail music = MusicDetail.of(CheeringCategory.DOWNLOAD, "음원", null,
+        MusicDetail music = MusicDetail.of(MusicCategory.DOWNLOAD, "음원", null,
                 LocalDateTime.of(2026, 8, 10, 0, 0), 0);
         VoteDetail vote = VoteDetail.of(VoteCategory.MUSIC_SHOW, "투표", null, null,
                 LocalDateTime.of(2026, 8, 5, 0, 0), 0);

@@ -1,6 +1,6 @@
 package com.thevip.music.config;
 
-import com.thevip.cheering.entity.CheeringCategory;
+import com.thevip.music.entity.MusicCategory;
 import com.thevip.music.entity.MusicDetail;
 import com.thevip.music.repository.MusicDetailRepository;
 import com.thevip.platform.entity.Platform;
@@ -40,7 +40,7 @@ public class MusicDataInitializer implements ApplicationRunner {
                         Platform.of("벅스(Bugs)", PlatformType.MUSIC, PlatformRegion.DOMESTIC, null)));
 
         MusicDetail detail = MusicDetail.of(
-                CheeringCategory.DOWNLOAD,
+                MusicCategory.DOWNLOAD,
                 "오늘 저녁 8시 30분 멜론 개별곡 다운로드 총공",
                 "타이틀 곡 <봄여름가을겨울>",
                 LocalDate.now().atTime(20, 30),

@@ -35,6 +35,10 @@ public class VoteDetail {
     @Column(nullable = false, length = 100)
     private String title;
 
+    // 음악방송 프로그램(총공 구분). 이 방송의 platformIds가 아래 platformIds 선택지로 쓰인다.
+    // FK 없이 ID 참조 방식. VoteCategory=MUSIC_SHOW가 아니면 보통 null.
+    private Long musicShowId;
+
     @Column(columnDefinition = "TEXT")
     private String rewardDescription;
 
@@ -84,6 +88,10 @@ public class VoteDetail {
     @Column(nullable = false)
     private boolean menuUrgent;
 
+    // 긴급 배너에 노출할 때 쓰는 문구. title과 별개 (title은 관리용 제목, 이건 배너 노출용 짧은 문구).
+    @Column(length = 26)
+    private String urgentContent;
+
     // 홈 화면 "오늘의 총공 일정" 노출 대상 여부. menuUrgent(긴급 배너, 최대 1개)와는 별개로,
     // 여기 해당하는 것들을 오늘 날짜 기준으로 시간순 최대 5개까지 리스트로 보여준다.
     @Column(nullable = false)
@@ -95,6 +103,19 @@ public class VoteDetail {
     // 지정하면 이 시각이 지나기 전까지는 active=true여도 노출 대상에서 제외한다 (예약 등록).
     // 배치 없이 조회 시점에 계산하는 방식(VoteDetailRepository 참고).
     private LocalDateTime scheduledAt;
+
+    // 푸시 알림 발송 여부. 실제 발송(FCM 연동 등)은 아직 없고, 설정값만 저장해둔다.
+    @Column(nullable = false)
+    private boolean pushEnabled;
+
+    // null이면 "게시 즉시" 발송, 값이 있으면 그 시각에 발송(예정) — scheduledAt과 같은 방식.
+    private LocalDateTime pushSendAt;
+
+    @Column(length = 26)
+    private String pushTitle;
+
+    @Column(length = 26)
+    private String pushBody;
 
     @Column(nullable = false)
     private int sortOrder;
@@ -140,6 +161,10 @@ public class VoteDetail {
         this.platformUrl = platformUrl;
     }
 
+    public void updateMusicShowId(Long musicShowId) {
+        this.musicShowId = musicShowId;
+    }
+
     public void updateCtaButtonLabel(String ctaButtonLabel) {
         this.ctaButtonLabel = ctaButtonLabel;
     }
@@ -152,12 +177,32 @@ public class VoteDetail {
         this.menuUrgent = menuUrgent;
     }
 
+    public void updateUrgentContent(String urgentContent) {
+        this.urgentContent = urgentContent;
+    }
+
     public void updateTodayExposed(boolean todayExposed) {
         this.todayExposed = todayExposed;
     }
 
     public void updateScheduledAt(LocalDateTime scheduledAt) {
         this.scheduledAt = scheduledAt;
+    }
+
+    public void updatePushEnabled(boolean pushEnabled) {
+        this.pushEnabled = pushEnabled;
+    }
+
+    public void updatePushSendAt(LocalDateTime pushSendAt) {
+        this.pushSendAt = pushSendAt;
+    }
+
+    public void updatePushTitle(String pushTitle) {
+        this.pushTitle = pushTitle;
+    }
+
+    public void updatePushBody(String pushBody) {
+        this.pushBody = pushBody;
     }
 
     @PreUpdate

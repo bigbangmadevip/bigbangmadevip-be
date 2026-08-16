@@ -1,6 +1,5 @@
 package com.thevip.music.entity;
 
-import com.thevip.cheering.entity.CheeringCategory;
 import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
@@ -31,7 +30,7 @@ public class MusicDetail {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
-    private CheeringCategory category;
+    private MusicCategory category;
 
     @Column(nullable = false, length = 100)
     private String title;
@@ -109,7 +108,7 @@ public class MusicDetail {
 
     private LocalDateTime updatedAt;
 
-    public static MusicDetail of(CheeringCategory category, String title, String songName,
+    public static MusicDetail of(MusicCategory category, String title, String songName,
             LocalDateTime eventAt, int sortOrder) {
         MusicDetail detail = new MusicDetail();
         detail.category = category;

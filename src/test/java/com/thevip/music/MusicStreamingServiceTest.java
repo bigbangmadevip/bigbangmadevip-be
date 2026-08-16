@@ -5,7 +5,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import com.thevip.cheering.entity.CheeringCategory;
+import com.thevip.music.entity.MusicCategory;
 import com.thevip.music.dto.MusicStreamingResponse;
 import com.thevip.music.dto.StreamingPlatformResponse;
 import com.thevip.music.entity.MusicDetail;
@@ -102,7 +102,7 @@ class MusicStreamingServiceTest {
         MusicStreamingImageRepository imageRepository = mock(MusicStreamingImageRepository.class);
         PlatformRepository platformRepository = mock(PlatformRepository.class);
 
-        MusicDetail detail = MusicDetail.of(CheeringCategory.DOWNLOAD, "테스트 총공", null, null, 0);
+        MusicDetail detail = MusicDetail.of(MusicCategory.DOWNLOAD, "테스트 총공", null, null, 0);
         detail.updateUrgentContent("오늘 저녁 12시 30분 멜론 개별곡 다운로드 총공");
         when(musicDetailRepository.findVisibleMenuUrgent(any(LocalDateTime.class))).thenReturn(List.of(detail));
         when(linkRepository.findByActiveTrueOrderByPlatformIdAscSortOrderAsc()).thenReturn(List.of());
