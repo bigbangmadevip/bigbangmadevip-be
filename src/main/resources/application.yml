@@ -83,3 +83,12 @@ logging:
 
 app:
   front-url: http://localhost:3000  # 배포 시 실제 프론트 주소로 교체
+
+# 로컬에서 실제 S3에 붙여볼 땐 secrets.properties에 AWS_ACCESS_KEY_ID/AWS_SECRET_ACCESS_KEY/AWS_S3_BUCKET을 채워 넣는다.
+# placeholder 상태로는 S3Client 빈만 뜨고 실제 호출 시점에 인증 실패한다 (앱 기동 자체는 막지 않음).
+aws:
+  region: ${AWS_REGION:ap-northeast-2}
+  access-key-id: ${AWS_ACCESS_KEY_ID:placeholder}
+  secret-access-key: ${AWS_SECRET_ACCESS_KEY:placeholder}
+  s3:
+    bucket: ${AWS_S3_BUCKET:placeholder}
