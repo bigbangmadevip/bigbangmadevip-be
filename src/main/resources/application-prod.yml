@@ -25,6 +25,8 @@ aws:
   secret-access-key: ${AWS_SECRET_ACCESS_KEY}
   s3:
     bucket: ${AWS_S3_BUCKET}
+  cloudfront:
+    domain: ${AWS_CLOUDFRONT_DOMAIN}
 
 app:
   # music/vote 관리자 서브도메인끼리 세션(로그인)을 공유하기 위한 상위 도메인. 앞에 점을 붙이면

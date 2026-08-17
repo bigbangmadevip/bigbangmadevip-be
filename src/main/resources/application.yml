@@ -38,6 +38,12 @@ spring:
       enabled: true
       path: /h2-console
 
+  # 어드민 이미지 업로드용. 용량 제한은 여기서만 걸고(S3/CloudFront 쪽은 별도 제한 없음).
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+
   security:
     oauth2:
       client:
@@ -98,3 +104,7 @@ aws:
   secret-access-key: ${AWS_SECRET_ACCESS_KEY:placeholder}
   s3:
     bucket: ${AWS_S3_BUCKET:placeholder}
+  cloudfront:
+    # CloudFront 배포 도메인(dXXXXXXXXXXXXX.cloudfront.net 또는 커스텀 도메인). 업로드된 이미지 URL을
+    # 이 도메인 기준으로 만든다. 버킷은 비공개로 두고 CloudFront OAC로만 읽는 구조를 전제로 한다.
+    domain: ${AWS_CLOUDFRONT_DOMAIN:placeholder.cloudfront.net}

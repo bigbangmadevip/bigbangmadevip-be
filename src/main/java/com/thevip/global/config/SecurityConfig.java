@@ -85,7 +85,7 @@ public class SecurityConfig {
                         .requestMatchers("/api/v1/admin/music/**").hasAnyRole("MUSIC_ADMIN", "MASTER")
                         .requestMatchers("/api/v1/admin/vote/**").hasAnyRole("VOTE_ADMIN", "MASTER")
                         .requestMatchers("/api/v1/admin/guides/**", "/api/v1/admin/platforms/**",
-                                "/api/v1/admin/cheering-items/**")
+                                "/api/v1/admin/cheering-items/**", "/api/v1/admin/images/**")
                         .hasAnyRole("MUSIC_ADMIN", "VOTE_ADMIN", "MASTER")
                         .anyRequest().authenticated())
                 .oauth2Login(oauth2 -> oauth2
