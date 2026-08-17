@@ -67,10 +67,39 @@ class MemberRoleRequestServiceTest {
         when(memberRepository.findById(1L)).thenReturn(Optional.of(member));
 
         MemberRoleRequestService service = new MemberRoleRequestService(requestRepository, memberRepository);
-        service.approve(100L, 9L);
+        service.approve(100L, 9L, Role.MASTER);
 
         assertThat(member.getRole()).isEqualTo(Role.MUSIC_ADMIN);
         assertThat(request.getStatus()).isEqualTo(RequestStatus.APPROVED);
+    }
+
+    @Test
+    void 같은_도메인_관리자도_승인할_수_있다() {
+        MemberRoleRequestRepository requestRepository = mock(MemberRoleRequestRepository.class);
+        MemberRepository memberRepository = mock(MemberRepository.class);
+
+        MemberRoleRequest request = MemberRoleRequest.of(1L, Role.VOTE_ADMIN);
+        Member member = Member.of(Provider.KAKAO, "1", "테스트");
+        when(requestRepository.findById(100L)).thenReturn(Optional.of(request));
+        when(memberRepository.findById(1L)).thenReturn(Optional.of(member));
+
+        MemberRoleRequestService service = new MemberRoleRequestService(requestRepository, memberRepository);
+        service.approve(100L, 9L, Role.VOTE_ADMIN);
+
+        assertThat(member.getRole()).isEqualTo(Role.VOTE_ADMIN);
+    }
+
+    @Test
+    void 다른_도메인_관리자가_승인하면_예외가_발생한다() {
+        MemberRoleRequestRepository requestRepository = mock(MemberRoleRequestRepository.class);
+        MemberRepository memberRepository = mock(MemberRepository.class);
+
+        MemberRoleRequest request = MemberRoleRequest.of(1L, Role.VOTE_ADMIN);
+        when(requestRepository.findById(100L)).thenReturn(Optional.of(request));
+
+        MemberRoleRequestService service = new MemberRoleRequestService(requestRepository, memberRepository);
+
+        assertThatThrownBy(() -> service.approve(100L, 9L, Role.MUSIC_ADMIN)).isInstanceOf(BusinessException.class);
     }
 
     @Test
@@ -84,11 +113,11 @@ class MemberRoleRequestServiceTest {
 
         MemberRoleRequestService service = new MemberRoleRequestService(requestRepository, memberRepository);
 
-        assertThatThrownBy(() -> service.approve(100L, 9L)).isInstanceOf(BusinessException.class);
+        assertThatThrownBy(() -> service.approve(100L, 9L, Role.MASTER)).isInstanceOf(BusinessException.class);
     }
 
     @Test
-    void 대기중인_신청_목록을_닉네임과_함께_반환한다() {
+    void 마스터는_대기중인_신청_전부를_닉네임과_함께_반환받는다() {
         MemberRoleRequestRepository requestRepository = mock(MemberRoleRequestRepository.class);
         MemberRepository memberRepository = mock(MemberRepository.class);
 
@@ -100,9 +129,25 @@ class MemberRoleRequestServiceTest {
         when(memberRepository.findAllById(List.of(1L))).thenReturn(List.of(member));
 
         MemberRoleRequestService service = new MemberRoleRequestService(requestRepository, memberRepository);
-        var result = service.listPending();
+        var result = service.listPending(Role.MASTER);
 
         assertThat(result).hasSize(1);
         assertThat(result.get(0).memberNickname()).isEqualTo("닉네임테스트");
+    }
+
+    @Test
+    void 도메인_관리자는_자기_도메인_신청만_반환받는다() {
+        MemberRoleRequestRepository requestRepository = mock(MemberRoleRequestRepository.class);
+        MemberRepository memberRepository = mock(MemberRepository.class);
+
+        MemberRoleRequest request = MemberRoleRequest.of(1L, Role.VOTE_ADMIN);
+        when(requestRepository.findByStatusAndRequestedRoleOrderByCreatedAtAsc(RequestStatus.PENDING, Role.VOTE_ADMIN))
+                .thenReturn(List.of(request));
+        when(memberRepository.findAllById(List.of(1L))).thenReturn(List.of());
+
+        MemberRoleRequestService service = new MemberRoleRequestService(requestRepository, memberRepository);
+        var result = service.listPending(Role.VOTE_ADMIN);
+
+        assertThat(result).hasSize(1);
     }
 }

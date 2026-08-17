@@ -38,21 +38,22 @@ public class MemberRoleRequestController {
     }
 
     @GetMapping("/api/v1/admin/role-requests")
-    public ApiResponse<List<RoleRequestListItemResponse>> pending() {
-        return ApiResponse.success(memberRoleRequestService.listPending());
+    public ApiResponse<List<RoleRequestListItemResponse>> pending(OAuth2AuthenticationToken authentication) {
+        Member member = memberService.getCurrentMember(authentication);
+        return ApiResponse.success(memberRoleRequestService.listPending(member.getRole()));
     }
 
     @PostMapping("/api/v1/admin/role-requests/{requestId}/approve")
     public ApiResponse<Void> approve(@PathVariable Long requestId, OAuth2AuthenticationToken authentication) {
         Member member = memberService.getCurrentMember(authentication);
-        memberRoleRequestService.approve(requestId, member.getId());
+        memberRoleRequestService.approve(requestId, member.getId(), member.getRole());
         return ApiResponse.success();
     }
 
     @PostMapping("/api/v1/admin/role-requests/{requestId}/reject")
     public ApiResponse<Void> reject(@PathVariable Long requestId, OAuth2AuthenticationToken authentication) {
         Member member = memberService.getCurrentMember(authentication);
-        memberRoleRequestService.reject(requestId, member.getId());
+        memberRoleRequestService.reject(requestId, member.getId(), member.getRole());
         return ApiResponse.success();
     }
 }

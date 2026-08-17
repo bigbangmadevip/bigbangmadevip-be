@@ -9,6 +9,7 @@ import com.thevip.global.security.RestLogoutSuccessHandler;
 import com.thevip.global.security.SessionRenewalFilter;
 import com.thevip.member.service.CustomOAuth2UserService;
 import java.time.Duration;
+import java.util.ArrayList;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
@@ -33,6 +34,11 @@ public class SecurityConfig {
 
     @Value("${app.front-url}")
     private String frontUrl;
+
+    // 실제 배포 환경(예: .bigbangmadevip.com)에서만 지정 — 로컬/ngrok처럼 그 도메인과 무관한
+    // host로 접속할 때 지정돼 있으면 브라우저가 쿠키 자체를 거부해 로그인이 아예 깨진다.
+    @Value("${app.cookie-domain:}")
+    private String cookieDomain;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http,
@@ -65,9 +71,15 @@ public class SecurityConfig {
                         .frameOptions(frame -> frame.sameOrigin()))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/", "/health", "/h2-console/**", "/s/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/api/v1/admin/role-requests").hasRole("MASTER")
-                        .requestMatchers(HttpMethod.POST, "/api/v1/admin/role-requests/*/approve").hasRole("MASTER")
-                        .requestMatchers(HttpMethod.POST, "/api/v1/admin/role-requests/*/reject").hasRole("MASTER")
+                        // 이 셋은 요청 목록/승인/반려의 실제 대상 제한(MASTER는 전부, MUSIC_ADMIN/VOTE_ADMIN은
+                        // 자기 도메인 신청만)은 컨트롤러 진입 후 서비스 레이어에서 건별로 판단한다. 여기서는
+                        // 일반 USER를 걸러내는 정도만 담당.
+                        .requestMatchers(HttpMethod.GET, "/api/v1/admin/role-requests")
+                        .hasAnyRole("MASTER", "MUSIC_ADMIN", "VOTE_ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/api/v1/admin/role-requests/*/approve")
+                        .hasAnyRole("MASTER", "MUSIC_ADMIN", "VOTE_ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/api/v1/admin/role-requests/*/reject")
+                        .hasAnyRole("MASTER", "MUSIC_ADMIN", "VOTE_ADMIN")
                         .anyRequest().authenticated())
                 .oauth2Login(oauth2 -> oauth2
                         .userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService))
@@ -78,9 +90,13 @@ public class SecurityConfig {
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(frontUrl.equals("http://localhost:3000")
+        List<String> allowedOrigins = new ArrayList<>(frontUrl.equals("http://localhost:3000")
                 ? List.of(frontUrl)
                 : List.of(frontUrl, "http://localhost:3000"));
+        // 음원/투표 관리자 서브도메인. 두 곳 다 별도 프론트 배포라 origin으로 명시해야 CORS를 통과한다.
+        allowedOrigins.add("https://music.bigbangmadevip.com");
+        allowedOrigins.add("https://vote.bigbangmadevip.com");
+        config.setAllowedOrigins(allowedOrigins);
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowCredentials(true);
@@ -101,6 +117,9 @@ public class SecurityConfig {
         serializer.setUseSecureCookie(true);
         serializer.setSameSite("None");
         serializer.setCookieMaxAge((int) Duration.ofDays(60).toSeconds());
+        if (!cookieDomain.isBlank()) {
+            serializer.setDomainName(cookieDomain);
+        }
         return serializer;
     }
 }

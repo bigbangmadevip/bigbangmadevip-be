@@ -42,9 +42,12 @@ public class MemberRoleRequestService {
                 .orElse(null);
     }
 
+    // MASTER는 대기 중인 신청 전부, MUSIC_ADMIN/VOTE_ADMIN은 자기 도메인(requestedRole이 같은) 신청만 본다.
     @Transactional(readOnly = true)
-    public List<RoleRequestListItemResponse> listPending() {
-        List<MemberRoleRequest> requests = memberRoleRequestRepository.findByStatusOrderByCreatedAtAsc(RequestStatus.PENDING);
+    public List<RoleRequestListItemResponse> listPending(Role callerRole) {
+        List<MemberRoleRequest> requests = callerRole == Role.MASTER
+                ? memberRoleRequestRepository.findByStatusOrderByCreatedAtAsc(RequestStatus.PENDING)
+                : memberRoleRequestRepository.findByStatusAndRequestedRoleOrderByCreatedAtAsc(RequestStatus.PENDING, callerRole);
         List<Long> memberIds = requests.stream().map(MemberRoleRequest::getMemberId).toList();
         Map<Long, String> nicknamesById = memberRepository.findAllById(memberIds).stream()
                 .collect(Collectors.toMap(Member::getId, Member::getNickname));
@@ -55,8 +58,9 @@ public class MemberRoleRequestService {
     }
 
     @Transactional
-    public void approve(Long requestId, Long resolverId) {
+    public void approve(Long requestId, Long resolverId, Role callerRole) {
         MemberRoleRequest request = getPendingRequest(requestId);
+        requireApprovalAuthority(callerRole, request.getRequestedRole());
         Member member = memberRepository.findById(request.getMemberId())
                 .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND, "존재하지 않는 회원입니다."));
 
@@ -65,9 +69,17 @@ public class MemberRoleRequestService {
     }
 
     @Transactional
-    public void reject(Long requestId, Long resolverId) {
+    public void reject(Long requestId, Long resolverId, Role callerRole) {
         MemberRoleRequest request = getPendingRequest(requestId);
+        requireApprovalAuthority(callerRole, request.getRequestedRole());
         request.reject(resolverId);
+    }
+
+    // MASTER는 모든 신청을, MUSIC_ADMIN/VOTE_ADMIN은 자기 도메인과 같은 requestedRole 신청만 승인/반려할 수 있다.
+    private void requireApprovalAuthority(Role callerRole, Role requestedRole) {
+        if (callerRole != Role.MASTER && callerRole != requestedRole) {
+            throw new BusinessException(ErrorCode.FORBIDDEN);
+        }
     }
 
     private MemberRoleRequest getPendingRequest(Long requestId) {

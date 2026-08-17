@@ -25,3 +25,8 @@ aws:
   secret-access-key: ${AWS_SECRET_ACCESS_KEY}
   s3:
     bucket: ${AWS_S3_BUCKET}
+
+app:
+  # music/vote 관리자 서브도메인끼리 세션(로그인)을 공유하기 위한 상위 도메인. 로컬/ngrok에서는
+  # 이 값이 없어야(비어있어야) 쿠키가 정상적으로 내려간다 — SecurityConfig 참고.
+  cookie-domain: .bigbangmadevip.com
