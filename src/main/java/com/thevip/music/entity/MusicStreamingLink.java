@@ -62,6 +62,18 @@ public class MusicStreamingLink {
         return link;
     }
 
+    public void update(Long platformId, OperatingSystem os, String label, String url, int sortOrder) {
+        this.platformId = platformId;
+        this.os = os;
+        this.label = label;
+        this.url = url;
+        this.sortOrder = sortOrder;
+    }
+
+    public void updateActive(boolean active) {
+        this.active = active;
+    }
+
     @PreUpdate
     protected void onUpdate() {
         this.updatedAt = LocalDateTime.now();

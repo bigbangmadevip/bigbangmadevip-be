@@ -47,6 +47,15 @@ public class MusicStreamingImage {
         return image;
     }
 
+    public void update(String imageUrl, int sortOrder) {
+        this.imageUrl = imageUrl;
+        this.sortOrder = sortOrder;
+    }
+
+    public void updateActive(boolean active) {
+        this.active = active;
+    }
+
     @PreUpdate
     protected void onUpdate() {
         this.updatedAt = LocalDateTime.now();
