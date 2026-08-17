@@ -5,6 +5,7 @@ import com.thevip.global.security.DynamicRedirectSuccessHandler;
 import com.thevip.global.security.RedirectCaptureFilter;
 import com.thevip.global.security.RestAuthenticationEntryPoint;
 import com.thevip.global.security.RestLogoutSuccessHandler;
+import com.thevip.global.security.SessionRenewalFilter;
 import com.thevip.member.service.CustomOAuth2UserService;
 import java.time.Duration;
 import java.util.List;
@@ -54,6 +55,7 @@ public class SecurityConfig {
                 })
                 .addFilterAfter(new CsrfCookieFilter(), CsrfFilter.class)
                 .addFilterBefore(new RedirectCaptureFilter(), OAuth2AuthorizationRequestRedirectFilter.class)
+                .addFilterAfter(new SessionRenewalFilter(), CsrfCookieFilter.class)
                 .headers(headers -> headers
                         .frameOptions(frame -> frame.sameOrigin()))
                 .authorizeHttpRequests(auth -> auth

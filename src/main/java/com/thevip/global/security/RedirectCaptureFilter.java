@@ -19,9 +19,13 @@ public class RedirectCaptureFilter extends OncePerRequestFilter {
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
             throws ServletException, IOException {
-        String redirect = request.getParameter("redirect");
-        if (redirect != null) {
-            request.getSession().setAttribute(SESSION_KEY, redirect);
+        // 카카오 로그인 시작 요청에만 반응한다. 이전엔 모든 요청에 걸려서, 미인증 요청도
+        // ?redirect= 파라미터만 있으면 세션(Redis)을 만들 수 있었다.
+        if (request.getRequestURI().startsWith("/oauth2/authorization/")) {
+            String redirect = request.getParameter("redirect");
+            if (redirect != null) {
+                request.getSession().setAttribute(SESSION_KEY, redirect);
+            }
         }
         filterChain.doFilter(request, response);
     }

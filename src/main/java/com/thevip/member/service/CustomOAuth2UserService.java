@@ -26,8 +26,7 @@ public class CustomOAuth2UserService extends DefaultOAuth2UserService {
         String registrationId = userRequest.getClientRegistration().getRegistrationId();
         OAuthProfile profile = OAuthProfile.from(registrationId, oAuth2User.getAttributes());
         Member member = memberService.findOrCreate(profile.provider(), profile.providerId(), profile.name());
-        log.info("OAuth 로그인: provider={}, memberId={}, name={}, nickname={}",
-                member.getProvider(), member.getId(), member.getName(), member.getNickname());
+        log.info("OAuth 로그인: provider={}, memberId={}", member.getProvider(), member.getId());
 
         String userNameAttribute = userRequest.getClientRegistration()
                 .getProviderDetails().getUserInfoEndpoint().getUserNameAttributeName();
