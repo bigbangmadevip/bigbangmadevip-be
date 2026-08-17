@@ -27,6 +27,8 @@ aws:
     bucket: ${AWS_S3_BUCKET}
 
 app:
-  # music/vote 관리자 서브도메인끼리 세션(로그인)을 공유하기 위한 상위 도메인. 로컬/ngrok에서는
-  # 이 값이 없어야(비어있어야) 쿠키가 정상적으로 내려간다 — SecurityConfig 참고.
-  cookie-domain: .bigbangmadevip.com
+  # music/vote 관리자 서브도메인끼리 세션(로그인)을 공유하기 위한 상위 도메인. 앞에 점을 붙이면
+  # Spring Session의 DefaultCookieSerializer가 유효하지 않은 도메인으로 거부한다(RFC 6265 기준
+  # 점 없이 써도 서브도메인 전체에 매칭됨). 로컬/ngrok에서는 이 값이 없어야(비어있어야) 쿠키가
+  # 정상적으로 내려간다 — SecurityConfig 참고.
+  cookie-domain: bigbangmadevip.com
