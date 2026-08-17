@@ -45,6 +45,26 @@ public class MusicShow {
     @Column(nullable = false)
     private int sortOrder;
 
+    @Column(length = 20)
+    private String channel;
+
+    @Column(length = 50)
+    private String broadcastTime;
+
+    @Column(length = 500)
+    private String iconUrl;
+
+    // 투표 플랜 탭 상세 화면에 노출하는 방송 소개 문구.
+    @Column(columnDefinition = "TEXT")
+    private String description;
+
+    // 관련 가이드(Guide) id 참조 목록. FK 없이 ID 참조 방식.
+    @ElementCollection
+    @CollectionTable(name = "music_show_guide", joinColumns = @JoinColumn(name = "music_show_id"))
+    @OrderColumn(name = "sort_order")
+    @Column(name = "guide_id")
+    private List<Long> guideIds = new ArrayList<>();
+
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
@@ -59,5 +79,25 @@ public class MusicShow {
 
     public void addPlatformId(Long platformId) {
         this.platformIds.add(platformId);
+    }
+
+    public void addGuideId(Long guideId) {
+        this.guideIds.add(guideId);
+    }
+
+    public void updateChannel(String channel) {
+        this.channel = channel;
+    }
+
+    public void updateBroadcastTime(String broadcastTime) {
+        this.broadcastTime = broadcastTime;
+    }
+
+    public void updateIconUrl(String iconUrl) {
+        this.iconUrl = iconUrl;
+    }
+
+    public void updateDescription(String description) {
+        this.description = description;
     }
 }
