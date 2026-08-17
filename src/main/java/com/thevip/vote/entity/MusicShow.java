@@ -85,6 +85,28 @@ public class MusicShow {
         this.guideIds.add(guideId);
     }
 
+    public void replacePlatformIds(List<Long> platformIds) {
+        this.platformIds.clear();
+        this.platformIds.addAll(platformIds);
+    }
+
+    public void replaceGuideIds(List<Long> guideIds) {
+        this.guideIds.clear();
+        this.guideIds.addAll(guideIds);
+    }
+
+    public void updateName(String name) {
+        this.name = name;
+    }
+
+    public void updateActive(boolean active) {
+        this.active = active;
+    }
+
+    public void updateSortOrder(int sortOrder) {
+        this.sortOrder = sortOrder;
+    }
+
     public void updateChannel(String channel) {
         this.channel = channel;
     }

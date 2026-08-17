@@ -45,4 +45,15 @@ public class CheeringItem {
         item.active = true;
         return item;
     }
+
+    public void update(CheeringCategory category, String title, String subtitle, int sortOrder) {
+        this.category = category;
+        this.title = title;
+        this.subtitle = subtitle;
+        this.sortOrder = sortOrder;
+    }
+
+    public void updateActive(boolean active) {
+        this.active = active;
+    }
 }

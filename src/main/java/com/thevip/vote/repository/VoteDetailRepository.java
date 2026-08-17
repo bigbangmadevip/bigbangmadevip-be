@@ -9,6 +9,9 @@ import org.springframework.data.repository.query.Param;
 
 public interface VoteDetailRepository extends JpaRepository<VoteDetail, Long> {
 
+    // 메뉴(투표)당 긴급 배너는 최대 1개만 켜져 있어야 하는 불변식을 어드민 서비스가 강제할 때 쓴다.
+    List<VoteDetail> findByMenuUrgentTrue();
+
     // active=true여도 scheduledAt이 미래면 아직 예약 대기중이라 제외한다 (배치 없이 조회 시점 계산).
     // eventEndAt이 지나면(마감되면) 어드민이 안 끄더라도 배너에서 자동으로 빠진다.
     @Query("SELECT v FROM VoteDetail v WHERE v.menuUrgent = true AND v.active = true "

@@ -157,6 +157,40 @@ public class VoteDetail {
         this.platformIds.add(platformId);
     }
 
+    public void replacePlatformIds(List<Long> platformIds) {
+        this.platformIds.clear();
+        this.platformIds.addAll(platformIds);
+    }
+
+    public void replaceChecklist(List<String> checklist) {
+        this.checklist.clear();
+        this.checklist.addAll(checklist);
+    }
+
+    public void replaceImageUrls(List<String> imageUrls) {
+        this.imageUrls.clear();
+        this.imageUrls.addAll(imageUrls);
+    }
+
+    public void replaceGuideIds(List<Long> guideIds) {
+        this.guideIds.clear();
+        this.guideIds.addAll(guideIds);
+    }
+
+    public void updateCore(VoteCategory category, String title, String rewardDescription,
+            LocalDateTime eventStartAt, LocalDateTime eventEndAt, int sortOrder) {
+        this.category = category;
+        this.title = title;
+        this.rewardDescription = rewardDescription;
+        this.eventStartAt = eventStartAt;
+        this.eventEndAt = eventEndAt;
+        this.sortOrder = sortOrder;
+    }
+
+    public void updateActive(boolean active) {
+        this.active = active;
+    }
+
     public void updatePlatformUrl(String platformUrl) {
         this.platformUrl = platformUrl;
     }

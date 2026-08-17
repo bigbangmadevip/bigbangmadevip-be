@@ -77,6 +77,22 @@ public class MusicShowVoteRound {
         this.rows.add(new VoteRoundRow(label, value));
     }
 
+    public void replaceRows(List<VoteRoundRow> rows) {
+        this.rows.clear();
+        this.rows.addAll(rows);
+    }
+
+    public void updateCore(String label, String time, String tone, int sortOrder) {
+        this.label = label;
+        this.time = time;
+        this.tone = tone;
+        this.sortOrder = sortOrder;
+    }
+
+    public void updateActive(boolean active) {
+        this.active = active;
+    }
+
     @PreUpdate
     protected void onUpdate() {
         this.updatedAt = LocalDateTime.now();

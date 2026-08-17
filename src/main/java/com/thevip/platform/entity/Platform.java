@@ -34,12 +34,27 @@ public class Platform {
     @Column(columnDefinition = "TEXT")
     private String iconUrl;
 
+    @Column(nullable = false)
+    private boolean active;
+
     public static Platform of(String name, PlatformType type, PlatformRegion region, String iconUrl) {
         Platform platform = new Platform();
         platform.name = name;
         platform.type = type;
         platform.region = region;
         platform.iconUrl = iconUrl;
+        platform.active = true;
         return platform;
+    }
+
+    public void update(String name, PlatformType type, PlatformRegion region, String iconUrl) {
+        this.name = name;
+        this.type = type;
+        this.region = region;
+        this.iconUrl = iconUrl;
+    }
+
+    public void updateActive(boolean active) {
+        this.active = active;
     }
 }

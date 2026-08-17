@@ -9,6 +9,9 @@ import org.springframework.data.repository.query.Param;
 
 public interface MusicDetailRepository extends JpaRepository<MusicDetail, Long> {
 
+    // 메뉴(음원)당 긴급 배너는 최대 1개만 켜져 있어야 하는 불변식을 어드민 서비스가 강제할 때 쓴다.
+    List<MusicDetail> findByMenuUrgentTrue();
+
     // active=true여도 scheduledAt이 미래면 아직 예약 대기중이라 제외한다 (배치 없이 조회 시점 계산).
     // eventAt이 오늘 날짜가 지나면(총공 당일이 지나면) 어드민이 안 끄더라도 배너에서 자동으로 빠진다.
     @Query("SELECT m FROM MusicDetail m WHERE m.menuUrgent = true AND m.active = true "

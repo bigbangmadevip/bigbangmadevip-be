@@ -17,8 +17,13 @@ public interface PlatformRepository extends JpaRepository<Platform, Long> {
     // findAllById로 한 번에 조회 후 원래 순서대로 재조립한다 (건별 findById N+1 방지).
     default List<String> findNamesByIds(List<Long> platformIds) {
         List<Long> ids = platformIds.stream().filter(Objects::nonNull).toList();
-        Map<Long, String> namesById = findAllById(ids).stream()
-                .collect(Collectors.toMap(Platform::getId, Platform::getName));
-        return ids.stream().map(namesById::get).filter(Objects::nonNull).toList();
+        Map<Long, Platform> platformsById = findAllById(ids).stream()
+                .collect(Collectors.toMap(Platform::getId, platform -> platform));
+        return ids.stream()
+                .map(platformsById::get)
+                .filter(Objects::nonNull)
+                .filter(Platform::isActive)
+                .map(Platform::getName)
+                .toList();
     }
 }

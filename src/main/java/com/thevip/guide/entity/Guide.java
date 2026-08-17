@@ -72,6 +72,22 @@ public class Guide {
         this.imageUrls.add(imageUrl);
     }
 
+    public void replaceImageUrls(List<String> imageUrls) {
+        this.imageUrls.clear();
+        this.imageUrls.addAll(imageUrls);
+    }
+
+    public void update(GuideType guideType, Long platformId, String title, int sortOrder) {
+        this.guideType = guideType;
+        this.platformId = platformId;
+        this.title = title;
+        this.sortOrder = sortOrder;
+    }
+
+    public void updateActive(boolean active) {
+        this.active = active;
+    }
+
     @PreUpdate
     protected void onUpdate() {
         this.updatedAt = LocalDateTime.now();

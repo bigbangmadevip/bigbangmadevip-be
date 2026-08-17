@@ -80,6 +80,13 @@ public class SecurityConfig {
                         .hasAnyRole("MASTER", "MUSIC_ADMIN", "VOTE_ADMIN")
                         .requestMatchers(HttpMethod.POST, "/api/v1/admin/role-requests/*/reject")
                         .hasAnyRole("MASTER", "MUSIC_ADMIN", "VOTE_ADMIN")
+                        // 콘텐츠 어드민 CRUD. 도메인 전용(음원/투표)은 URL 프리픽스로 바로 막고,
+                        // 공용 리소스(가이드/플랫폼/오늘의 응원)는 두 관리자 모두 접근 가능하게 둔다.
+                        .requestMatchers("/api/v1/admin/music/**").hasAnyRole("MUSIC_ADMIN", "MASTER")
+                        .requestMatchers("/api/v1/admin/vote/**").hasAnyRole("VOTE_ADMIN", "MASTER")
+                        .requestMatchers("/api/v1/admin/guides/**", "/api/v1/admin/platforms/**",
+                                "/api/v1/admin/cheering-items/**")
+                        .hasAnyRole("MUSIC_ADMIN", "VOTE_ADMIN", "MASTER")
                         .anyRequest().authenticated())
                 .oauth2Login(oauth2 -> oauth2
                         .userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService))

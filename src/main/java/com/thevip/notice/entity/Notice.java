@@ -81,6 +81,15 @@ public class Notice {
         this.pinned = pinned;
     }
 
+    public void updateActive(boolean active) {
+        this.active = active;
+    }
+
+    public void replaceImageUrls(List<String> imageUrls) {
+        this.imageUrls.clear();
+        this.imageUrls.addAll(imageUrls);
+    }
+
     public void update(String title, String content, String updatedBy) {
         this.title = title;
         this.content = content;

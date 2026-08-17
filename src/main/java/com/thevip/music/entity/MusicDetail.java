@@ -139,6 +139,39 @@ public class MusicDetail {
         this.platformIds.add(platformId);
     }
 
+    public void replacePlatformIds(List<Long> platformIds) {
+        this.platformIds.clear();
+        this.platformIds.addAll(platformIds);
+    }
+
+    public void replaceChecklist(List<String> checklist) {
+        this.checklist.clear();
+        this.checklist.addAll(checklist);
+    }
+
+    public void replaceImageUrls(List<String> imageUrls) {
+        this.imageUrls.clear();
+        this.imageUrls.addAll(imageUrls);
+    }
+
+    public void replaceGuideIds(List<Long> guideIds) {
+        this.guideIds.clear();
+        this.guideIds.addAll(guideIds);
+    }
+
+    public void updateCore(MusicCategory category, String title, String songName, LocalDateTime eventAt,
+            int sortOrder) {
+        this.category = category;
+        this.title = title;
+        this.songName = songName;
+        this.eventAt = eventAt;
+        this.sortOrder = sortOrder;
+    }
+
+    public void updateActive(boolean active) {
+        this.active = active;
+    }
+
     public void updateDescription(String description) {
         this.description = description;
     }
