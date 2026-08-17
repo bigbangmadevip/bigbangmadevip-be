@@ -22,7 +22,9 @@ public interface VoteDetailRepository extends JpaRepository<VoteDetail, Long> {
     // active=true여도 scheduledAt이 미래면 아직 예약 대기중이라 제외한다 (배치 없이 조회 시점 계산).
     // 투표는 마감(eventEndAt)이 지나기 전까지 매일 노출한다 (음원처럼 특정 날짜 1회성 이벤트가 아니라
     // 마감까지 계속 진행되는 액션이라 "오늘 날짜인 것만"이 아니라 "아직 마감 안 지난 것"으로 판단한다).
-    @Query("SELECT v FROM VoteDetail v WHERE v.todayExposed = true AND v.active = true "
+    // todayExposed 필드는 더 이상 이 조회에서 쓰지 않는다 — 게시 여부(active)만으로 노출을
+    // 판단한다 (필드 자체는 남겨둠).
+    @Query("SELECT v FROM VoteDetail v WHERE v.active = true "
             + "AND (v.scheduledAt IS NULL OR v.scheduledAt <= :now) "
             + "AND v.eventEndAt >= :now "
             + "ORDER BY v.eventEndAt ASC")

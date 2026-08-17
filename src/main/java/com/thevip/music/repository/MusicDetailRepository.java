@@ -22,8 +22,9 @@ public interface MusicDetailRepository extends JpaRepository<MusicDetail, Long> 
             @Param("startOfTomorrow") LocalDateTime startOfTomorrow);
 
     // active=true여도 scheduledAt이 미래면 아직 예약 대기중이라 제외한다 (배치 없이 조회 시점 계산).
-    // eventAt이 오늘 날짜인 것만 "오늘의 총공 일정"에 노출한다.
-    @Query("SELECT m FROM MusicDetail m WHERE m.todayExposed = true AND m.active = true "
+    // eventAt이 오늘 날짜인 것만 "오늘의 총공 일정"에 노출한다. todayExposed 필드는 더 이상
+    // 이 조회에서 쓰지 않는다 — 게시 여부(active)만으로 노출을 판단한다 (필드 자체는 남겨둠).
+    @Query("SELECT m FROM MusicDetail m WHERE m.active = true "
             + "AND (m.scheduledAt IS NULL OR m.scheduledAt <= :now) "
             + "AND m.eventAt >= :startOfToday AND m.eventAt < :startOfTomorrow "
             + "ORDER BY m.eventAt ASC")
