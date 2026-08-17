@@ -56,6 +56,7 @@ spring:
             redirect-uri: "{baseUrl}/login/oauth2/code/kakao"
             scope:
               - profile_nickname
+              - account_email
              # - profile_image
           naver:
             client-id: ${NAVER_CLIENT_ID:placeholder}

@@ -32,12 +32,22 @@ public class MemberService {
 
     @Transactional
     public Member findOrCreate(Provider provider, String providerId, String name) {
+        return findOrCreate(provider, providerId, name, null);
+    }
+
+    @Transactional
+    public Member findOrCreate(Provider provider, String providerId, String name, String email) {
         return memberRepository.findByProviderAndProviderId(provider, providerId)
                 .map(member -> {
                     member.updateName(name);
+                    member.updateEmail(email);
                     return member;
                 })
-                .orElseGet(() -> memberRepository.save(Member.of(provider, providerId, name)));
+                .orElseGet(() -> {
+                    Member member = Member.of(provider, providerId, name);
+                    member.updateEmail(email);
+                    return memberRepository.save(member);
+                });
     }
 
     @Transactional

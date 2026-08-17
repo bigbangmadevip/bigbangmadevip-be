@@ -44,13 +44,15 @@ class MemberServiceTest {
     void 카카오_응답에서_프로필을_추출한다() {
         Map<String, Object> attributes = Map.of(
                 "id", 12345678L,
-                "properties", Map.of("nickname", "홍길동"));
+                "properties", Map.of("nickname", "홍길동"),
+                "kakao_account", Map.of("email", "hong@example.com"));
 
         OAuthProfile profile = OAuthProfile.from("kakao", attributes);
 
         assertThat(profile.provider()).isEqualTo(Provider.KAKAO);
         assertThat(profile.providerId()).isEqualTo("12345678");
         assertThat(profile.name()).isEqualTo("홍길동");
+        assertThat(profile.email()).isEqualTo("hong@example.com");
     }
 
     @Test
@@ -58,6 +60,22 @@ class MemberServiceTest {
         OAuthProfile profile = OAuthProfile.from("kakao", Map.of("id", 999L));
 
         assertThat(profile.name()).isEqualTo("VIP");
+    }
+
+    @Test
+    void 이메일_동의를_안하면_null이다() {
+        OAuthProfile profile = OAuthProfile.from("kakao", Map.of("id", 999L));
+
+        assertThat(profile.email()).isNull();
+    }
+
+    @Test
+    void 이메일과_함께_가입하고_재로그인하면_이메일이_갱신된다() {
+        Member member = memberService.findOrCreate(Provider.KAKAO, "10004", "이메일테스트", "old@example.com");
+        assertThat(member.getEmail()).isEqualTo("old@example.com");
+
+        Member reLoggedIn = memberService.findOrCreate(Provider.KAKAO, "10004", "이메일테스트", "new@example.com");
+        assertThat(reLoggedIn.getEmail()).isEqualTo("new@example.com");
     }
 
     @Test

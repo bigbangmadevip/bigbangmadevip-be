@@ -40,6 +40,11 @@ public class Member {
     @Column(nullable = false, length = 50)
     private String nickname;
 
+    // OAuth 제공자 동의항목에서 받은 이메일. 사용자가 동의를 안 했거나 제공자가 안 주면 null.
+    // name과 마찬가지로 재로그인할 때마다 최신값으로 동기화된다.
+    @Column(length = 100)
+    private String email;
+
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
     private Role role;
@@ -67,6 +72,10 @@ public class Member {
 
     public void updateName(String name) {
         this.name = name;
+    }
+
+    public void updateEmail(String email) {
+        this.email = email;
     }
 
     public void updateNickname(String nickname) {
