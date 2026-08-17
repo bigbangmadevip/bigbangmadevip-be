@@ -91,7 +91,7 @@ logging:
   level:
     org.hibernate.SQL: debug
   pattern:
-    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%X{requestUri}] %logger{36} - %msg%n"
+    console: "%d{yyyy-MM-dd HH:mm:ss.SSS} %-5level [%X{requestUri}] [%X{user}] %logger{36} - %msg%n"
 
 app:
   front-url: http://localhost:3000  # 배포 시 실제 프론트 주소로 교체
