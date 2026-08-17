@@ -1,5 +1,5 @@
 package com.thevip.member.entity;
 
 public enum Role {
-    USER, ADMIN
+    USER, MUSIC_ADMIN, VOTE_ADMIN, MASTER
 }

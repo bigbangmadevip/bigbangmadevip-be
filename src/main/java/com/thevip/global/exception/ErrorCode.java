@@ -14,7 +14,10 @@ public enum ErrorCode {
     NOT_FOUND(HttpStatus.NOT_FOUND, "C004", "리소스를 찾을 수 없습니다."),
     INTERNAL_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "C005", "서버 오류가 발생했습니다."),
 
-    CHEERING_ALREADY_PARTICIPATED(HttpStatus.CONFLICT, "CH001", "이미 완료한 응원입니다.");
+    CHEERING_ALREADY_PARTICIPATED(HttpStatus.CONFLICT, "CH001", "이미 완료한 응원입니다."),
+
+    ROLE_REQUEST_ALREADY_PENDING(HttpStatus.CONFLICT, "RR001", "이미 대기 중인 권한 신청이 있습니다."),
+    ROLE_REQUEST_ALREADY_RESOLVED(HttpStatus.CONFLICT, "RR002", "이미 처리된 권한 신청입니다.");
 
     private final HttpStatus status;
     private final String code;

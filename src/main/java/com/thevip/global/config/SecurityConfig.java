@@ -3,6 +3,7 @@ package com.thevip.global.config;
 import com.thevip.global.security.CsrfCookieFilter;
 import com.thevip.global.security.DynamicRedirectSuccessHandler;
 import com.thevip.global.security.RedirectCaptureFilter;
+import com.thevip.global.security.RestAccessDeniedHandler;
 import com.thevip.global.security.RestAuthenticationEntryPoint;
 import com.thevip.global.security.RestLogoutSuccessHandler;
 import com.thevip.global.security.SessionRenewalFilter;
@@ -12,6 +13,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.oauth2.client.web.OAuth2AuthorizationRequestRedirectFilter;
@@ -36,10 +38,13 @@ public class SecurityConfig {
     public SecurityFilterChain securityFilterChain(HttpSecurity http,
             CustomOAuth2UserService customOAuth2UserService,
             RestAuthenticationEntryPoint restAuthenticationEntryPoint,
+            RestAccessDeniedHandler restAccessDeniedHandler,
             RestLogoutSuccessHandler restLogoutSuccessHandler) throws Exception {
         http
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
-                .exceptionHandling(exceptions -> exceptions.authenticationEntryPoint(restAuthenticationEntryPoint))
+                .exceptionHandling(exceptions -> exceptions
+                        .authenticationEntryPoint(restAuthenticationEntryPoint)
+                        .accessDeniedHandler(restAccessDeniedHandler))
                 .logout(logout -> logout
                         .logoutUrl("/api/v1/logout")
                         .invalidateHttpSession(true)
@@ -60,6 +65,9 @@ public class SecurityConfig {
                         .frameOptions(frame -> frame.sameOrigin()))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/", "/health", "/h2-console/**", "/s/**").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/api/v1/admin/role-requests").hasRole("MASTER")
+                        .requestMatchers(HttpMethod.POST, "/api/v1/admin/role-requests/*/approve").hasRole("MASTER")
+                        .requestMatchers(HttpMethod.POST, "/api/v1/admin/role-requests/*/reject").hasRole("MASTER")
                         .anyRequest().authenticated())
                 .oauth2Login(oauth2 -> oauth2
                         .userInfoEndpoint(userInfo -> userInfo.userService(customOAuth2UserService))

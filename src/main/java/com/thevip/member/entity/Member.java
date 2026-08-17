@@ -77,4 +77,8 @@ public class Member {
         this.termsAgreed = true;
         this.termsAgreedAt = LocalDateTime.now();
     }
+
+    public void updateRole(Role role) {
+        this.role = role;
+    }
 }
