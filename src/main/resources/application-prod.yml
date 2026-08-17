@@ -19,6 +19,12 @@ spring:
     console:
       enabled: false
 
+# 로컬 개발용 SQL 디버그 로깅(application.yml)을 운영에서는 끈다. 매 쿼리를 로그로 찍는 건
+# 트래픽 늘어난 상태에서 부하로 작용할 수 있다.
+logging:
+  level:
+    org.hibernate.SQL: warn
+
 aws:
   region: ${AWS_REGION}
   access-key-id: ${AWS_ACCESS_KEY_ID}
