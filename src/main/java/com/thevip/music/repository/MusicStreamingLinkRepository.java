@@ -7,4 +7,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 public interface MusicStreamingLinkRepository extends JpaRepository<MusicStreamingLink, Long> {
 
     List<MusicStreamingLink> findByActiveTrueOrderByPlatformIdAscSortOrderAsc();
+
+    void deleteByPlatformId(Long platformId);
 }

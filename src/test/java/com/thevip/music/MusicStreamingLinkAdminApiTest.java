@@ -1,7 +1,6 @@
 package com.thevip.music;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -28,50 +27,57 @@ class MusicStreamingLinkAdminApiTest {
     @Autowired
     MockMvc mockMvc;
 
-    private static final String REQUEST_BODY = """
-            {
-              "platformId": 1,
-              "os": "ANDROID",
-              "label": "멜론 앱으로 스트리밍",
-              "url": "melonapp://streaming",
-              "active": true,
-              "sortOrder": 0
-            }""";
+    private static final long TEST_PLATFORM_ID = 555001L;
 
     @Test
-    void MUSIC_ADMIN은_생성_조회_수정을_할_수_있다() throws Exception {
-        String created = mockMvc.perform(post("/api/v1/admin/music/streaming-links")
-                        .with(loginAs("MUSIC_ADMIN"))
-                        .with(SecurityMockMvcRequestPostProcessors.csrf())
-                        .contentType(MediaType.APPLICATION_JSON)
-                        .content(REQUEST_BODY))
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.os").value("ANDROID"))
-                .andExpect(jsonPath("$.data.label").value("멜론 앱으로 스트리밍"))
-                .andReturn().getResponse().getContentAsString();
-        Long id = com.jayway.jsonpath.JsonPath.parse(created).read("$.data.id", Long.class);
-
-        mockMvc.perform(get("/api/v1/admin/music/streaming-links/" + id).with(loginAs("MUSIC_ADMIN")))
-                .andExpect(status().isOk());
-        mockMvc.perform(get("/api/v1/admin/music/streaming-links").with(loginAs("MUSIC_ADMIN")))
-                .andExpect(status().isOk());
-
-        mockMvc.perform(put("/api/v1/admin/music/streaming-links/" + id)
+    void MUSIC_ADMIN은_플랫폼_전체_링크를_한번에_등록하고_다시_요청하면_교체된다() throws Exception {
+        mockMvc.perform(put("/api/v1/admin/music/streaming-links/platforms/" + TEST_PLATFORM_ID)
                         .with(loginAs("MUSIC_ADMIN"))
                         .with(SecurityMockMvcRequestPostProcessors.csrf())
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("""
                                 {
-                                  "platformId": 1,
-                                  "os": "IPHONE",
-                                  "label": "멜론 웹으로 스트리밍",
-                                  "url": "https://www.melon.com/",
-                                  "active": false,
-                                  "sortOrder": 1
+                                  "osGroups": [
+                                    {
+                                      "os": "ANDROID",
+                                      "links": [
+                                        {"label": "멜론 링크 1", "url": "melonapp://streaming"},
+                                        {"label": "멜론 링크 2", "url": "melonapp://streaming"}
+                                      ]
+                                    },
+                                    {
+                                      "os": "IPHONE",
+                                      "links": [
+                                        {"label": "멜론 링크 1", "url": "melonapp://streaming"}
+                                      ]
+                                    }
+                                  ]
                                 }"""))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.os").value("IPHONE"))
-                .andExpect(jsonPath("$.data.active").value(false));
+                .andExpect(jsonPath("$.data.length()").value(3))
+                .andExpect(jsonPath("$.data[0].os").value("ANDROID"))
+                .andExpect(jsonPath("$.data[0].label").value("멜론 링크 1"))
+                .andExpect(jsonPath("$.data[0].sortOrder").value(0))
+                .andExpect(jsonPath("$.data[1].sortOrder").value(1))
+                .andExpect(jsonPath("$.data[2].os").value("IPHONE"));
+
+        mockMvc.perform(get("/api/v1/admin/music/streaming-links").with(loginAs("MUSIC_ADMIN")))
+                .andExpect(status().isOk());
+
+        // 같은 플랫폼으로 다시 요청하면 기존 링크는 전부 지워지고 새 목록으로 교체된다.
+        mockMvc.perform(put("/api/v1/admin/music/streaming-links/platforms/" + TEST_PLATFORM_ID)
+                        .with(loginAs("MUSIC_ADMIN"))
+                        .with(SecurityMockMvcRequestPostProcessors.csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "osGroups": [
+                                    {"os": "ANDROID", "links": [{"label": "새 링크", "url": "melonapp://new"}]}
+                                  ]
+                                }"""))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.length()").value(1))
+                .andExpect(jsonPath("$.data[0].label").value("새 링크"));
     }
 
     @Test
