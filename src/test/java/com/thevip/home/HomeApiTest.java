@@ -57,7 +57,7 @@ class HomeApiTest {
                 .andExpect(jsonPath("$.data.urgentDetail.platformNames[1]").value("벅스(Bugs)"))
                 .andExpect(jsonPath("$.data.todaySchedule.length()").value(2))
                 .andExpect(jsonPath("$.data.todaySchedule[0].menuType").value("MUSIC"))
-                .andExpect(jsonPath("$.data.todaySchedule[0].title").value("오늘 저녁 8시 30분 멜론 다운로드 총공"))
+                .andExpect(jsonPath("$.data.todaySchedule[0].title").value("오늘 저녁 8시 30분 멜론 개별곡 다운로드 총공"))
                 .andExpect(jsonPath("$.data.todaySchedule[0].platformNames.length()").value(2))
                 .andExpect(jsonPath("$.data.todaySchedule[0].platformNames[0]").value("멜론"))
                 .andExpect(jsonPath("$.data.todaySchedule[0].platformNames[1]").value("벅스(Bugs)"))

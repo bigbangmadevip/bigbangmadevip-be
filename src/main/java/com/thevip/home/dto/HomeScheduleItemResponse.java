@@ -13,7 +13,7 @@ public record HomeScheduleItemResponse(
         List<String> platformNames) {
 
     public static HomeScheduleItemResponse fromMusic(MusicDetail detail, List<String> platformNames) {
-        return new HomeScheduleItemResponse(MenuType.MUSIC, detail.getId(), detail.getUrgentContent(),
+        return new HomeScheduleItemResponse(MenuType.MUSIC, detail.getId(), detail.getTitle(),
                 detail.getEventAt(), platformNames);
     }
 

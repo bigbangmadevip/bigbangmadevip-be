@@ -115,10 +115,8 @@ class ScheduleServiceTest {
 
         MusicDetail late = MusicDetail.of(MusicCategory.DOWNLOAD, "늦은 총공", null,
                 LocalDateTime.of(2026, 8, 9, 20, 0), 0);
-        late.updateUrgentContent("벅스 다운로드 총공");
         MusicDetail early = MusicDetail.of(MusicCategory.DOWNLOAD, "이른 총공", null,
                 LocalDateTime.of(2026, 8, 9, 19, 0), 0);
-        early.updateUrgentContent("멜론 다운로드 총공");
         when(musicDetailRepository.findActiveInRange(any(), any(), any())).thenReturn(List.of(late, early));
         when(voteDetailRepository.findActiveOverlapping(any(), any(), any())).thenReturn(List.of());
         when(platformRepository.findNamesByIds(any())).thenReturn(List.of());
@@ -127,8 +125,8 @@ class ScheduleServiceTest {
         ScheduleDayResponse result = service.getDay(LocalDate.of(2026, 8, 9), ScheduleCategory.ALL, VoteDisplayMode.EVERY_DAY);
 
         assertThat(result.items()).hasSize(2);
-        assertThat(result.items().get(0).title()).isEqualTo("멜론 다운로드 총공");
-        assertThat(result.items().get(1).title()).isEqualTo("벅스 다운로드 총공");
+        assertThat(result.items().get(0).title()).isEqualTo("이른 총공");
+        assertThat(result.items().get(1).title()).isEqualTo("늦은 총공");
     }
 
     @Test

@@ -14,7 +14,7 @@ public record ScheduleItemResponse(
         List<String> platformNames) {
 
     public static ScheduleItemResponse fromMusic(MusicDetail detail, List<String> platformNames) {
-        return new ScheduleItemResponse(MenuType.MUSIC, detail.getId(), detail.getUrgentContent(),
+        return new ScheduleItemResponse(MenuType.MUSIC, detail.getId(), detail.getTitle(),
                 detail.getEventAt(), platformNames);
     }
 

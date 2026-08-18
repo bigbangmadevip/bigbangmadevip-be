@@ -48,7 +48,7 @@ class HomeTodayScheduleServiceTest {
 
         assertThat(result).hasSize(1);
         assertThat(result.get(0).menuType()).isEqualTo(MenuType.MUSIC);
-        assertThat(result.get(0).title()).isEqualTo("긴급 배너 문구");
+        assertThat(result.get(0).title()).isEqualTo("테스트 총공");
         assertThat(result.get(0).platformNames()).containsExactly("멜론");
     }
 
