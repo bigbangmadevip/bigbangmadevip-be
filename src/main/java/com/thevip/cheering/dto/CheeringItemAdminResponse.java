@@ -13,7 +13,7 @@ public record CheeringItemAdminResponse(
     public static CheeringItemAdminResponse from(CheeringItem item) {
         return new CheeringItemAdminResponse(
                 item.getId(),
-                item.getCategory().name(),
+                item.getCategory(),
                 item.getTitle(),
                 item.getSubtitle(),
                 item.getSortOrder(),

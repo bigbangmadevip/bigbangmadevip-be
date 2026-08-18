@@ -7,7 +7,6 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 import com.thevip.cheering.dto.CheeringCatalogItem;
-import com.thevip.cheering.entity.CheeringCategory;
 import com.thevip.cheering.entity.CheeringItem;
 import com.thevip.cheering.repository.CheeringItemRepository;
 import com.thevip.cheering.repository.CheeringRepository;
@@ -33,9 +32,9 @@ class MyPageServiceTest {
         CheeringItemRepository cheeringItemRepository = mock(CheeringItemRepository.class);
 
         when(cheeringCatalogService.getActiveCatalog()).thenReturn(List.of(
-                new CheeringCatalogItem(1L, CheeringCategory.STREAMING, "음원\n스트리밍", null),
-                new CheeringCatalogItem(2L, CheeringCategory.VOTE, "투표", null),
-                new CheeringCatalogItem(3L, CheeringCategory.VOTE, "투표2", null)));
+                new CheeringCatalogItem(1L, "STREAMING", "음원\n스트리밍", null),
+                new CheeringCatalogItem(2L, "VOTE", "투표", null),
+                new CheeringCatalogItem(3L, "VOTE", "투표2", null)));
         when(cheeringService.getCompletedItemIds(1L)).thenReturn(List.of(1L));
         when(cheeringRepository.countByMemberId(1L)).thenReturn(19L);
         when(cheeringRepository.countDistinctCheeringDateByMemberId(1L)).thenReturn(12L);
@@ -103,9 +102,9 @@ class MyPageServiceTest {
         LocalDate date = LocalDate.of(2026, 8, 20);
         when(cheeringRepository.findItemIdsByMemberIdAndCheeringDate(1L, date)).thenReturn(List.of(2L, 1L));
 
-        CheeringItem second = CheeringItem.of(CheeringCategory.VOTE, "인기가요 사전 투표", null, 1);
+        CheeringItem second = CheeringItem.of("VOTE", "인기가요 사전 투표", null, 1);
         ReflectionTestUtils.setField(second, "id", 2L);
-        CheeringItem first = CheeringItem.of(CheeringCategory.STREAMING, "음원 스트리밍", null, 0);
+        CheeringItem first = CheeringItem.of("STREAMING", "음원 스트리밍", null, 0);
         ReflectionTestUtils.setField(first, "id", 1L);
         when(cheeringItemRepository.findAllById(List.of(2L, 1L))).thenReturn(List.of(second, first));
 

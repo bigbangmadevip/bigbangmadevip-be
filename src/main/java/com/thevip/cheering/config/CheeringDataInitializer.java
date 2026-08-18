@@ -1,6 +1,5 @@
 package com.thevip.cheering.config;
 
-import com.thevip.cheering.entity.CheeringCategory;
 import com.thevip.cheering.entity.CheeringItem;
 import com.thevip.cheering.repository.CheeringItemRepository;
 import lombok.RequiredArgsConstructor;
@@ -26,13 +25,13 @@ public class CheeringDataInitializer implements ApplicationRunner {
             return;
         }
 
-        cheeringItemRepository.save(CheeringItem.of(CheeringCategory.STREAMING, "음원\n스트리밍", "봄여름가을겨울", 0));
-        cheeringItemRepository.save(CheeringItem.of(CheeringCategory.VOTE, "인기가요\n사전 투표", null, 1));
-        cheeringItemRepository.save(CheeringItem.of(CheeringCategory.VOTE, "멜론 주간인기상\n투표", null, 2));
-        cheeringItemRepository.save(CheeringItem.of(CheeringCategory.YOUTUBE, "유튜브\n뮤직비디오 조회", "봄여름가을겨울", 3));
-        cheeringItemRepository.save(CheeringItem.of(CheeringCategory.REPORT, "네이버 기사\n댓글 작성", null, 4));
-        cheeringItemRepository.save(CheeringItem.of(CheeringCategory.DOWNLOAD, "선착순\n이벤트 참여", null, 5));
-        cheeringItemRepository.save(CheeringItem.of(CheeringCategory.HASHTAG, "해시태그\n총공 이벤트", null, 6));
-        cheeringItemRepository.save(CheeringItem.of(CheeringCategory.VOTECOIN, "어쩌구\n저쩌구", null, 7));
+        cheeringItemRepository.save(CheeringItem.of("STREAMING", "음원\n스트리밍", "봄여름가을겨울", 0));
+        cheeringItemRepository.save(CheeringItem.of("VOTE", "인기가요\n사전 투표", null, 1));
+        cheeringItemRepository.save(CheeringItem.of("VOTE", "멜론 주간인기상\n투표", null, 2));
+        cheeringItemRepository.save(CheeringItem.of("YOUTUBE", "유튜브\n뮤직비디오 조회", "봄여름가을겨울", 3));
+        cheeringItemRepository.save(CheeringItem.of("REPORT", "네이버 기사\n댓글 작성", null, 4));
+        cheeringItemRepository.save(CheeringItem.of("DOWNLOAD", "선착순\n이벤트 참여", null, 5));
+        cheeringItemRepository.save(CheeringItem.of("HASHTAG", "해시태그\n총공 이벤트", null, 6));
+        cheeringItemRepository.save(CheeringItem.of("VOTECOIN", "어쩌구\n저쩌구", null, 7));
     }
 }

@@ -2,8 +2,6 @@ package com.thevip.cheering.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -20,9 +18,8 @@ public class CheeringItem {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
-    private CheeringCategory category;
+    private String category;
 
     @Column(nullable = false, length = 50)
     private String title;
@@ -36,7 +33,7 @@ public class CheeringItem {
     @Column(nullable = false)
     private boolean active;
 
-    public static CheeringItem of(CheeringCategory category, String title, String subtitle, int sortOrder) {
+    public static CheeringItem of(String category, String title, String subtitle, int sortOrder) {
         CheeringItem item = new CheeringItem();
         item.category = category;
         item.title = title;
@@ -46,7 +43,7 @@ public class CheeringItem {
         return item;
     }
 
-    public void update(CheeringCategory category, String title, String subtitle, int sortOrder) {
+    public void update(String category, String title, String subtitle, int sortOrder) {
         this.category = category;
         this.title = title;
         this.subtitle = subtitle;

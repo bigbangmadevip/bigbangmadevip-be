@@ -3,7 +3,6 @@ package com.thevip.cheering;
 import static org.assertj.core.api.Assertions.assertThat;
 
 import com.thevip.cheering.dto.CheeringCatalogItem;
-import com.thevip.cheering.entity.CheeringCategory;
 import com.thevip.cheering.service.CheeringCatalogService;
 import java.util.List;
 import org.junit.jupiter.api.Test;
@@ -32,13 +31,13 @@ class CheeringCatalogServiceTest {
                         "어쩌구\n저쩌구");
         assertThat(catalog).extracting(CheeringCatalogItem::category)
                 .containsExactly(
-                        CheeringCategory.STREAMING,
-                        CheeringCategory.VOTE,
-                        CheeringCategory.VOTE,
-                        CheeringCategory.YOUTUBE,
-                        CheeringCategory.REPORT,
-                        CheeringCategory.DOWNLOAD,
-                        CheeringCategory.HASHTAG,
-                        CheeringCategory.VOTECOIN);
+                        "STREAMING",
+                        "VOTE",
+                        "VOTE",
+                        "YOUTUBE",
+                        "REPORT",
+                        "DOWNLOAD",
+                        "HASHTAG",
+                        "VOTECOIN");
     }
 }
