@@ -7,6 +7,7 @@ import com.thevip.music.repository.MusicDetailRepository;
 import com.thevip.platform.repository.PlatformRepository;
 import com.thevip.vote.entity.VoteDetail;
 import com.thevip.vote.repository.VoteDetailRepository;
+import com.thevip.vote.service.VoteDetailPlatformResolver;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Optional;
@@ -27,6 +28,7 @@ public class HomeUrgentService {
     private final MusicDetailRepository musicDetailRepository;
     private final VoteDetailRepository voteDetailRepository;
     private final PlatformRepository platformRepository;
+    private final VoteDetailPlatformResolver voteDetailPlatformResolver;
 
     @Transactional(readOnly = true)
     @Cacheable(CacheConfig.HOME_URGENT)
@@ -57,7 +59,7 @@ public class HomeUrgentService {
     }
 
     private HomeUrgentResponse toResponse(VoteDetail detail) {
-        return HomeUrgentResponse.fromVote(detail, platformRepository.findNamesByIds(detail.getPlatformIds()));
+        return HomeUrgentResponse.fromVote(detail, voteDetailPlatformResolver.resolveNames(detail));
     }
 
     // 날짜가 없는 쪽은 비교 대상에서 밀려난다: 둘 다 없으면 투표를, 한쪽만 있으면 그쪽을 우선한다.

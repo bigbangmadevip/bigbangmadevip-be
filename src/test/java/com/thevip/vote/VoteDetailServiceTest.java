@@ -9,11 +9,11 @@ import com.thevip.global.exception.BusinessException;
 import com.thevip.guide.entity.Guide;
 import com.thevip.guide.entity.GuideType;
 import com.thevip.guide.repository.GuideRepository;
-import com.thevip.platform.repository.PlatformRepository;
 import com.thevip.vote.dto.VoteDetailResponse;
 import com.thevip.vote.entity.VoteCategory;
 import com.thevip.vote.entity.VoteDetail;
 import com.thevip.vote.repository.VoteDetailRepository;
+import com.thevip.vote.service.VoteDetailPlatformResolver;
 import com.thevip.vote.service.VoteDetailService;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -25,7 +25,7 @@ class VoteDetailServiceTest {
     @Test
     void 상세를_조회하면_플랫폼명과_가이드를_같이_반환한다() {
         VoteDetailRepository voteDetailRepository = mock(VoteDetailRepository.class);
-        PlatformRepository platformRepository = mock(PlatformRepository.class);
+        VoteDetailPlatformResolver voteDetailPlatformResolver = mock(VoteDetailPlatformResolver.class);
         GuideRepository guideRepository = mock(GuideRepository.class);
 
         VoteDetail detail = VoteDetail.of(VoteCategory.MUSIC_SHOW, "테스트 투표", "1위 리워드",
@@ -36,11 +36,11 @@ class VoteDetailServiceTest {
         detail.updatePlatformUrl("https://example.com/vote");
         detail.updateCtaButtonLabel("투표하러 가기");
         when(voteDetailRepository.findById(1L)).thenReturn(Optional.of(detail));
-        when(platformRepository.findNamesByIds(List.of(1L))).thenReturn(List.of("뮤빗"));
+        when(voteDetailPlatformResolver.resolveNames(detail)).thenReturn(List.of("뮤빗"));
         Guide guide = Guide.of(GuideType.STREAMING, 1L, "뮤빗 투표 방법", 0);
         when(guideRepository.findActiveByIds(List.of(10L))).thenReturn(List.of(guide));
 
-        VoteDetailService service = new VoteDetailService(voteDetailRepository, platformRepository, guideRepository);
+        VoteDetailService service = new VoteDetailService(voteDetailRepository, voteDetailPlatformResolver, guideRepository);
         VoteDetailResponse result = service.getDetail(1L);
 
         assertThat(result.title()).isEqualTo("테스트 투표");
@@ -55,11 +55,11 @@ class VoteDetailServiceTest {
     @Test
     void 존재하지_않으면_예외가_발생한다() {
         VoteDetailRepository voteDetailRepository = mock(VoteDetailRepository.class);
-        PlatformRepository platformRepository = mock(PlatformRepository.class);
+        VoteDetailPlatformResolver voteDetailPlatformResolver = mock(VoteDetailPlatformResolver.class);
         GuideRepository guideRepository = mock(GuideRepository.class);
         when(voteDetailRepository.findById(999L)).thenReturn(Optional.empty());
 
-        VoteDetailService service = new VoteDetailService(voteDetailRepository, platformRepository, guideRepository);
+        VoteDetailService service = new VoteDetailService(voteDetailRepository, voteDetailPlatformResolver, guideRepository);
 
         assertThatThrownBy(() -> service.getDetail(999L)).isInstanceOf(BusinessException.class);
     }
@@ -67,14 +67,14 @@ class VoteDetailServiceTest {
     @Test
     void 예약시각이_지나지_않았으면_예외가_발생한다() {
         VoteDetailRepository voteDetailRepository = mock(VoteDetailRepository.class);
-        PlatformRepository platformRepository = mock(PlatformRepository.class);
+        VoteDetailPlatformResolver voteDetailPlatformResolver = mock(VoteDetailPlatformResolver.class);
         GuideRepository guideRepository = mock(GuideRepository.class);
 
         VoteDetail detail = VoteDetail.of(VoteCategory.MUSIC_SHOW, "테스트 투표", null, null, null, 0);
         detail.updateScheduledAt(LocalDateTime.now().plusDays(1));
         when(voteDetailRepository.findById(1L)).thenReturn(Optional.of(detail));
 
-        VoteDetailService service = new VoteDetailService(voteDetailRepository, platformRepository, guideRepository);
+        VoteDetailService service = new VoteDetailService(voteDetailRepository, voteDetailPlatformResolver, guideRepository);
 
         assertThatThrownBy(() -> service.getDetail(1L)).isInstanceOf(BusinessException.class);
     }

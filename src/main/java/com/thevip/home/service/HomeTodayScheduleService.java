@@ -7,6 +7,7 @@ import com.thevip.music.repository.MusicDetailRepository;
 import com.thevip.platform.repository.PlatformRepository;
 import com.thevip.vote.entity.VoteDetail;
 import com.thevip.vote.repository.VoteDetailRepository;
+import com.thevip.vote.service.VoteDetailPlatformResolver;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Comparator;
@@ -30,6 +31,7 @@ public class HomeTodayScheduleService {
     private final MusicDetailRepository musicDetailRepository;
     private final VoteDetailRepository voteDetailRepository;
     private final PlatformRepository platformRepository;
+    private final VoteDetailPlatformResolver voteDetailPlatformResolver;
 
     @Transactional(readOnly = true)
     @Cacheable(CacheConfig.HOME_TODAY_SCHEDULE)
@@ -46,7 +48,7 @@ public class HomeTodayScheduleService {
                         platformRepository.findNamesByIds(detail.getPlatformIds())));
         Stream<HomeScheduleItemResponse> voteItems = voteDetails.stream()
                 .map(detail -> HomeScheduleItemResponse.fromVote(detail,
-                        platformRepository.findNamesByIds(detail.getPlatformIds())));
+                        voteDetailPlatformResolver.resolveNames(detail)));
 
         return Stream.concat(musicItems, voteItems)
                 .sorted(Comparator.comparing(HomeScheduleItemResponse::time))

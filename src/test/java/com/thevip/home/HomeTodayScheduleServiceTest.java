@@ -15,6 +15,7 @@ import com.thevip.platform.repository.PlatformRepository;
 import com.thevip.vote.entity.VoteCategory;
 import com.thevip.vote.entity.VoteDetail;
 import com.thevip.vote.repository.VoteDetailRepository;
+import com.thevip.vote.service.VoteDetailPlatformResolver;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.IntStream;
@@ -31,6 +32,7 @@ class HomeTodayScheduleServiceTest {
         MusicDetailRepository musicDetailRepository = mock(MusicDetailRepository.class);
         VoteDetailRepository voteDetailRepository = mock(VoteDetailRepository.class);
         PlatformRepository platformRepository = mock(PlatformRepository.class);
+        VoteDetailPlatformResolver voteDetailPlatformResolver = mock(VoteDetailPlatformResolver.class);
 
         MusicDetail detail = MusicDetail.of(MusicCategory.DOWNLOAD, "테스트 총공", null,
                 LocalDateTime.now(), 0);
@@ -41,7 +43,7 @@ class HomeTodayScheduleServiceTest {
         when(platformRepository.findNamesByIds(List.of(1L))).thenReturn(List.of("멜론"));
 
         HomeTodayScheduleService service = new HomeTodayScheduleService(
-                musicDetailRepository, voteDetailRepository, platformRepository);
+                musicDetailRepository, voteDetailRepository, platformRepository, voteDetailPlatformResolver);
         List<HomeScheduleItemResponse> result = service.getTodaySchedule();
 
         assertThat(result).hasSize(1);
@@ -55,6 +57,7 @@ class HomeTodayScheduleServiceTest {
         MusicDetailRepository musicDetailRepository = mock(MusicDetailRepository.class);
         VoteDetailRepository voteDetailRepository = mock(VoteDetailRepository.class);
         PlatformRepository platformRepository = mock(PlatformRepository.class);
+        VoteDetailPlatformResolver voteDetailPlatformResolver = mock(VoteDetailPlatformResolver.class);
 
         MusicDetail detail = MusicDetail.of(MusicCategory.DOWNLOAD, "멜론, 벅스 flac 16bit 다운", null,
                 LocalDateTime.now(), 0);
@@ -66,7 +69,7 @@ class HomeTodayScheduleServiceTest {
         when(platformRepository.findNamesByIds(List.of(1L, 2L))).thenReturn(List.of("멜론", "벅스(Bugs)"));
 
         HomeTodayScheduleService service = new HomeTodayScheduleService(
-                musicDetailRepository, voteDetailRepository, platformRepository);
+                musicDetailRepository, voteDetailRepository, platformRepository, voteDetailPlatformResolver);
         List<HomeScheduleItemResponse> result = service.getTodaySchedule();
 
         assertThat(result).hasSize(1);
@@ -78,6 +81,7 @@ class HomeTodayScheduleServiceTest {
         MusicDetailRepository musicDetailRepository = mock(MusicDetailRepository.class);
         VoteDetailRepository voteDetailRepository = mock(VoteDetailRepository.class);
         PlatformRepository platformRepository = mock(PlatformRepository.class);
+        VoteDetailPlatformResolver voteDetailPlatformResolver = mock(VoteDetailPlatformResolver.class);
 
         MusicDetail music = MusicDetail.of(MusicCategory.DOWNLOAD, "음원", null,
                 LocalDateTime.of(2026, 8, 8, 20, 30), 0);
@@ -88,9 +92,10 @@ class HomeTodayScheduleServiceTest {
         when(musicDetailRepository.findTodayExposed(any(), any(), any())).thenReturn(List.of(music));
         when(voteDetailRepository.findTodayExposed(any())).thenReturn(List.of(vote));
         when(platformRepository.findNamesByIds(List.of(1L))).thenReturn(List.of("멜론"));
+        when(voteDetailPlatformResolver.resolveNames(vote)).thenReturn(List.of("멜론"));
 
         HomeTodayScheduleService service = new HomeTodayScheduleService(
-                musicDetailRepository, voteDetailRepository, platformRepository);
+                musicDetailRepository, voteDetailRepository, platformRepository, voteDetailPlatformResolver);
         List<HomeScheduleItemResponse> result = service.getTodaySchedule();
 
         assertThat(result).hasSize(2);
@@ -103,11 +108,12 @@ class HomeTodayScheduleServiceTest {
         MusicDetailRepository musicDetailRepository = mock(MusicDetailRepository.class);
         VoteDetailRepository voteDetailRepository = mock(VoteDetailRepository.class);
         PlatformRepository platformRepository = mock(PlatformRepository.class);
+        VoteDetailPlatformResolver voteDetailPlatformResolver = mock(VoteDetailPlatformResolver.class);
         when(musicDetailRepository.findTodayExposed(any(), any(), any())).thenReturn(List.of());
         when(voteDetailRepository.findTodayExposed(any())).thenReturn(List.of());
 
         HomeTodayScheduleService service = new HomeTodayScheduleService(
-                musicDetailRepository, voteDetailRepository, platformRepository);
+                musicDetailRepository, voteDetailRepository, platformRepository, voteDetailPlatformResolver);
 
         assertThat(service.getTodaySchedule()).isEmpty();
     }
@@ -117,6 +123,7 @@ class HomeTodayScheduleServiceTest {
         MusicDetailRepository musicDetailRepository = mock(MusicDetailRepository.class);
         VoteDetailRepository voteDetailRepository = mock(VoteDetailRepository.class);
         PlatformRepository platformRepository = mock(PlatformRepository.class);
+        VoteDetailPlatformResolver voteDetailPlatformResolver = mock(VoteDetailPlatformResolver.class);
 
         LocalDateTime base = LocalDateTime.of(2026, 8, 8, 0, 0);
         List<MusicDetail> details = IntStream.range(0, 6)
@@ -132,7 +139,7 @@ class HomeTodayScheduleServiceTest {
         when(platformRepository.findNamesByIds(List.of(1L))).thenReturn(List.of("멜론"));
 
         HomeTodayScheduleService service = new HomeTodayScheduleService(
-                musicDetailRepository, voteDetailRepository, platformRepository);
+                musicDetailRepository, voteDetailRepository, platformRepository, voteDetailPlatformResolver);
         List<HomeScheduleItemResponse> result = service.getTodaySchedule();
 
         assertThat(result).hasSize(5);

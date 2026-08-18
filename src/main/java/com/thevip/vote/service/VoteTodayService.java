@@ -1,6 +1,5 @@
 package com.thevip.vote.service;
 
-import com.thevip.platform.repository.PlatformRepository;
 import com.thevip.vote.dto.VoteSummaryResponse;
 import com.thevip.vote.dto.VoteTodayResponse;
 import com.thevip.vote.dto.VoteUrgentResponse;
@@ -23,7 +22,7 @@ public class VoteTodayService {
     private static final int DUE_SOON_LIMIT = 4;
 
     private final VoteDetailRepository voteDetailRepository;
-    private final PlatformRepository platformRepository;
+    private final VoteDetailPlatformResolver voteDetailPlatformResolver;
 
     @Transactional(readOnly = true)
     public VoteTodayResponse getToday() {
@@ -51,7 +50,7 @@ public class VoteTodayService {
 
     private List<VoteSummaryResponse> toSummaries(List<VoteDetail> details) {
         return details.stream()
-                .map(detail -> VoteSummaryResponse.from(detail, platformRepository.findNamesByIds(detail.getPlatformIds())))
+                .map(detail -> VoteSummaryResponse.from(detail, voteDetailPlatformResolver.resolveNames(detail)))
                 .toList();
     }
 }
