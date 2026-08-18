@@ -3,6 +3,7 @@ package com.thevip.music.controller;
 import com.thevip.global.response.ApiResponse;
 import com.thevip.music.dto.MusicStreamingLinkAdminResponse;
 import com.thevip.music.dto.MusicStreamingLinkBatchRequest;
+import com.thevip.music.dto.StreamingPlatformResponse;
 import com.thevip.music.service.MusicStreamingLinkAdminService;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -30,7 +31,7 @@ public class MusicStreamingLinkAdminController {
     }
 
     @PutMapping("/api/v1/admin/music/streaming-links/platforms/{platformId}")
-    public ApiResponse<List<MusicStreamingLinkAdminResponse>> replaceForPlatform(@PathVariable Long platformId,
+    public ApiResponse<StreamingPlatformResponse> replaceForPlatform(@PathVariable Long platformId,
             @Valid @RequestBody MusicStreamingLinkBatchRequest request) {
         return ApiResponse.success(musicStreamingLinkAdminService.replaceForPlatform(platformId, request));
     }

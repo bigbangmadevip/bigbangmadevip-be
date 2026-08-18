@@ -2,12 +2,9 @@ package com.thevip.music.service;
 
 import com.thevip.music.dto.MusicStreamingResponse;
 import com.thevip.music.dto.MusicStreamingUrgentResponse;
-import com.thevip.music.dto.StreamingLinkResponse;
-import com.thevip.music.dto.StreamingOsGroupResponse;
 import com.thevip.music.dto.StreamingPlatformResponse;
 import com.thevip.music.entity.MusicStreamingImage;
 import com.thevip.music.entity.MusicStreamingLink;
-import com.thevip.music.entity.OperatingSystem;
 import com.thevip.music.repository.MusicDetailRepository;
 import com.thevip.music.repository.MusicStreamingImageRepository;
 import com.thevip.music.repository.MusicStreamingLinkRepository;
@@ -76,16 +73,6 @@ public class MusicStreamingService {
         if (platform == null) {
             return null;
         }
-
-        Map<OperatingSystem, List<MusicStreamingLink>> linksByOs = links.stream()
-                .collect(Collectors.groupingBy(MusicStreamingLink::getOs, LinkedHashMap::new, Collectors.toList()));
-
-        List<StreamingOsGroupResponse> osGroups = linksByOs.entrySet().stream()
-                .map(entry -> new StreamingOsGroupResponse(entry.getKey().name(),
-                        entry.getValue().stream().map(StreamingLinkResponse::from).toList()))
-                .toList();
-
-        return new StreamingPlatformResponse(platform.getId(), platform.getName(), platform.getIconUrl(),
-                platform.getRegion().name(), osGroups);
+        return StreamingPlatformResponse.from(platform, links);
     }
 }

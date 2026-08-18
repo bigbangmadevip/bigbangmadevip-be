@@ -5,6 +5,10 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
+import com.thevip.platform.entity.Platform;
+import com.thevip.platform.entity.PlatformRegion;
+import com.thevip.platform.entity.PlatformType;
+import com.thevip.platform.repository.PlatformRepository;
 import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
@@ -27,11 +31,15 @@ class MusicStreamingLinkAdminApiTest {
     @Autowired
     MockMvc mockMvc;
 
-    private static final long TEST_PLATFORM_ID = 555001L;
+    @Autowired
+    PlatformRepository platformRepository;
 
     @Test
     void MUSIC_ADMIN은_플랫폼_전체_링크를_한번에_등록하고_다시_요청하면_교체된다() throws Exception {
-        mockMvc.perform(put("/api/v1/admin/music/streaming-links/platforms/" + TEST_PLATFORM_ID)
+        Long platformId = platformRepository.save(
+                Platform.of("멜론", PlatformType.MUSIC, PlatformRegion.DOMESTIC, null)).getId();
+
+        mockMvc.perform(put("/api/v1/admin/music/streaming-links/platforms/" + platformId)
                         .with(loginAs("MUSIC_ADMIN"))
                         .with(SecurityMockMvcRequestPostProcessors.csrf())
                         .contentType(MediaType.APPLICATION_JSON)
@@ -54,18 +62,21 @@ class MusicStreamingLinkAdminApiTest {
                                   ]
                                 }"""))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.length()").value(3))
-                .andExpect(jsonPath("$.data[0].os").value("ANDROID"))
-                .andExpect(jsonPath("$.data[0].label").value("멜론 링크 1"))
-                .andExpect(jsonPath("$.data[0].sortOrder").value(0))
-                .andExpect(jsonPath("$.data[1].sortOrder").value(1))
-                .andExpect(jsonPath("$.data[2].os").value("IPHONE"));
+                .andExpect(jsonPath("$.data.platformId").value(platformId))
+                .andExpect(jsonPath("$.data.name").value("멜론"))
+                .andExpect(jsonPath("$.data.region").value("DOMESTIC"))
+                .andExpect(jsonPath("$.data.osGroups.length()").value(2))
+                .andExpect(jsonPath("$.data.osGroups[0].os").value("ANDROID"))
+                .andExpect(jsonPath("$.data.osGroups[0].links.length()").value(2))
+                .andExpect(jsonPath("$.data.osGroups[0].links[0].label").value("멜론 링크 1"))
+                .andExpect(jsonPath("$.data.osGroups[1].os").value("IPHONE"))
+                .andExpect(jsonPath("$.data.osGroups[1].links.length()").value(1));
 
         mockMvc.perform(get("/api/v1/admin/music/streaming-links").with(loginAs("MUSIC_ADMIN")))
                 .andExpect(status().isOk());
 
         // 같은 플랫폼으로 다시 요청하면 기존 링크는 전부 지워지고 새 목록으로 교체된다.
-        mockMvc.perform(put("/api/v1/admin/music/streaming-links/platforms/" + TEST_PLATFORM_ID)
+        mockMvc.perform(put("/api/v1/admin/music/streaming-links/platforms/" + platformId)
                         .with(loginAs("MUSIC_ADMIN"))
                         .with(SecurityMockMvcRequestPostProcessors.csrf())
                         .contentType(MediaType.APPLICATION_JSON)
@@ -76,8 +87,23 @@ class MusicStreamingLinkAdminApiTest {
                                   ]
                                 }"""))
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.length()").value(1))
-                .andExpect(jsonPath("$.data[0].label").value("새 링크"));
+                .andExpect(jsonPath("$.data.osGroups.length()").value(1))
+                .andExpect(jsonPath("$.data.osGroups[0].links[0].label").value("새 링크"));
+    }
+
+    @Test
+    void 존재하지_않는_플랫폼이면_404() throws Exception {
+        mockMvc.perform(put("/api/v1/admin/music/streaming-links/platforms/999999")
+                        .with(loginAs("MUSIC_ADMIN"))
+                        .with(SecurityMockMvcRequestPostProcessors.csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "osGroups": [
+                                    {"os": "ANDROID", "links": [{"label": "링크", "url": "melonapp://x"}]}
+                                  ]
+                                }"""))
+                .andExpect(status().isNotFound());
     }
 
     @Test
