@@ -13,6 +13,11 @@ public record MusicStreamingLinkBatchRequest(@NotEmpty @Valid List<OsGroupReques
     public record OsGroupRequest(@NotNull OperatingSystem os, @NotEmpty @Valid List<LinkRequest> links) {
     }
 
-    public record LinkRequest(@NotBlank String label, @NotBlank String url) {
+    public record LinkRequest(@NotBlank String label, @NotBlank String url, Boolean active) {
+
+        // active를 안 보내면 노출(true)이 기본값이다.
+        public boolean resolvedActive() {
+            return active == null || active;
+        }
     }
 }

@@ -54,7 +54,10 @@ public class MusicStreamingLinkAdminService {
             List<MusicStreamingLinkBatchRequest.LinkRequest> groupLinks = group.links();
             for (int i = 0; i < groupLinks.size(); i++) {
                 MusicStreamingLinkBatchRequest.LinkRequest linkRequest = groupLinks.get(i);
-                links.add(MusicStreamingLink.of(platformId, group.os(), linkRequest.label(), linkRequest.url(), i));
+                MusicStreamingLink link = MusicStreamingLink.of(platformId, group.os(), linkRequest.label(),
+                        linkRequest.url(), i);
+                link.updateActive(linkRequest.resolvedActive());
+                links.add(link);
             }
         }
         musicStreamingLinkRepository.saveAll(links);

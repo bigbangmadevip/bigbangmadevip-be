@@ -1,5 +1,6 @@
 package com.thevip.music;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.put;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -89,6 +90,45 @@ class MusicStreamingLinkAdminApiTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.osGroups.length()").value(1))
                 .andExpect(jsonPath("$.data.osGroups[0].links[0].label").value("새 링크"));
+    }
+
+    @Test
+    void active를_생략하면_true가_기본값이고_명시하면_그대로_반영된다() throws Exception {
+        Long platformId = platformRepository.save(
+                Platform.of("지니", PlatformType.MUSIC, PlatformRegion.DOMESTIC, null)).getId();
+
+        String created = mockMvc.perform(put("/api/v1/admin/music/streaming-links/platforms/" + platformId)
+                        .with(loginAs("MUSIC_ADMIN"))
+                        .with(SecurityMockMvcRequestPostProcessors.csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "osGroups": [
+                                    {
+                                      "os": "ANDROID",
+                                      "links": [
+                                        {"label": "생략됨", "url": "geniemusic://a"},
+                                        {"label": "명시적으로 꺼짐", "url": "geniemusic://b", "active": false}
+                                      ]
+                                    }
+                                  ]
+                                }"""))
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+
+        List<Map<String, Object>> links = com.jayway.jsonpath.JsonPath.parse(created).read("$.data.osGroups[0].links");
+        assertThat(links).hasSize(2);
+
+        String listJson = mockMvc.perform(get("/api/v1/admin/music/streaming-links").with(loginAs("MUSIC_ADMIN")))
+                .andExpect(status().isOk())
+                .andReturn().getResponse().getContentAsString();
+        List<Map<String, Object>> allLinks = com.jayway.jsonpath.JsonPath.parse(listJson)
+                .read("$.data[?(@.platformId == " + platformId + ")]");
+        assertThat(allLinks).hasSize(2);
+        assertThat(allLinks.stream().filter(l -> l.get("label").equals("생략됨")).findFirst().orElseThrow().get("active"))
+                .isEqualTo(true);
+        assertThat(allLinks.stream().filter(l -> l.get("label").equals("명시적으로 꺼짐")).findFirst().orElseThrow()
+                .get("active")).isEqualTo(false);
     }
 
     @Test
