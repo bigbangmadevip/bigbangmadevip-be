@@ -37,7 +37,9 @@ jobs:
           context: .
           platforms: linux/amd64
           push: true
-          tags: ${{ secrets.DOCKER_REPO }}
+          tags: |
+            ${{ secrets.DOCKER_REPO }}:latest
+            ${{ secrets.DOCKER_REPO }}:${{ github.sha }}
 
   deploy:
     runs-on: ubuntu-latest
@@ -52,8 +54,7 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           port: ${{ secrets.SSH_PORT }}
           script: |
-            docker stop bigbangmadevip-be || true
-            docker rm bigbangmadevip-be || true
-            docker rmi $(docker images ${{ secrets.DOCKER_REPO }} -q) || true
-            docker pull ${{ secrets.DOCKER_REPO }}
-            docker run -d --network bigbangmadevip-net --env-file $HOME/config/.env --name bigbangmadevip-be ${{ secrets.DOCKER_REPO }}
+            docker pull ${{ secrets.DOCKER_REPO }}:${{ github.sha }}
+            docker rm -f bigbangmadevip-be || true
+            docker run -d --network bigbangmadevip-net --env-file $HOME/config/.env --name bigbangmadevip-be ${{ secrets.DOCKER_REPO }}:${{ github.sha }}
+            docker images ${{ secrets.DOCKER_REPO }} --format '{{.Tag}}' | grep -v -E '^(latest|${{ github.sha }})$' | xargs -r -I{} docker rmi ${{ secrets.DOCKER_REPO }}:{}
