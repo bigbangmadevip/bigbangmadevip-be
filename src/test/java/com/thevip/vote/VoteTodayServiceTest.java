@@ -57,7 +57,6 @@ class VoteTodayServiceTest {
         VoteDetail vote = VoteDetail.of(VoteCategory.MUSIC_SHOW, "쇼음악중심 사전투표", "1위 트로피",
                 LocalDateTime.of(2026, 8, 19, 11, 0), LocalDateTime.of(2026, 8, 21, 23, 0), 0);
         vote.addPlatformId(1L);
-        vote.addImageUrl("https://example.com/vote/1.png");
         when(voteDetailRepository.findActiveOngoing(any())).thenReturn(List.of(vote));
         when(voteDetailPlatformResolver.resolveNames(vote)).thenReturn(List.of("뮤빗"));
 
@@ -67,7 +66,6 @@ class VoteTodayServiceTest {
         assertThat(result.votes()).hasSize(1);
         assertThat(result.votes().get(0).title()).isEqualTo("쇼음악중심 사전투표");
         assertThat(result.votes().get(0).platformNames()).containsExactly("뮤빗");
-        assertThat(result.votes().get(0).imageUrl()).isEqualTo("https://example.com/vote/1.png");
         assertThat(result.votes().get(0).eventEndAt()).isEqualTo(LocalDateTime.of(2026, 8, 21, 23, 0));
     }
 
