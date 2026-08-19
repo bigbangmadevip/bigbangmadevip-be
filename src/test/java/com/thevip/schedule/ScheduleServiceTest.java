@@ -19,6 +19,7 @@ import com.thevip.schedule.service.ScheduleService;
 import com.thevip.vote.entity.VoteCategory;
 import com.thevip.vote.entity.VoteDetail;
 import com.thevip.vote.repository.VoteDetailRepository;
+import com.thevip.vote.service.VoteDetailPlatformResolver;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
@@ -32,6 +33,7 @@ class ScheduleServiceTest {
         MusicDetailRepository musicDetailRepository = mock(MusicDetailRepository.class);
         VoteDetailRepository voteDetailRepository = mock(VoteDetailRepository.class);
         PlatformRepository platformRepository = mock(PlatformRepository.class);
+        VoteDetailPlatformResolver voteDetailPlatformResolver = mock(VoteDetailPlatformResolver.class);
 
         MusicDetail music = MusicDetail.of(MusicCategory.DOWNLOAD, "총공", null,
                 LocalDateTime.of(2026, 8, 9, 19, 0), 0);
@@ -41,7 +43,8 @@ class ScheduleServiceTest {
                 LocalDateTime.of(2026, 8, 9, 0, 0), LocalDateTime.of(2026, 8, 9, 23, 59), 0);
         when(voteDetailRepository.findActiveOverlapping(any(), any(), any())).thenReturn(List.of(vote));
 
-        ScheduleService service = new ScheduleService(musicDetailRepository, voteDetailRepository, platformRepository);
+        ScheduleService service = new ScheduleService(musicDetailRepository, voteDetailRepository, platformRepository,
+                voteDetailPlatformResolver);
         ScheduleMonthResponse result = service.getMonth(YearMonth.of(2026, 8), ScheduleCategory.ALL, VoteDisplayMode.EVERY_DAY);
 
         assertThat(result.days()).hasSize(1);
@@ -56,13 +59,15 @@ class ScheduleServiceTest {
         MusicDetailRepository musicDetailRepository = mock(MusicDetailRepository.class);
         VoteDetailRepository voteDetailRepository = mock(VoteDetailRepository.class);
         PlatformRepository platformRepository = mock(PlatformRepository.class);
+        VoteDetailPlatformResolver voteDetailPlatformResolver = mock(VoteDetailPlatformResolver.class);
 
         when(musicDetailRepository.findActiveInRange(any(), any(), any())).thenReturn(List.of());
         VoteDetail vote = VoteDetail.of(VoteCategory.MUSIC_SHOW, "3일짜리 투표", null,
                 LocalDateTime.of(2026, 8, 5, 0, 0), LocalDateTime.of(2026, 8, 7, 23, 59), 0);
         when(voteDetailRepository.findActiveOverlapping(any(), any(), any())).thenReturn(List.of(vote));
 
-        ScheduleService service = new ScheduleService(musicDetailRepository, voteDetailRepository, platformRepository);
+        ScheduleService service = new ScheduleService(musicDetailRepository, voteDetailRepository, platformRepository,
+                voteDetailPlatformResolver);
         ScheduleMonthResponse result = service.getMonth(YearMonth.of(2026, 8), ScheduleCategory.ALL, VoteDisplayMode.EVERY_DAY);
 
         assertThat(result.days()).hasSize(3);
@@ -76,13 +81,15 @@ class ScheduleServiceTest {
         MusicDetailRepository musicDetailRepository = mock(MusicDetailRepository.class);
         VoteDetailRepository voteDetailRepository = mock(VoteDetailRepository.class);
         PlatformRepository platformRepository = mock(PlatformRepository.class);
+        VoteDetailPlatformResolver voteDetailPlatformResolver = mock(VoteDetailPlatformResolver.class);
 
         when(musicDetailRepository.findActiveInRange(any(), any(), any())).thenReturn(List.of());
         VoteDetail vote = VoteDetail.of(VoteCategory.MUSIC_SHOW, "3일짜리 투표", null,
                 LocalDateTime.of(2026, 8, 5, 0, 0), LocalDateTime.of(2026, 8, 7, 23, 59), 0);
         when(voteDetailRepository.findActiveByDeadlineInRange(any(), any(), any())).thenReturn(List.of(vote));
 
-        ScheduleService service = new ScheduleService(musicDetailRepository, voteDetailRepository, platformRepository);
+        ScheduleService service = new ScheduleService(musicDetailRepository, voteDetailRepository, platformRepository,
+                voteDetailPlatformResolver);
         ScheduleMonthResponse result = service.getMonth(YearMonth.of(2026, 8), ScheduleCategory.ALL, VoteDisplayMode.DEADLINE_ONLY);
 
         assertThat(result.days()).hasSize(1);
@@ -95,12 +102,14 @@ class ScheduleServiceTest {
         MusicDetailRepository musicDetailRepository = mock(MusicDetailRepository.class);
         VoteDetailRepository voteDetailRepository = mock(VoteDetailRepository.class);
         PlatformRepository platformRepository = mock(PlatformRepository.class);
+        VoteDetailPlatformResolver voteDetailPlatformResolver = mock(VoteDetailPlatformResolver.class);
 
         MusicDetail music = MusicDetail.of(MusicCategory.DOWNLOAD, "총공", null,
                 LocalDateTime.of(2026, 8, 9, 19, 0), 0);
         when(musicDetailRepository.findActiveInRange(any(), any(), any())).thenReturn(List.of(music));
 
-        ScheduleService service = new ScheduleService(musicDetailRepository, voteDetailRepository, platformRepository);
+        ScheduleService service = new ScheduleService(musicDetailRepository, voteDetailRepository, platformRepository,
+                voteDetailPlatformResolver);
         ScheduleMonthResponse result = service.getMonth(YearMonth.of(2026, 8), ScheduleCategory.MUSIC, VoteDisplayMode.EVERY_DAY);
 
         assertThat(result.days()).hasSize(1);
@@ -112,6 +121,7 @@ class ScheduleServiceTest {
         MusicDetailRepository musicDetailRepository = mock(MusicDetailRepository.class);
         VoteDetailRepository voteDetailRepository = mock(VoteDetailRepository.class);
         PlatformRepository platformRepository = mock(PlatformRepository.class);
+        VoteDetailPlatformResolver voteDetailPlatformResolver = mock(VoteDetailPlatformResolver.class);
 
         MusicDetail late = MusicDetail.of(MusicCategory.DOWNLOAD, "늦은 총공", null,
                 LocalDateTime.of(2026, 8, 9, 20, 0), 0);
@@ -121,7 +131,8 @@ class ScheduleServiceTest {
         when(voteDetailRepository.findActiveOverlapping(any(), any(), any())).thenReturn(List.of());
         when(platformRepository.findNamesByIds(any())).thenReturn(List.of());
 
-        ScheduleService service = new ScheduleService(musicDetailRepository, voteDetailRepository, platformRepository);
+        ScheduleService service = new ScheduleService(musicDetailRepository, voteDetailRepository, platformRepository,
+                voteDetailPlatformResolver);
         ScheduleDayResponse result = service.getDay(LocalDate.of(2026, 8, 9), ScheduleCategory.ALL, VoteDisplayMode.EVERY_DAY);
 
         assertThat(result.items()).hasSize(2);
@@ -134,6 +145,7 @@ class ScheduleServiceTest {
         MusicDetailRepository musicDetailRepository = mock(MusicDetailRepository.class);
         VoteDetailRepository voteDetailRepository = mock(VoteDetailRepository.class);
         PlatformRepository platformRepository = mock(PlatformRepository.class);
+        VoteDetailPlatformResolver voteDetailPlatformResolver = mock(VoteDetailPlatformResolver.class);
 
         when(musicDetailRepository.findActiveInRange(any(), any(), any())).thenReturn(List.of());
         VoteDetail vote = VoteDetail.of(VoteCategory.MUSIC_SHOW, "투표", null,
@@ -141,7 +153,8 @@ class ScheduleServiceTest {
         when(voteDetailRepository.findActiveByDeadlineInRange(any(), any(), any())).thenReturn(List.of(vote));
         when(platformRepository.findNamesByIds(any())).thenReturn(List.of());
 
-        ScheduleService service = new ScheduleService(musicDetailRepository, voteDetailRepository, platformRepository);
+        ScheduleService service = new ScheduleService(musicDetailRepository, voteDetailRepository, platformRepository,
+                voteDetailPlatformResolver);
         ScheduleDayResponse result = service.getDay(LocalDate.of(2026, 8, 7), ScheduleCategory.ALL, VoteDisplayMode.DEADLINE_ONLY);
 
         assertThat(result.items()).hasSize(1);
@@ -153,6 +166,7 @@ class ScheduleServiceTest {
         MusicDetailRepository musicDetailRepository = mock(MusicDetailRepository.class);
         VoteDetailRepository voteDetailRepository = mock(VoteDetailRepository.class);
         PlatformRepository platformRepository = mock(PlatformRepository.class);
+        VoteDetailPlatformResolver voteDetailPlatformResolver = mock(VoteDetailPlatformResolver.class);
 
         MusicDetail music = MusicDetail.of(MusicCategory.DOWNLOAD, "총공", null,
                 LocalDateTime.of(2026, 8, 9, 19, 0), 0);
@@ -160,7 +174,8 @@ class ScheduleServiceTest {
         when(voteDetailRepository.findActiveOverlapping(any(), any(), any())).thenReturn(List.of());
         when(platformRepository.findNamesByIds(any())).thenReturn(List.of());
 
-        ScheduleService service = new ScheduleService(musicDetailRepository, voteDetailRepository, platformRepository);
+        ScheduleService service = new ScheduleService(musicDetailRepository, voteDetailRepository, platformRepository,
+                voteDetailPlatformResolver);
         ScheduleInitialResponse result = service.getInitial(YearMonth.of(2026, 8), LocalDate.of(2026, 8, 9),
                 ScheduleCategory.ALL, VoteDisplayMode.EVERY_DAY);
 

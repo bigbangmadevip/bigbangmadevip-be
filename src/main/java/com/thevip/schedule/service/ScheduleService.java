@@ -11,6 +11,7 @@ import com.thevip.schedule.dto.ScheduleMonthResponse;
 import com.thevip.schedule.dto.VoteDisplayMode;
 import com.thevip.vote.entity.VoteDetail;
 import com.thevip.vote.repository.VoteDetailRepository;
+import com.thevip.vote.service.VoteDetailPlatformResolver;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.YearMonth;
@@ -30,6 +31,7 @@ public class ScheduleService {
     private final MusicDetailRepository musicDetailRepository;
     private final VoteDetailRepository voteDetailRepository;
     private final PlatformRepository platformRepository;
+    private final VoteDetailPlatformResolver voteDetailPlatformResolver;
 
     // 일정 화면 첫 진입용. 월(캘린더 점)과 날짜(리스트)를 한 번에 내려줘서 초기 호출을 1번으로 줄인다.
     // 이후 월/날짜 이동은 각각 getMonth/getDay를 따로 호출하면 된다.
@@ -89,7 +91,7 @@ public class ScheduleService {
                     ? voteDetailRepository.findActiveByDeadlineInRange(now, rangeStart, rangeEnd)
                     : voteDetailRepository.findActiveOverlapping(now, rangeStart, rangeEnd);
             votes.forEach(detail -> items.add(ScheduleItemResponse.fromVote(detail,
-                    platformRepository.findNamesByIds(detail.getPlatformIds()))));
+                    voteDetailPlatformResolver.resolveNames(detail))));
         }
 
         List<ScheduleItemResponse> sorted = items.stream()
