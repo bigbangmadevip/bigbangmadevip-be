@@ -52,10 +52,11 @@ public interface VoteDetailRepository extends JpaRepository<VoteDetail, Long> {
     List<VoteDetail> findActiveByDeadlineInRange(@Param("now") LocalDateTime now,
             @Param("rangeStart") LocalDateTime rangeStart, @Param("rangeEnd") LocalDateTime rangeEnd);
 
-    // 투표 메뉴 "오늘의 투표" 탭용. todayExposed(홈 전용 개념)와 무관하게, 지금 진행 중인(마감 안 지난)
-    // 투표 전부를 마감 임박순으로 반환한다.
+    // 투표 메뉴 "오늘의 투표" 탭용. todayExposed(홈 전용 개념)와 무관하게, 지금 진행 중인(시작했고
+    // 마감 안 지난) 투표 전부를 마감 임박순으로 반환한다. eventStartAt이 없으면 시작 제약 없음으로 본다.
     @Query("SELECT v FROM VoteDetail v WHERE v.active = true "
             + "AND (v.scheduledAt IS NULL OR v.scheduledAt <= :now) "
+            + "AND (v.eventStartAt IS NULL OR v.eventStartAt <= :now) "
             + "AND v.eventEndAt >= :now "
             + "ORDER BY v.eventEndAt ASC")
     List<VoteDetail> findActiveOngoing(@Param("now") LocalDateTime now);
