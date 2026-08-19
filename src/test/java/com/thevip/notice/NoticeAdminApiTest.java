@@ -39,6 +39,7 @@ class NoticeAdminApiTest {
               "title": "어드민 공지 생성 테스트",
               "content": "본문",
               "imageUrls": [],
+              "links": [{"label": "이벤트 페이지", "url": "https://example.com/event"}],
               "pinned": false,
               "active": true
             }""";
@@ -58,6 +59,9 @@ class NoticeAdminApiTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.menuType").value("MUSIC"))
                 .andExpect(jsonPath("$.data.updatedBy").value("음원공지어드민"))
+                .andExpect(jsonPath("$.data.links.length()").value(1))
+                .andExpect(jsonPath("$.data.links[0].label").value("이벤트 페이지"))
+                .andExpect(jsonPath("$.data.links[0].url").value("https://example.com/event"))
                 .andReturn().getResponse().getContentAsString();
         Long id = com.jayway.jsonpath.JsonPath.parse(created).read("$.data.id", Long.class);
 
@@ -74,12 +78,14 @@ class NoticeAdminApiTest {
                                   "title": "수정된 공지",
                                   "content": "수정된 본문",
                                   "imageUrls": [],
+                                  "links": [],
                                   "pinned": true,
                                   "active": true
                                 }"""))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.title").value("수정된 공지"))
-                .andExpect(jsonPath("$.data.pinned").value(true));
+                .andExpect(jsonPath("$.data.pinned").value(true))
+                .andExpect(jsonPath("$.data.links.length()").value(0));
 
         // 음원 공지 id로 투표 쪽 URL을 조회하면 404
         mockMvc.perform(get("/api/v1/admin/vote/notices/" + id).with(loginAs("41005", "VOTE_ADMIN")))

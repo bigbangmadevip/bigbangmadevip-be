@@ -48,6 +48,11 @@ public class Notice {
     @Column(name = "image_url", columnDefinition = "TEXT")
     private List<String> imageUrls = new ArrayList<>();
 
+    @ElementCollection
+    @CollectionTable(name = "notice_link", joinColumns = @JoinColumn(name = "notice_id"))
+    @OrderColumn(name = "sort_order")
+    private List<NoticeLink> links = new ArrayList<>();
+
     @Column(nullable = false)
     private boolean active;
 
@@ -88,6 +93,11 @@ public class Notice {
     public void replaceImageUrls(List<String> imageUrls) {
         this.imageUrls.clear();
         this.imageUrls.addAll(imageUrls);
+    }
+
+    public void replaceLinks(List<NoticeLink> links) {
+        this.links.clear();
+        this.links.addAll(links);
     }
 
     public void update(String title, String content, String updatedBy) {

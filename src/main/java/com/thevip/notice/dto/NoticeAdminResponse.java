@@ -11,13 +11,14 @@ public record NoticeAdminResponse(
         String title,
         String content,
         List<String> imageUrls,
+        List<NoticeLinkResponse> links,
         boolean pinned,
         boolean active,
         LocalDateTime createdAt,
         LocalDateTime updatedAt,
         String updatedBy) {
 
-    // imageUrls는 지연 로딩 @ElementCollection이라, 트랜잭션이 열려 있는 이 시점에 리스트로
+    // imageUrls/links는 지연 로딩 @ElementCollection이라, 트랜잭션이 열려 있는 이 시점에 리스트로
     // 미리 소비해둬야 한다(응답 직렬화 시점엔 세션이 이미 닫혀 있어 LazyInitializationException).
     public static NoticeAdminResponse from(Notice notice) {
         return new NoticeAdminResponse(
@@ -26,6 +27,7 @@ public record NoticeAdminResponse(
                 notice.getTitle(),
                 notice.getContent(),
                 notice.getImageUrls().stream().filter(Objects::nonNull).toList(),
+                notice.getLinks().stream().filter(Objects::nonNull).map(NoticeLinkResponse::from).toList(),
                 notice.isPinned(),
                 notice.isActive(),
                 notice.getCreatedAt(),

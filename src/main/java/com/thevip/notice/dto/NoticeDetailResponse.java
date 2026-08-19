@@ -10,7 +10,8 @@ public record NoticeDetailResponse(
         String title,
         LocalDateTime createdAt,
         String content,
-        List<String> imageUrls) {
+        List<String> imageUrls,
+        List<NoticeLinkResponse> links) {
 
     public static NoticeDetailResponse from(Notice notice) {
         return new NoticeDetailResponse(
@@ -18,6 +19,7 @@ public record NoticeDetailResponse(
                 notice.getTitle(),
                 notice.getCreatedAt(),
                 notice.getContent(),
-                notice.getImageUrls().stream().filter(Objects::nonNull).toList());
+                notice.getImageUrls().stream().filter(Objects::nonNull).toList(),
+                notice.getLinks().stream().filter(Objects::nonNull).map(NoticeLinkResponse::from).toList());
     }
 }

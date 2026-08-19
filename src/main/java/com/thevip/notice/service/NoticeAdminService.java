@@ -5,6 +5,7 @@ import com.thevip.global.exception.ErrorCode;
 import com.thevip.notice.dto.NoticeAdminRequest;
 import com.thevip.notice.dto.NoticeAdminResponse;
 import com.thevip.notice.entity.Notice;
+import com.thevip.notice.entity.NoticeLink;
 import com.thevip.notice.entity.NoticeMenuType;
 import com.thevip.notice.repository.NoticeRepository;
 import java.util.List;
@@ -49,6 +50,10 @@ public class NoticeAdminService {
     private void applyRequest(Notice notice, NoticeAdminRequest request, String updatedBy) {
         notice.update(request.title(), request.content(), updatedBy);
         notice.replaceImageUrls(request.imageUrls() == null ? List.of() : request.imageUrls());
+        List<NoticeLink> links = request.links() == null
+                ? List.of()
+                : request.links().stream().map(link -> new NoticeLink(link.label(), link.url())).toList();
+        notice.replaceLinks(links);
         notice.updatePinned(request.pinned());
         notice.updateActive(request.active());
     }
