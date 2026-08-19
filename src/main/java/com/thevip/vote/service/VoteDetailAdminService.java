@@ -1,6 +1,5 @@
 package com.thevip.vote.service;
 
-import com.thevip.global.config.CacheConfig;
 import com.thevip.global.exception.BusinessException;
 import com.thevip.global.exception.ErrorCode;
 import com.thevip.vote.dto.VoteDetailAdminRequest;
@@ -10,7 +9,6 @@ import com.thevip.vote.repository.VoteDetailRepository;
 import java.util.Comparator;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
-import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -33,9 +31,6 @@ public class VoteDetailAdminService {
         return VoteDetailAdminResponse.from(getEntity(id));
     }
 
-    // 홈 화면 긴급배너/오늘의 일정 캐시는 TTL 없이 어드민 변경 시점에만 갱신되므로, 투표 상세를
-    // 쓰는 경로에서는 반드시 같이 비워줘야 한다 (안 그러면 재기동 전까지 옛 값이 계속 나간다).
-    @CacheEvict(cacheNames = {CacheConfig.HOME_URGENT, CacheConfig.HOME_TODAY_SCHEDULE}, allEntries = true)
     @Transactional
     public VoteDetailAdminResponse create(VoteDetailAdminRequest request) {
         VoteDetail detail = VoteDetail.of(request.category(), request.title(), request.rewardDescription(),
@@ -45,7 +40,6 @@ public class VoteDetailAdminService {
         return VoteDetailAdminResponse.from(detail);
     }
 
-    @CacheEvict(cacheNames = {CacheConfig.HOME_URGENT, CacheConfig.HOME_TODAY_SCHEDULE}, allEntries = true)
     @Transactional
     public VoteDetailAdminResponse update(Long id, VoteDetailAdminRequest request) {
         VoteDetail detail = getEntity(id);

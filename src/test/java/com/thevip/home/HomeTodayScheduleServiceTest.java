@@ -21,10 +21,6 @@ import java.util.List;
 import java.util.stream.IntStream;
 import org.junit.jupiter.api.Test;
 
-/**
- * @Cacheable이 붙은 무인자 메서드라 실제 스프링 컨텍스트/DB로 테스트하면 캐시가 공유되어
- * 여러 시나리오가 서로 오염된다. 캐시 프록시를 안 타도록 서비스를 직접 new해서 순수 로직만 검증한다.
- */
 class HomeTodayScheduleServiceTest {
 
     @Test

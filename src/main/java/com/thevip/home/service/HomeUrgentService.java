@@ -1,6 +1,5 @@
 package com.thevip.home.service;
 
-import com.thevip.global.config.CacheConfig;
 import com.thevip.home.dto.HomeUrgentResponse;
 import com.thevip.music.entity.MusicDetail;
 import com.thevip.music.repository.MusicDetailRepository;
@@ -12,7 +11,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Optional;
 import lombok.RequiredArgsConstructor;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,7 +29,6 @@ public class HomeUrgentService {
     private final VoteDetailPlatformResolver voteDetailPlatformResolver;
 
     @Transactional(readOnly = true)
-    @Cacheable(CacheConfig.HOME_URGENT)
     public Optional<HomeUrgentResponse> getCurrentUrgent() {
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime startOfToday = LocalDate.now().atStartOfDay();

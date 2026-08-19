@@ -1,6 +1,5 @@
 package com.thevip.home.service;
 
-import com.thevip.global.config.CacheConfig;
 import com.thevip.home.dto.HomeScheduleItemResponse;
 import com.thevip.music.entity.MusicDetail;
 import com.thevip.music.repository.MusicDetailRepository;
@@ -14,7 +13,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Stream;
 import lombok.RequiredArgsConstructor;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -34,7 +32,6 @@ public class HomeTodayScheduleService {
     private final VoteDetailPlatformResolver voteDetailPlatformResolver;
 
     @Transactional(readOnly = true)
-    @Cacheable(CacheConfig.HOME_TODAY_SCHEDULE)
     public List<HomeScheduleItemResponse> getTodaySchedule() {
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime startOfToday = LocalDate.now().atStartOfDay();
