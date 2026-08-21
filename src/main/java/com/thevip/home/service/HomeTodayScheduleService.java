@@ -38,7 +38,7 @@ public class HomeTodayScheduleService {
         LocalDateTime startOfTomorrow = startOfToday.plusDays(1);
 
         List<MusicDetail> musicDetails = musicDetailRepository.findTodayExposed(now, startOfToday, startOfTomorrow);
-        List<VoteDetail> voteDetails = voteDetailRepository.findTodayExposed(now);
+        List<VoteDetail> voteDetails = voteDetailRepository.findTodayExposed(now, startOfTomorrow);
 
         Stream<HomeScheduleItemResponse> musicItems = musicDetails.stream()
                 .map(detail -> HomeScheduleItemResponse.fromMusic(detail,

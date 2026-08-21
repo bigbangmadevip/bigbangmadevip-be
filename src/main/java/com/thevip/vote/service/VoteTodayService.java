@@ -5,6 +5,7 @@ import com.thevip.vote.dto.VoteTodayResponse;
 import com.thevip.vote.dto.VoteUrgentResponse;
 import com.thevip.vote.entity.VoteDetail;
 import com.thevip.vote.repository.VoteDetailRepository;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -27,6 +28,7 @@ public class VoteTodayService {
     @Transactional(readOnly = true)
     public VoteTodayResponse getToday() {
         LocalDateTime now = LocalDateTime.now();
+        LocalDateTime startOfTomorrow = LocalDate.now().plusDays(1).atStartOfDay();
 
         VoteUrgentResponse urgent = voteDetailRepository.findVisibleMenuUrgent(now)
                 .stream().findFirst()
@@ -34,7 +36,7 @@ public class VoteTodayService {
                 .orElse(null);
 
         // findActiveOngoing은 eventEndAt 오름차순이라 마감 임박(24시간 이내) 항목이 항상 앞쪽에 몰려 있다.
-        List<VoteDetail> ongoing = voteDetailRepository.findActiveOngoing(now);
+        List<VoteDetail> ongoing = voteDetailRepository.findActiveOngoing(now, startOfTomorrow);
         LocalDateTime dueSoonCutoff = now.plusHours(24);
 
         List<VoteDetail> dueSoon = ongoing.stream()

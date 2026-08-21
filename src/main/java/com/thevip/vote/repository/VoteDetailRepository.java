@@ -21,14 +21,17 @@ public interface VoteDetailRepository extends JpaRepository<VoteDetail, Long> {
 
     // active=true여도 scheduledAt이 미래면 아직 예약 대기중이라 제외한다 (배치 없이 조회 시점 계산).
     // 투표는 [eventStartAt, eventEndAt] 구간 안에 있을 때만(=오늘이 그 구간에 포함될 때만) 노출한다.
-    // eventStartAt이 없으면 시작 제약 없음으로 본다. todayExposed 필드는 더 이상 이 조회에서
-    // 쓰지 않는다 — 게시 여부(active)만으로 노출을 판단한다 (필드 자체는 남겨둠).
+    // eventStartAt은 시각까지가 아니라 날짜만 본다 — 시작일이 오늘이면 몇 시로 등록했든 오늘 0시부터
+    // 바로 노출된다 (startOfTomorrow 이전이면 통과). eventStartAt이 없으면 시작 제약 없음으로 본다.
+    // todayExposed 필드는 더 이상 이 조회에서 쓰지 않는다 — 게시 여부(active)만으로 노출을
+    // 판단한다 (필드 자체는 남겨둠).
     @Query("SELECT v FROM VoteDetail v WHERE v.active = true "
             + "AND (v.scheduledAt IS NULL OR v.scheduledAt <= :now) "
-            + "AND (v.eventStartAt IS NULL OR v.eventStartAt <= :now) "
+            + "AND (v.eventStartAt IS NULL OR v.eventStartAt < :startOfTomorrow) "
             + "AND v.eventEndAt >= :now "
             + "ORDER BY v.eventEndAt ASC")
-    List<VoteDetail> findTodayExposed(@Param("now") LocalDateTime now);
+    List<VoteDetail> findTodayExposed(@Param("now") LocalDateTime now,
+            @Param("startOfTomorrow") LocalDateTime startOfTomorrow);
 
     // "일정" 탭 캘린더/일별 리스트용(EVERY_DAY 모드). todayExposed와 무관하게 활성 상태인 항목 전부를
     // 대상으로 하고, 지난 일정도 조회할 수 있어야 해서 만료 여부는 걸러내지 않는다. 투표는
@@ -53,11 +56,14 @@ public interface VoteDetailRepository extends JpaRepository<VoteDetail, Long> {
             @Param("rangeStart") LocalDateTime rangeStart, @Param("rangeEnd") LocalDateTime rangeEnd);
 
     // 투표 메뉴 "오늘의 투표" 탭용. todayExposed(홈 전용 개념)와 무관하게, 지금 진행 중인(시작했고
-    // 마감 안 지난) 투표 전부를 마감 임박순으로 반환한다. eventStartAt이 없으면 시작 제약 없음으로 본다.
+    // 마감 안 지난) 투표 전부를 마감 임박순으로 반환한다. eventStartAt은 시각까지가 아니라 날짜만
+    // 본다 — 시작일이 오늘이면 몇 시로 등록했든 오늘 0시부터 바로 노출된다. eventStartAt이 없으면
+    // 시작 제약 없음으로 본다.
     @Query("SELECT v FROM VoteDetail v WHERE v.active = true "
             + "AND (v.scheduledAt IS NULL OR v.scheduledAt <= :now) "
-            + "AND (v.eventStartAt IS NULL OR v.eventStartAt <= :now) "
+            + "AND (v.eventStartAt IS NULL OR v.eventStartAt < :startOfTomorrow) "
             + "AND v.eventEndAt >= :now "
             + "ORDER BY v.eventEndAt ASC")
-    List<VoteDetail> findActiveOngoing(@Param("now") LocalDateTime now);
+    List<VoteDetail> findActiveOngoing(@Param("now") LocalDateTime now,
+            @Param("startOfTomorrow") LocalDateTime startOfTomorrow);
 }
