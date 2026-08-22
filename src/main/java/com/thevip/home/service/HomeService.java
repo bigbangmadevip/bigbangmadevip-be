@@ -26,7 +26,7 @@ public class HomeService {
 
     public HomeResponse getHome(Long memberId) {
         long participantCount = cheeringStatsService.getTodayParticipantCount();
-        HomeUrgentResponse urgentDetail = homeUrgentService.getCurrentUrgent().orElse(null);
+        List<HomeUrgentResponse> urgentDetails = homeUrgentService.getCurrentUrgent();
         List<HomeScheduleItemResponse> todaySchedule = homeTodayScheduleService.getTodaySchedule();
         List<CheeringCatalogItem> catalog = cheeringCatalogService.getActiveCatalog();
         Set<Long> completedItemIds = new HashSet<>(cheeringService.getCompletedItemIds(memberId));
@@ -37,6 +37,6 @@ public class HomeService {
         long completedCheeringCount = items.stream().filter(CheeringItemResponse::completed).count();
 
         return new HomeResponse(
-                participantCount, urgentDetail, todaySchedule, items.size(), completedCheeringCount, items);
+                participantCount, urgentDetails, todaySchedule, items.size(), completedCheeringCount, items);
     }
 }

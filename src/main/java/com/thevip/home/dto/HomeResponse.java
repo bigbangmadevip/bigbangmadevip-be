@@ -5,7 +5,7 @@ import java.util.List;
 
 public record HomeResponse(
         long participantCount,
-        HomeUrgentResponse urgentDetail,
+        List<HomeUrgentResponse> urgentDetails,
         List<HomeScheduleItemResponse> todaySchedule,
         long totalCheeringCount,
         long completedCheeringCount,
