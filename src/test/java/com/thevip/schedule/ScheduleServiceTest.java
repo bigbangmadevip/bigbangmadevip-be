@@ -36,7 +36,7 @@ class ScheduleServiceTest {
         VoteDetailPlatformResolver voteDetailPlatformResolver = mock(VoteDetailPlatformResolver.class);
 
         MusicDetail music = MusicDetail.of(MusicCategory.DOWNLOAD, "총공", null,
-                LocalDateTime.of(2026, 8, 9, 19, 0), 0);
+                LocalDateTime.of(2026, 8, 9, 19, 0), null, 0);
         when(musicDetailRepository.findActiveInRange(any(), any(), any())).thenReturn(List.of(music));
 
         VoteDetail vote = VoteDetail.of(VoteCategory.MUSIC_SHOW, "투표", null,
@@ -105,7 +105,7 @@ class ScheduleServiceTest {
         VoteDetailPlatformResolver voteDetailPlatformResolver = mock(VoteDetailPlatformResolver.class);
 
         MusicDetail music = MusicDetail.of(MusicCategory.DOWNLOAD, "총공", null,
-                LocalDateTime.of(2026, 8, 9, 19, 0), 0);
+                LocalDateTime.of(2026, 8, 9, 19, 0), null, 0);
         when(musicDetailRepository.findActiveInRange(any(), any(), any())).thenReturn(List.of(music));
 
         ScheduleService service = new ScheduleService(musicDetailRepository, voteDetailRepository, platformRepository,
@@ -124,9 +124,9 @@ class ScheduleServiceTest {
         VoteDetailPlatformResolver voteDetailPlatformResolver = mock(VoteDetailPlatformResolver.class);
 
         MusicDetail late = MusicDetail.of(MusicCategory.DOWNLOAD, "늦은 총공", null,
-                LocalDateTime.of(2026, 8, 9, 20, 0), 0);
+                LocalDateTime.of(2026, 8, 9, 20, 0), null, 0);
         MusicDetail early = MusicDetail.of(MusicCategory.DOWNLOAD, "이른 총공", null,
-                LocalDateTime.of(2026, 8, 9, 19, 0), 0);
+                LocalDateTime.of(2026, 8, 9, 19, 0), null, 0);
         when(musicDetailRepository.findActiveInRange(any(), any(), any())).thenReturn(List.of(late, early));
         when(voteDetailRepository.findActiveOverlapping(any(), any(), any())).thenReturn(List.of());
         when(platformRepository.findNamesByIds(any())).thenReturn(List.of());
@@ -169,7 +169,7 @@ class ScheduleServiceTest {
         VoteDetailPlatformResolver voteDetailPlatformResolver = mock(VoteDetailPlatformResolver.class);
 
         MusicDetail music = MusicDetail.of(MusicCategory.DOWNLOAD, "총공", null,
-                LocalDateTime.of(2026, 8, 9, 19, 0), 0);
+                LocalDateTime.of(2026, 8, 9, 19, 0), null, 0);
         when(musicDetailRepository.findActiveInRange(any(), any(), any())).thenReturn(List.of(music));
         when(voteDetailRepository.findActiveOverlapping(any(), any(), any())).thenReturn(List.of());
         when(platformRepository.findNamesByIds(any())).thenReturn(List.of());

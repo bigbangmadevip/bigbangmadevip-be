@@ -37,11 +37,10 @@ public class MusicStreamingService {
     @Transactional(readOnly = true)
     public MusicStreamingResponse getStreamingPlatforms() {
         LocalDateTime now = LocalDateTime.now();
-        LocalDateTime startOfToday = LocalDate.now().atStartOfDay();
-        LocalDateTime startOfTomorrow = startOfToday.plusDays(1);
+        LocalDateTime startOfTomorrow = LocalDate.now().plusDays(1).atStartOfDay();
 
         MusicStreamingUrgentResponse urgent = musicDetailRepository
-                .findVisibleMenuUrgent(now, startOfToday, startOfTomorrow)
+                .findVisibleMenuUrgent(now, startOfTomorrow)
                 .stream().findFirst()
                 .map(MusicStreamingUrgentResponse::from)
                 .orElse(null);

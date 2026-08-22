@@ -34,10 +34,9 @@ public class HomeTodayScheduleService {
     @Transactional(readOnly = true)
     public List<HomeScheduleItemResponse> getTodaySchedule() {
         LocalDateTime now = LocalDateTime.now();
-        LocalDateTime startOfToday = LocalDate.now().atStartOfDay();
-        LocalDateTime startOfTomorrow = startOfToday.plusDays(1);
+        LocalDateTime startOfTomorrow = LocalDate.now().plusDays(1).atStartOfDay();
 
-        List<MusicDetail> musicDetails = musicDetailRepository.findTodayExposed(now, startOfToday, startOfTomorrow);
+        List<MusicDetail> musicDetails = musicDetailRepository.findTodayExposed(now, startOfTomorrow);
         List<VoteDetail> voteDetails = voteDetailRepository.findTodayExposed(now, startOfTomorrow);
 
         Stream<HomeScheduleItemResponse> musicItems = musicDetails.stream()

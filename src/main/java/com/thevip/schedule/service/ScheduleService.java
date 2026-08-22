@@ -55,7 +55,7 @@ public class ScheduleService {
 
         if (category != ScheduleCategory.VOTE) {
             musicDetailRepository.findActiveInRange(now, rangeStart, rangeEnd)
-                    .forEach(detail -> counts.computeIfAbsent(detail.getEventAt().toLocalDate(), d -> new int[2])[0]++);
+                    .forEach(detail -> counts.computeIfAbsent(detail.getEventStartAt().toLocalDate(), d -> new int[2])[0]++);
         }
         if (category != ScheduleCategory.MUSIC) {
             if (voteDisplayMode == VoteDisplayMode.DEADLINE_ONLY) {

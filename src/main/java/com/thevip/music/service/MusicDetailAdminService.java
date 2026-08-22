@@ -34,7 +34,7 @@ public class MusicDetailAdminService {
     @Transactional
     public MusicDetailAdminResponse create(MusicDetailAdminRequest request) {
         MusicDetail detail = MusicDetail.of(request.category(), request.title(), request.songName(),
-                request.eventAt(), request.sortOrder());
+                request.eventStartAt(), request.eventEndAt(), request.sortOrder());
         musicDetailRepository.save(detail);
         applyRequest(detail, request);
         return MusicDetailAdminResponse.from(detail);
@@ -43,22 +43,18 @@ public class MusicDetailAdminService {
     @Transactional
     public MusicDetailAdminResponse update(Long id, MusicDetailAdminRequest request) {
         MusicDetail detail = getEntity(id);
-        detail.updateCore(request.category(), request.title(), request.songName(), request.eventAt(),
-                request.sortOrder());
+        detail.updateCore(request.category(), request.title(), request.songName(), request.eventStartAt(),
+                request.eventEndAt(), request.sortOrder());
         applyRequest(detail, request);
         return MusicDetailAdminResponse.from(detail);
     }
 
     private void applyRequest(MusicDetail detail, MusicDetailAdminRequest request) {
         detail.replacePlatformIds(nullSafe(request.platformIds()));
-        detail.updatePlatformUrl(request.platformUrl());
-        detail.updateDescription(request.description());
         detail.replaceChecklist(nullSafe(request.checklist()));
         detail.replaceImageUrls(nullSafe(request.imageUrls()));
         detail.replaceGuideIds(nullSafe(request.guideIds()));
-        detail.updateCheeringItemId(request.cheeringItemId());
         detail.updateUrgentContent(request.urgentContent());
-        detail.updateTodayExposed(request.todayExposed());
         detail.updateActive(request.active());
         detail.updateScheduledAt(request.scheduledAt());
         applyMenuUrgent(detail, request.menuUrgent());

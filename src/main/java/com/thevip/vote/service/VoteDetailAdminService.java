@@ -57,9 +57,7 @@ public class VoteDetailAdminService {
         detail.replaceImageUrls(nullSafe(request.imageUrls()));
         detail.replaceGuideIds(nullSafe(request.guideIds()));
         detail.updateCtaButtonLabel(request.ctaButtonLabel());
-        detail.updateCheeringItemId(request.cheeringItemId());
         detail.updateUrgentContent(request.urgentContent());
-        detail.updateTodayExposed(request.todayExposed());
         detail.updateActive(request.active());
         detail.updateScheduledAt(request.scheduledAt());
         detail.updatePushEnabled(request.pushEnabled());

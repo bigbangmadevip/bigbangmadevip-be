@@ -35,8 +35,9 @@ public class VoteDetail {
     @Column(nullable = false, length = 100)
     private String title;
 
-    // 음악방송 프로그램(총공 구분). 이 방송의 platformIds가 아래 platformIds 선택지로 쓰인다.
-    // FK 없이 ID 참조 방식. VoteCategory=MUSIC_SHOW가 아니면 보통 null.
+    // 투표 중분류(음악방송/시상식/기념일 등 카테고리 공통으로 쓰인다. 예: 쇼음악중심/뮤직뱅크,
+    // MAMA/MMA). 카테고리와 무관하게 선택 가능하고, 선택하지 않아도 된다. FK 없이 ID 참조 방식.
+    // 플랫폼(아래 platformIds)은 이 중분류가 아니라 상세마다 직접 고른다(VoteDetailPlatformResolver 참고).
     private Long musicShowId;
 
     @Column(columnDefinition = "TEXT")
@@ -79,9 +80,6 @@ public class VoteDetail {
     @Column(length = 30)
     private String ctaButtonLabel;
 
-    // "오늘의 응원" 노출용으로 연결한 CheeringItem. null이면 오늘의 응원에 안 뜬다.
-    private Long cheeringItemId;
-
     // 투표 메뉴 상단 고정 겸 홈 화면 긴급 배너 후보. 메뉴(투표)당 최대 하나만 켜져 있어야 하며
     // 이 불변식은 어드민 서비스가 강제한다 (DB 제약으로는 표현 불가). 홈 배너는 음원/투표 후보 중
     // 날짜(eventAt/eventEndAt)가 더 임박한 쪽을 HomeUrgentService가 골라서 보여준다.
@@ -91,11 +89,6 @@ public class VoteDetail {
     // 긴급 배너에 노출할 때 쓰는 문구. title과 별개 (title은 관리용 제목, 이건 배너 노출용 짧은 문구).
     @Column(length = 26)
     private String urgentContent;
-
-    // 홈 화면 "오늘의 총공 일정" 노출 대상 여부. menuUrgent(긴급 배너, 최대 1개)와는 별개로,
-    // 여기 해당하는 것들을 오늘 날짜 기준으로 시간순 최대 5개까지 리스트로 보여준다.
-    @Column(nullable = false)
-    private boolean todayExposed;
 
     @Column(nullable = false)
     private boolean active;
@@ -135,7 +128,6 @@ public class VoteDetail {
         detail.eventEndAt = eventEndAt;
         detail.sortOrder = sortOrder;
         detail.menuUrgent = false;
-        detail.todayExposed = false;
         detail.active = true;
         detail.createdAt = LocalDateTime.now();
         return detail;
@@ -203,20 +195,12 @@ public class VoteDetail {
         this.ctaButtonLabel = ctaButtonLabel;
     }
 
-    public void updateCheeringItemId(Long cheeringItemId) {
-        this.cheeringItemId = cheeringItemId;
-    }
-
     public void updateMenuUrgent(boolean menuUrgent) {
         this.menuUrgent = menuUrgent;
     }
 
     public void updateUrgentContent(String urgentContent) {
         this.urgentContent = urgentContent;
-    }
-
-    public void updateTodayExposed(boolean todayExposed) {
-        this.todayExposed = todayExposed;
     }
 
     public void updateScheduledAt(LocalDateTime scheduledAt) {

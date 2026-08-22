@@ -29,7 +29,7 @@ class MusicDetailServiceTest {
         GuideRepository guideRepository = mock(GuideRepository.class);
 
         MusicDetail detail = MusicDetail.of(MusicCategory.DOWNLOAD, "테스트 총공", "테스트 곡",
-                LocalDateTime.of(2026, 8, 9, 20, 30), 0);
+                LocalDateTime.of(2026, 8, 9, 20, 30), null, 0);
         detail.addPlatformId(1L);
         detail.addChecklistItem("체크1");
         detail.addGuideId(10L);
@@ -66,7 +66,7 @@ class MusicDetailServiceTest {
         PlatformRepository platformRepository = mock(PlatformRepository.class);
         GuideRepository guideRepository = mock(GuideRepository.class);
 
-        MusicDetail detail = MusicDetail.of(MusicCategory.DOWNLOAD, "테스트 총공", null, null, 0);
+        MusicDetail detail = MusicDetail.of(MusicCategory.DOWNLOAD, "테스트 총공", null, null, null, 0);
         detail.updateScheduledAt(LocalDateTime.now().plusDays(1));
         when(musicDetailRepository.findById(1L)).thenReturn(Optional.of(detail));
 

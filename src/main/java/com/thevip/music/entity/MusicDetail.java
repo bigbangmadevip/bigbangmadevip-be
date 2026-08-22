@@ -46,14 +46,12 @@ public class MusicDetail {
     @Column(name = "platform_id")
     private List<Long> platformIds = new ArrayList<>();
 
-    @Column(columnDefinition = "TEXT")
-    private String platformUrl;
+    // 총공 시작 시각. 날짜만 본다 — 시작일이 오늘이면 몇 시로 등록했든 오늘 0시부터 바로 노출된다
+    // (VoteDetail의 eventStartAt과 동일한 규칙). 없으면 시작 제약 없음으로 본다.
+    private LocalDateTime eventStartAt;
 
-    // 마감 시각이 아니라 "이 시각에 진행"하는 예정 시각. 음원 총공은 마감 개념이 없다.
-    private LocalDateTime eventAt;
-
-    @Column(columnDefinition = "TEXT")
-    private String description;
+    // 총공 종료 시각. 이 시각이 지나면 노출 대상에서 자동으로 빠진다.
+    private LocalDateTime eventEndAt;
 
     @ElementCollection
     @CollectionTable(name = "music_detail_checklist", joinColumns = @JoinColumn(name = "music_detail_id"))
@@ -75,19 +73,11 @@ public class MusicDetail {
     @Column(name = "guide_id")
     private List<Long> guideIds = new ArrayList<>();
 
-    // "오늘의 응원" 노출용으로 연결한 CheeringItem. null이면 오늘의 응원에 안 뜬다.
-    private Long cheeringItemId;
-
     // 음원 메뉴 상단 고정 겸 홈 화면 긴급 배너 후보. 메뉴(음원)당 최대 하나만 켜져 있어야 하며
     // 이 불변식은 어드민 서비스가 강제한다 (DB 제약으로는 표현 불가). 홈 배너는 음원/투표 후보 중
-    // 날짜(eventAt/eventEndAt)가 더 임박한 쪽을 HomeUrgentService가 골라서 보여준다.
+    // 날짜(eventStartAt/eventEndAt)가 더 임박한 쪽을 HomeUrgentService가 골라서 보여준다.
     @Column(nullable = false)
     private boolean menuUrgent;
-
-    // 홈 화면 "오늘의 총공 일정" 노출 대상 여부. menuUrgent(긴급 배너, 최대 1개)와는 별개로,
-    // 여기 해당하는 것들을 오늘 날짜 기준으로 시간순 최대 5개까지 리스트로 보여준다.
-    @Column(nullable = false)
-    private boolean todayExposed;
 
     // 긴급 배너에 노출할 때 쓰는 문구. title과 별개 (title은 관리용 제목, 이건 배너 노출용 짧은 문구).
     @Column(length = 26)
@@ -109,15 +99,15 @@ public class MusicDetail {
     private LocalDateTime updatedAt;
 
     public static MusicDetail of(MusicCategory category, String title, String songName,
-            LocalDateTime eventAt, int sortOrder) {
+            LocalDateTime eventStartAt, LocalDateTime eventEndAt, int sortOrder) {
         MusicDetail detail = new MusicDetail();
         detail.category = category;
         detail.title = title;
         detail.songName = songName;
-        detail.eventAt = eventAt;
+        detail.eventStartAt = eventStartAt;
+        detail.eventEndAt = eventEndAt;
         detail.sortOrder = sortOrder;
         detail.menuUrgent = false;
-        detail.todayExposed = false;
         detail.active = true;
         detail.createdAt = LocalDateTime.now();
         return detail;
@@ -159,12 +149,13 @@ public class MusicDetail {
         this.guideIds.addAll(guideIds);
     }
 
-    public void updateCore(MusicCategory category, String title, String songName, LocalDateTime eventAt,
-            int sortOrder) {
+    public void updateCore(MusicCategory category, String title, String songName, LocalDateTime eventStartAt,
+            LocalDateTime eventEndAt, int sortOrder) {
         this.category = category;
         this.title = title;
         this.songName = songName;
-        this.eventAt = eventAt;
+        this.eventStartAt = eventStartAt;
+        this.eventEndAt = eventEndAt;
         this.sortOrder = sortOrder;
     }
 
@@ -172,24 +163,8 @@ public class MusicDetail {
         this.active = active;
     }
 
-    public void updateDescription(String description) {
-        this.description = description;
-    }
-
-    public void updatePlatformUrl(String platformUrl) {
-        this.platformUrl = platformUrl;
-    }
-
-    public void updateCheeringItemId(Long cheeringItemId) {
-        this.cheeringItemId = cheeringItemId;
-    }
-
     public void updateMenuUrgent(boolean menuUrgent) {
         this.menuUrgent = menuUrgent;
-    }
-
-    public void updateTodayExposed(boolean todayExposed) {
-        this.todayExposed = todayExposed;
     }
 
     public void updateUrgentContent(String urgentContent) {

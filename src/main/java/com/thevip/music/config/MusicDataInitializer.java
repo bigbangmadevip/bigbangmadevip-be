@@ -44,13 +44,13 @@ public class MusicDataInitializer implements ApplicationRunner {
                 "오늘 저녁 8시 30분 멜론 개별곡 다운로드 총공",
                 "타이틀 곡 <봄여름가을겨울>",
                 LocalDate.now().atTime(20, 30),
+                LocalDate.now().atTime(23, 59),
                 0);
         detail.addPlatformId(melon.getId());
         detail.addPlatformId(bugs.getId());
         detail.addChecklistItem("Too Bad, Home sweet Home, Live Fast Die Slow 스트리밍 필수");
         detail.addChecklistItem("다운로드 파일 삭제 확인 후 진행");
         detail.updateMenuUrgent(true);
-        detail.updateTodayExposed(true);
         detail.updateUrgentContent("오늘 저녁 8시 30분 멜론 다운로드 총공");
         musicDetailRepository.save(detail);
     }

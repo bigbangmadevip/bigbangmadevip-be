@@ -19,20 +19,20 @@ class MusicDetailAdminServiceTest {
     @Test
     void 긴급배너를_켜면_기존에_켜져있던_다른_상세는_꺼진다() {
         MusicDetailRepository musicDetailRepository = mock(MusicDetailRepository.class);
-        MusicDetail existingUrgent = MusicDetail.of(MusicCategory.STREAMING, "기존 긴급", null, null, 0);
+        MusicDetail existingUrgent = MusicDetail.of(MusicCategory.STREAMING, "기존 긴급", null, null, null, 0);
         existingUrgent.updateMenuUrgent(true);
         ReflectionTestUtils.setField(existingUrgent, "id", 1L);
         when(musicDetailRepository.findById(1L)).thenReturn(Optional.of(existingUrgent));
 
-        MusicDetail newDetail = MusicDetail.of(MusicCategory.STREAMING, "새 긴급", null, null, 1);
+        MusicDetail newDetail = MusicDetail.of(MusicCategory.STREAMING, "새 긴급", null, null, null, 1);
         ReflectionTestUtils.setField(newDetail, "id", 2L);
         when(musicDetailRepository.findById(2L)).thenReturn(Optional.of(newDetail));
         when(musicDetailRepository.findByMenuUrgentTrue()).thenReturn(List.of(existingUrgent));
 
         MusicDetailAdminService service = new MusicDetailAdminService(musicDetailRepository);
         MusicDetailAdminRequest request = new MusicDetailAdminRequest(
-                MusicCategory.STREAMING, "새 긴급", null, null, null, null, null, null, null, null, null,
-                true, "새 긴급 배너", false, true, null, 1);
+                MusicCategory.STREAMING, "새 긴급", null, null, null, null, null, null, null,
+                true, "새 긴급 배너", true, null, 1);
         service.update(2L, request);
 
         assertThat(existingUrgent.isMenuUrgent()).isFalse();

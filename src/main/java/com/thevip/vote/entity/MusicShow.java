@@ -17,8 +17,10 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 /**
- * 음악방송 프로그램(쇼! 음악중심, 뮤직뱅크 등). 투표 총공 등록 화면에서 "총공 구분"으로 이 방송을
- * 고르면, 여기 담긴 platformIds가 "총공 플랫폼" 선택지로 노출된다 (예: 쇼음악중심 -> 뮤빗/뮤니버스).
+ * 투표 중분류. 음악방송 프로그램(쇼! 음악중심, 뮤직뱅크 등)뿐 아니라 시상식/기념일 등
+ * 다른 카테고리에서도 공통으로 쓰인다 (예: MAMA, MMA). VoteDetail.musicShowId로 참조된다.
+ * platformIds는 실제 노출용 플랫폼 소스로는 쓰이지 않는다 — 플랫폼은 상세(VoteDetail)마다
+ * 다를 수 있어 VoteDetail 자체의 platformIds를 쓴다 (VoteDetailPlatformResolver 참고).
  */
 @Entity
 @Getter

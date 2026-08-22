@@ -43,10 +43,8 @@ class VoteDetailAdminServiceTest {
                 null, // imageUrls
                 null, // guideIds
                 null, // ctaButtonLabel
-                null, // cheeringItemId
                 true, // menuUrgent
                 "새 긴급 배너", // urgentContent
-                false, // todayExposed
                 true, // active
                 null, // scheduledAt
                 false, // pushEnabled

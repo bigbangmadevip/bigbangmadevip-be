@@ -38,7 +38,6 @@ class MusicDetailAdminApiTest {
               "imageUrls": [],
               "guideIds": [],
               "menuUrgent": false,
-              "todayExposed": false,
               "active": true,
               "sortOrder": 0
             }""";
@@ -71,7 +70,6 @@ class MusicDetailAdminApiTest {
                   "imageUrls": [],
                   "guideIds": [],
                   "menuUrgent": false,
-                  "todayExposed": false,
                   "active": false,
                   "sortOrder": 1
                 }""";

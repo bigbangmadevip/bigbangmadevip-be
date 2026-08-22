@@ -11,9 +11,8 @@ public record MusicDetailResponse(
         String title,
         String songName,
         List<String> platformNames,
-        String platformUrl,
-        LocalDateTime eventAt,
-        String description,
+        LocalDateTime eventStartAt,
+        LocalDateTime eventEndAt,
         List<String> checklist,
         List<String> imageUrls,
         List<MusicDetailGuideResponse> guides) {
@@ -26,9 +25,8 @@ public record MusicDetailResponse(
                 detail.getTitle(),
                 detail.getSongName(),
                 platformNames,
-                detail.getPlatformUrl(),
-                detail.getEventAt(),
-                detail.getDescription(),
+                detail.getEventStartAt(),
+                detail.getEventEndAt(),
                 detail.getChecklist().stream().filter(Objects::nonNull).toList(),
                 detail.getImageUrls().stream().filter(Objects::nonNull).toList(),
                 guides);

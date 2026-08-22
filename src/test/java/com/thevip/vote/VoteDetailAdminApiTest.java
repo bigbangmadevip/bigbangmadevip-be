@@ -37,7 +37,6 @@ class VoteDetailAdminApiTest {
               "imageUrls": [],
               "guideIds": [],
               "menuUrgent": false,
-              "todayExposed": false,
               "active": true,
               "pushEnabled": false,
               "sortOrder": 0
@@ -71,7 +70,6 @@ class VoteDetailAdminApiTest {
                   "imageUrls": [],
                   "guideIds": [],
                   "menuUrgent": false,
-                  "todayExposed": false,
                   "active": false,
                   "pushEnabled": false,
                   "sortOrder": 1
