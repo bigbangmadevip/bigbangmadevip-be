@@ -27,7 +27,6 @@ public record VoteDetailAdminResponse(
         LocalDateTime pushSendAt,
         String pushTitle,
         String pushBody,
-        int sortOrder,
         LocalDateTime createdAt,
         LocalDateTime updatedAt) {
 
@@ -56,7 +55,6 @@ public record VoteDetailAdminResponse(
                 detail.getPushSendAt(),
                 detail.getPushTitle(),
                 detail.getPushBody(),
-                detail.getSortOrder(),
                 detail.getCreatedAt(),
                 detail.getUpdatedAt());
     }

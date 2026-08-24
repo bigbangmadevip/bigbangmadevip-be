@@ -20,6 +20,5 @@ public record MusicDetailAdminRequest(
         boolean menuUrgent,
         @Size(max = 26) String urgentContent,
         boolean active,
-        LocalDateTime scheduledAt,
-        int sortOrder) {
+        LocalDateTime scheduledAt) {
 }

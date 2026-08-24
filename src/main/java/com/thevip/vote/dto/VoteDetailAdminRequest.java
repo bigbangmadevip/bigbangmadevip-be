@@ -27,6 +27,5 @@ public record VoteDetailAdminRequest(
         boolean pushEnabled,
         LocalDateTime pushSendAt,
         @Size(max = 26) String pushTitle,
-        @Size(max = 26) String pushBody,
-        int sortOrder) {
+        @Size(max = 26) String pushBody) {
 }

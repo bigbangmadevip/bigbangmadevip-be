@@ -39,7 +39,7 @@ public class VoteDataInitializer implements ApplicationRunner {
         // menuUrgent는 기본값 false 유지 - 지금은 음원 쪽만 긴급 배너 후보
         VoteDetail detail = VoteDetail.of(
                 VoteCategory.MUSIC_SHOW, "인기가요 생방송 투표", "1위 시 팬사인회 진행",
-                null, LocalDate.now().atTime(23, 59), 0);
+                null, LocalDate.now().atTime(23, 59));
         detail.addPlatformId(platform.getId());
         detail.addChecklistItem("하루 최대 투표 가능 횟수 확인");
         detail.updatePlatformUrl("https://example.com/vote");

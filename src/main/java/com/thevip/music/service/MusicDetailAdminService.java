@@ -21,7 +21,7 @@ public class MusicDetailAdminService {
     @Transactional(readOnly = true)
     public List<MusicDetailAdminResponse> list() {
         return musicDetailRepository.findAll().stream()
-                .sorted(Comparator.comparingInt(MusicDetail::getSortOrder))
+                .sorted(Comparator.comparing(MusicDetail::getCreatedAt).reversed())
                 .map(MusicDetailAdminResponse::from)
                 .toList();
     }
@@ -34,7 +34,7 @@ public class MusicDetailAdminService {
     @Transactional
     public MusicDetailAdminResponse create(MusicDetailAdminRequest request) {
         MusicDetail detail = MusicDetail.of(request.category(), request.title(), request.songName(),
-                request.eventStartAt(), request.eventEndAt(), request.sortOrder());
+                request.eventStartAt(), request.eventEndAt());
         musicDetailRepository.save(detail);
         applyRequest(detail, request);
         return MusicDetailAdminResponse.from(detail);
@@ -44,7 +44,7 @@ public class MusicDetailAdminService {
     public MusicDetailAdminResponse update(Long id, MusicDetailAdminRequest request) {
         MusicDetail detail = getEntity(id);
         detail.updateCore(request.category(), request.title(), request.songName(), request.eventStartAt(),
-                request.eventEndAt(), request.sortOrder());
+                request.eventEndAt());
         applyRequest(detail, request);
         return MusicDetailAdminResponse.from(detail);
     }

@@ -31,7 +31,7 @@ class HomeTodayScheduleServiceTest {
         VoteDetailPlatformResolver voteDetailPlatformResolver = mock(VoteDetailPlatformResolver.class);
 
         MusicDetail detail = MusicDetail.of(MusicCategory.DOWNLOAD, "테스트 총공", null,
-                LocalDateTime.now(), null, 0);
+                LocalDateTime.now(), null);
         detail.addPlatformId(1L);
         detail.updateUrgentContent("긴급 배너 문구");
         when(musicDetailRepository.findTodayExposed(any(), any())).thenReturn(List.of(detail));
@@ -56,7 +56,7 @@ class HomeTodayScheduleServiceTest {
         VoteDetailPlatformResolver voteDetailPlatformResolver = mock(VoteDetailPlatformResolver.class);
 
         MusicDetail detail = MusicDetail.of(MusicCategory.DOWNLOAD, "멜론, 벅스 flac 16bit 다운", null,
-                LocalDateTime.now(), null, 0);
+                LocalDateTime.now(), null);
         detail.addPlatformId(1L);
         detail.addPlatformId(2L);
         detail.updateUrgentContent("멜론, 벅스 flac 16bit 다운");
@@ -80,10 +80,10 @@ class HomeTodayScheduleServiceTest {
         VoteDetailPlatformResolver voteDetailPlatformResolver = mock(VoteDetailPlatformResolver.class);
 
         MusicDetail music = MusicDetail.of(MusicCategory.DOWNLOAD, "음원", null,
-                LocalDateTime.of(2026, 8, 8, 20, 30), null, 0);
+                LocalDateTime.of(2026, 8, 8, 20, 30), null);
         music.addPlatformId(1L);
         VoteDetail vote = VoteDetail.of(VoteCategory.MUSIC_SHOW, "투표", null,
-                null, LocalDateTime.of(2026, 8, 8, 23, 59), 0);
+                null, LocalDateTime.of(2026, 8, 8, 23, 59));
         vote.addPlatformId(1L);
         when(musicDetailRepository.findTodayExposed(any(), any())).thenReturn(List.of(music));
         when(voteDetailRepository.findTodayExposed(any(), any())).thenReturn(List.of(vote));
@@ -125,7 +125,7 @@ class HomeTodayScheduleServiceTest {
         List<MusicDetail> details = IntStream.range(0, 6)
                 .mapToObj(i -> {
                     MusicDetail detail = MusicDetail.of(MusicCategory.DOWNLOAD, "총공" + i, null,
-                            base.plusHours(i), null, 0);
+                            base.plusHours(i), null);
                     detail.addPlatformId(1L);
                     return detail;
                 })

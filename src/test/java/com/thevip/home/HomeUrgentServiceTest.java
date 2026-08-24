@@ -28,7 +28,7 @@ class HomeUrgentServiceTest {
         VoteDetailRepository voteDetailRepository = mock(VoteDetailRepository.class);
         PlatformRepository platformRepository = mock(PlatformRepository.class);
         VoteDetailPlatformResolver voteDetailPlatformResolver = mock(VoteDetailPlatformResolver.class);
-        MusicDetail detail = MusicDetail.of(MusicCategory.DOWNLOAD, "테스트 총공", null, null, null, 0);
+        MusicDetail detail = MusicDetail.of(MusicCategory.DOWNLOAD, "테스트 총공", null, null, null);
         detail.addPlatformId(1L);
         detail.updateUrgentContent("긴급 배너 문구");
         when(musicDetailRepository.findVisibleMenuUrgent(any(LocalDateTime.class), any(LocalDateTime.class))).thenReturn(List.of(detail));
@@ -53,7 +53,7 @@ class HomeUrgentServiceTest {
         PlatformRepository platformRepository = mock(PlatformRepository.class);
         VoteDetailPlatformResolver voteDetailPlatformResolver = mock(VoteDetailPlatformResolver.class);
         when(musicDetailRepository.findVisibleMenuUrgent(any(LocalDateTime.class), any(LocalDateTime.class))).thenReturn(List.of());
-        VoteDetail detail = VoteDetail.of(VoteCategory.MUSIC_SHOW, "테스트 투표", null, null, null, 0);
+        VoteDetail detail = VoteDetail.of(VoteCategory.MUSIC_SHOW, "테스트 투표", null, null, null);
         detail.updateUrgentContent("긴급 배너 문구");
         when(voteDetailRepository.findVisibleMenuUrgent(any(LocalDateTime.class))).thenReturn(List.of(detail));
         when(voteDetailPlatformResolver.resolveNames(detail)).thenReturn(List.of());
@@ -74,9 +74,9 @@ class HomeUrgentServiceTest {
         PlatformRepository platformRepository = mock(PlatformRepository.class);
         VoteDetailPlatformResolver voteDetailPlatformResolver = mock(VoteDetailPlatformResolver.class);
         MusicDetail music = MusicDetail.of(MusicCategory.DOWNLOAD, "음원", null,
-                LocalDateTime.of(2026, 8, 1, 0, 0), LocalDateTime.of(2026, 8, 10, 23, 59), 0);
+                LocalDateTime.of(2026, 8, 1, 0, 0), LocalDateTime.of(2026, 8, 10, 23, 59));
         VoteDetail vote = VoteDetail.of(VoteCategory.MUSIC_SHOW, "투표", null, null,
-                LocalDateTime.of(2026, 8, 5, 23, 59), 0);
+                LocalDateTime.of(2026, 8, 5, 23, 59));
         when(musicDetailRepository.findVisibleMenuUrgent(any(LocalDateTime.class), any(LocalDateTime.class))).thenReturn(List.of(music));
         when(voteDetailRepository.findVisibleMenuUrgent(any(LocalDateTime.class))).thenReturn(List.of(vote));
         when(platformRepository.findNamesByIds(any())).thenReturn(List.of());
@@ -99,8 +99,8 @@ class HomeUrgentServiceTest {
         VoteDetailPlatformResolver voteDetailPlatformResolver = mock(VoteDetailPlatformResolver.class);
         LocalDateTime sameDeadline = LocalDateTime.of(2026, 8, 10, 23, 59);
         MusicDetail music = MusicDetail.of(MusicCategory.DOWNLOAD, "음원", null,
-                LocalDateTime.of(2026, 8, 1, 0, 0), sameDeadline, 0);
-        VoteDetail vote = VoteDetail.of(VoteCategory.MUSIC_SHOW, "투표", null, null, sameDeadline, 0);
+                LocalDateTime.of(2026, 8, 1, 0, 0), sameDeadline);
+        VoteDetail vote = VoteDetail.of(VoteCategory.MUSIC_SHOW, "투표", null, null, sameDeadline);
         when(musicDetailRepository.findVisibleMenuUrgent(any(LocalDateTime.class), any(LocalDateTime.class))).thenReturn(List.of(music));
         when(voteDetailRepository.findVisibleMenuUrgent(any(LocalDateTime.class))).thenReturn(List.of(vote));
         when(platformRepository.findNamesByIds(any())).thenReturn(List.of());

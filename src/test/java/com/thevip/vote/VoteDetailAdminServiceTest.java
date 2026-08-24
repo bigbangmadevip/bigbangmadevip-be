@@ -19,12 +19,12 @@ class VoteDetailAdminServiceTest {
     @Test
     void 긴급배너를_켜면_기존에_켜져있던_다른_상세는_꺼진다() {
         VoteDetailRepository voteDetailRepository = mock(VoteDetailRepository.class);
-        VoteDetail existingUrgent = VoteDetail.of(VoteCategory.MUSIC_SHOW, "기존 긴급", null, null, null, 0);
+        VoteDetail existingUrgent = VoteDetail.of(VoteCategory.MUSIC_SHOW, "기존 긴급", null, null, null);
         existingUrgent.updateMenuUrgent(true);
         ReflectionTestUtils.setField(existingUrgent, "id", 1L);
         when(voteDetailRepository.findById(1L)).thenReturn(Optional.of(existingUrgent));
 
-        VoteDetail newDetail = VoteDetail.of(VoteCategory.MUSIC_SHOW, "새 긴급", null, null, null, 1);
+        VoteDetail newDetail = VoteDetail.of(VoteCategory.MUSIC_SHOW, "새 긴급", null, null, null);
         ReflectionTestUtils.setField(newDetail, "id", 2L);
         when(voteDetailRepository.findById(2L)).thenReturn(Optional.of(newDetail));
         when(voteDetailRepository.findByMenuUrgentTrue()).thenReturn(List.of(existingUrgent));
@@ -50,8 +50,7 @@ class VoteDetailAdminServiceTest {
                 false, // pushEnabled
                 null, // pushSendAt
                 null, // pushTitle
-                null, // pushBody
-                1); // sortOrder
+                null); // pushBody
         service.update(2L, request);
 
         assertThat(existingUrgent.isMenuUrgent()).isFalse();

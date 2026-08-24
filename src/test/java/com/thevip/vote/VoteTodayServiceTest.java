@@ -24,7 +24,7 @@ class VoteTodayServiceTest {
         VoteDetailRepository voteDetailRepository = mock(VoteDetailRepository.class);
         VoteDetailPlatformResolver voteDetailPlatformResolver = mock(VoteDetailPlatformResolver.class);
 
-        VoteDetail detail = VoteDetail.of(VoteCategory.MUSIC_SHOW, "테스트 투표", null, null, null, 0);
+        VoteDetail detail = VoteDetail.of(VoteCategory.MUSIC_SHOW, "테스트 투표", null, null, null);
         detail.updateUrgentContent("긴급 투표 문구");
         when(voteDetailRepository.findVisibleMenuUrgent(any())).thenReturn(List.of(detail));
         when(voteDetailRepository.findActiveOngoing(any(), any())).thenReturn(List.of());
@@ -57,7 +57,7 @@ class VoteTodayServiceTest {
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime eventEndAt = now.plusDays(3);
         VoteDetail vote = VoteDetail.of(VoteCategory.MUSIC_SHOW, "쇼음악중심 사전투표", "1위 트로피",
-                now.minusDays(2), eventEndAt, 0);
+                now.minusDays(2), eventEndAt);
         vote.addPlatformId(1L);
         when(voteDetailRepository.findActiveOngoing(any(), any())).thenReturn(List.of(vote));
         when(voteDetailPlatformResolver.resolveNames(vote)).thenReturn(List.of("뮤빗"));
@@ -78,8 +78,8 @@ class VoteTodayServiceTest {
         when(voteDetailRepository.findVisibleMenuUrgent(any())).thenReturn(List.of());
 
         LocalDateTime now = LocalDateTime.now();
-        VoteDetail dueSoon = VoteDetail.of(VoteCategory.MUSIC_SHOW, "마감임박 투표", null, null, now.plusHours(2), 0);
-        VoteDetail notDueSoon = VoteDetail.of(VoteCategory.AWARDS, "일반 투표", null, null, now.plusDays(3), 1);
+        VoteDetail dueSoon = VoteDetail.of(VoteCategory.MUSIC_SHOW, "마감임박 투표", null, null, now.plusHours(2));
+        VoteDetail notDueSoon = VoteDetail.of(VoteCategory.AWARDS, "일반 투표", null, null, now.plusDays(3));
         when(voteDetailRepository.findActiveOngoing(any(), any())).thenReturn(List.of(dueSoon, notDueSoon));
         when(voteDetailPlatformResolver.resolveNames(any())).thenReturn(List.of());
 
@@ -99,7 +99,7 @@ class VoteTodayServiceTest {
         LocalDateTime now = LocalDateTime.now();
         List<VoteDetail> details = new ArrayList<>();
         for (int i = 0; i < 5; i++) {
-            details.add(VoteDetail.of(VoteCategory.ETC, "임박 투표 " + i, null, null, now.plusHours(i + 1), i));
+            details.add(VoteDetail.of(VoteCategory.ETC, "임박 투표 " + i, null, null, now.plusHours(i + 1)));
         }
         when(voteDetailRepository.findActiveOngoing(any(), any())).thenReturn(details);
         when(voteDetailPlatformResolver.resolveNames(any())).thenReturn(List.of());

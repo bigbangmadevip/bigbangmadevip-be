@@ -20,7 +20,6 @@ public record MusicDetailAdminResponse(
         String urgentContent,
         boolean active,
         LocalDateTime scheduledAt,
-        int sortOrder,
         LocalDateTime createdAt,
         LocalDateTime updatedAt) {
 
@@ -42,7 +41,6 @@ public record MusicDetailAdminResponse(
                 detail.getUrgentContent(),
                 detail.isActive(),
                 detail.getScheduledAt(),
-                detail.getSortOrder(),
                 detail.getCreatedAt(),
                 detail.getUpdatedAt());
     }

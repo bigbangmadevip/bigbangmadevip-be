@@ -90,23 +90,19 @@ public class MusicDetail {
     // 배치 없이 조회 시점에 계산하는 방식(MusicDetailRepository 참고).
     private LocalDateTime scheduledAt;
 
-    @Column(nullable = false)
-    private int sortOrder;
-
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
     private LocalDateTime updatedAt;
 
     public static MusicDetail of(MusicCategory category, String title, String songName,
-            LocalDateTime eventStartAt, LocalDateTime eventEndAt, int sortOrder) {
+            LocalDateTime eventStartAt, LocalDateTime eventEndAt) {
         MusicDetail detail = new MusicDetail();
         detail.category = category;
         detail.title = title;
         detail.songName = songName;
         detail.eventStartAt = eventStartAt;
         detail.eventEndAt = eventEndAt;
-        detail.sortOrder = sortOrder;
         detail.menuUrgent = false;
         detail.active = true;
         detail.createdAt = LocalDateTime.now();
@@ -150,13 +146,12 @@ public class MusicDetail {
     }
 
     public void updateCore(MusicCategory category, String title, String songName, LocalDateTime eventStartAt,
-            LocalDateTime eventEndAt, int sortOrder) {
+            LocalDateTime eventEndAt) {
         this.category = category;
         this.title = title;
         this.songName = songName;
         this.eventStartAt = eventStartAt;
         this.eventEndAt = eventEndAt;
-        this.sortOrder = sortOrder;
     }
 
     public void updateActive(boolean active) {

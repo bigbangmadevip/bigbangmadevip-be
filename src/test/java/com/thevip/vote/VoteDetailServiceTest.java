@@ -29,7 +29,7 @@ class VoteDetailServiceTest {
         GuideRepository guideRepository = mock(GuideRepository.class);
 
         VoteDetail detail = VoteDetail.of(VoteCategory.MUSIC_SHOW, "테스트 투표", "1위 리워드",
-                LocalDateTime.of(2026, 8, 19, 0, 0), LocalDateTime.of(2026, 8, 21, 23, 59), 0);
+                LocalDateTime.of(2026, 8, 19, 0, 0), LocalDateTime.of(2026, 8, 21, 23, 59));
         detail.addPlatformId(1L);
         detail.addChecklistItem("체크1");
         detail.addGuideId(10L);
@@ -70,7 +70,7 @@ class VoteDetailServiceTest {
         VoteDetailPlatformResolver voteDetailPlatformResolver = mock(VoteDetailPlatformResolver.class);
         GuideRepository guideRepository = mock(GuideRepository.class);
 
-        VoteDetail detail = VoteDetail.of(VoteCategory.MUSIC_SHOW, "테스트 투표", null, null, null, 0);
+        VoteDetail detail = VoteDetail.of(VoteCategory.MUSIC_SHOW, "테스트 투표", null, null, null);
         detail.updateScheduledAt(LocalDateTime.now().plusDays(1));
         when(voteDetailRepository.findById(1L)).thenReturn(Optional.of(detail));
 

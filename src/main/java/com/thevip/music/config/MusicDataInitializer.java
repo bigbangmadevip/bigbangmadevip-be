@@ -44,8 +44,7 @@ public class MusicDataInitializer implements ApplicationRunner {
                 "오늘 저녁 8시 30분 멜론 개별곡 다운로드 총공",
                 "타이틀 곡 <봄여름가을겨울>",
                 LocalDate.now().atTime(20, 30),
-                LocalDate.now().atTime(23, 59),
-                0);
+                LocalDate.now().atTime(23, 59));
         detail.addPlatformId(melon.getId());
         detail.addPlatformId(bugs.getId());
         detail.addChecklistItem("Too Bad, Home sweet Home, Live Fast Die Slow 스트리밍 필수");

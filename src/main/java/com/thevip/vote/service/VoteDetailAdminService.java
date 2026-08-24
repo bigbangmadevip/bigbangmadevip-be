@@ -21,7 +21,7 @@ public class VoteDetailAdminService {
     @Transactional(readOnly = true)
     public List<VoteDetailAdminResponse> list() {
         return voteDetailRepository.findAll().stream()
-                .sorted(Comparator.comparingInt(VoteDetail::getSortOrder))
+                .sorted(Comparator.comparing(VoteDetail::getCreatedAt).reversed())
                 .map(VoteDetailAdminResponse::from)
                 .toList();
     }
@@ -34,7 +34,7 @@ public class VoteDetailAdminService {
     @Transactional
     public VoteDetailAdminResponse create(VoteDetailAdminRequest request) {
         VoteDetail detail = VoteDetail.of(request.category(), request.title(), request.rewardDescription(),
-                request.eventStartAt(), request.eventEndAt(), request.sortOrder());
+                request.eventStartAt(), request.eventEndAt());
         voteDetailRepository.save(detail);
         applyRequest(detail, request);
         return VoteDetailAdminResponse.from(detail);
@@ -44,7 +44,7 @@ public class VoteDetailAdminService {
     public VoteDetailAdminResponse update(Long id, VoteDetailAdminRequest request) {
         VoteDetail detail = getEntity(id);
         detail.updateCore(request.category(), request.title(), request.rewardDescription(),
-                request.eventStartAt(), request.eventEndAt(), request.sortOrder());
+                request.eventStartAt(), request.eventEndAt());
         applyRequest(detail, request);
         return VoteDetailAdminResponse.from(detail);
     }

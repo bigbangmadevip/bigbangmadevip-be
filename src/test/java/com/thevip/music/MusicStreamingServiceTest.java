@@ -102,7 +102,7 @@ class MusicStreamingServiceTest {
         MusicStreamingImageRepository imageRepository = mock(MusicStreamingImageRepository.class);
         PlatformRepository platformRepository = mock(PlatformRepository.class);
 
-        MusicDetail detail = MusicDetail.of(MusicCategory.DOWNLOAD, "테스트 총공", null, null, null, 0);
+        MusicDetail detail = MusicDetail.of(MusicCategory.DOWNLOAD, "테스트 총공", null, null, null);
         detail.updateUrgentContent("오늘 저녁 12시 30분 멜론 개별곡 다운로드 총공");
         when(musicDetailRepository.findVisibleMenuUrgent(any(LocalDateTime.class), any(LocalDateTime.class))).thenReturn(List.of(detail));
         when(linkRepository.findByActiveTrueOrderByPlatformIdAscSortOrderAsc()).thenReturn(List.of());

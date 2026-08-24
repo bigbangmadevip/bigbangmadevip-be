@@ -38,8 +38,7 @@ class VoteDetailAdminApiTest {
               "guideIds": [],
               "menuUrgent": false,
               "active": true,
-              "pushEnabled": false,
-              "sortOrder": 0
+              "pushEnabled": false
             }""";
 
     @Test
@@ -71,8 +70,7 @@ class VoteDetailAdminApiTest {
                   "guideIds": [],
                   "menuUrgent": false,
                   "active": false,
-                  "pushEnabled": false,
-                  "sortOrder": 1
+                  "pushEnabled": false
                 }""";
         mockMvc.perform(put("/api/v1/admin/vote/details/" + id)
                         .with(loginAs("VOTE_ADMIN"))

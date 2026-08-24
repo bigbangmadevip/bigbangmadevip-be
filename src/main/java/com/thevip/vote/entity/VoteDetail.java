@@ -110,23 +110,19 @@ public class VoteDetail {
     @Column(length = 26)
     private String pushBody;
 
-    @Column(nullable = false)
-    private int sortOrder;
-
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
     private LocalDateTime updatedAt;
 
     public static VoteDetail of(VoteCategory category, String title, String rewardDescription,
-            LocalDateTime eventStartAt, LocalDateTime eventEndAt, int sortOrder) {
+            LocalDateTime eventStartAt, LocalDateTime eventEndAt) {
         VoteDetail detail = new VoteDetail();
         detail.category = category;
         detail.title = title;
         detail.rewardDescription = rewardDescription;
         detail.eventStartAt = eventStartAt;
         detail.eventEndAt = eventEndAt;
-        detail.sortOrder = sortOrder;
         detail.menuUrgent = false;
         detail.active = true;
         detail.createdAt = LocalDateTime.now();
@@ -170,13 +166,12 @@ public class VoteDetail {
     }
 
     public void updateCore(VoteCategory category, String title, String rewardDescription,
-            LocalDateTime eventStartAt, LocalDateTime eventEndAt, int sortOrder) {
+            LocalDateTime eventStartAt, LocalDateTime eventEndAt) {
         this.category = category;
         this.title = title;
         this.rewardDescription = rewardDescription;
         this.eventStartAt = eventStartAt;
         this.eventEndAt = eventEndAt;
-        this.sortOrder = sortOrder;
     }
 
     public void updateActive(boolean active) {
