@@ -100,6 +100,32 @@ class HomeTodayScheduleServiceTest {
     }
 
     @Test
+    void 날짜가_달라도_시각만_비교해서_정렬한다() {
+        MusicDetailRepository musicDetailRepository = mock(MusicDetailRepository.class);
+        VoteDetailRepository voteDetailRepository = mock(VoteDetailRepository.class);
+        PlatformRepository platformRepository = mock(PlatformRepository.class);
+        VoteDetailPlatformResolver voteDetailPlatformResolver = mock(VoteDetailPlatformResolver.class);
+
+        // 음원은 며칠 전(8/1)에 시작했지만 시각은 20시, 투표는 오늘(8/8) 마감이지만 시각은 10시.
+        // 날짜까지 비교하면 음원(8/1)이 먼저지만, 시:분만 비교하면 투표(10시)가 먼저여야 한다.
+        MusicDetail music = MusicDetail.of(MusicCategory.DOWNLOAD, "며칠 전 시작한 총공", null,
+                LocalDateTime.of(2026, 8, 1, 20, 0), null);
+        VoteDetail vote = VoteDetail.of(VoteCategory.MUSIC_SHOW, "오늘 오전 마감 투표", null,
+                null, LocalDateTime.of(2026, 8, 8, 10, 0));
+        when(musicDetailRepository.findTodayExposed(any(), any())).thenReturn(List.of(music));
+        when(voteDetailRepository.findTodayExposed(any(), any())).thenReturn(List.of(vote));
+        when(platformRepository.findNamesByIds(any())).thenReturn(List.of());
+        when(voteDetailPlatformResolver.resolveNames(vote)).thenReturn(List.of());
+
+        HomeTodayScheduleService service = new HomeTodayScheduleService(
+                musicDetailRepository, voteDetailRepository, platformRepository, voteDetailPlatformResolver);
+        List<HomeScheduleItemResponse> result = service.getTodaySchedule();
+
+        assertThat(result).extracting(HomeScheduleItemResponse::menuType)
+                .containsExactly(MenuType.VOTE, MenuType.MUSIC);
+    }
+
+    @Test
     void 둘_다_없으면_빈_리스트를_반환한다() {
         MusicDetailRepository musicDetailRepository = mock(MusicDetailRepository.class);
         VoteDetailRepository voteDetailRepository = mock(VoteDetailRepository.class);
