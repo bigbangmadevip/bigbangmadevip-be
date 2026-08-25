@@ -14,7 +14,7 @@ public record HomeScheduleItemResponse(
 
     public static HomeScheduleItemResponse fromMusic(MusicDetail detail, List<String> platformNames) {
         return new HomeScheduleItemResponse(MenuType.MUSIC, detail.getId(), detail.getTitle(),
-                detail.getEventStartAt(), platformNames);
+                detail.getEventEndAt(), platformNames);
     }
 
     public static HomeScheduleItemResponse fromVote(VoteDetail detail, List<String> platformNames) {
