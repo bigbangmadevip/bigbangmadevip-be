@@ -34,7 +34,7 @@ public class VoteDataInitializer implements ApplicationRunner {
 
         Platform platform = platformRepository.findByName("하이어(Higher)")
                 .orElseGet(() -> platformRepository.save(
-                        Platform.of("하이어(Higher)", "higher", PlatformType.VOTE, PlatformRegion.DOMESTIC, null)));
+                        Platform.of("하이어(Higher)", PlatformType.VOTE, PlatformRegion.DOMESTIC, null)));
 
         // menuUrgent는 기본값 false 유지 - 지금은 음원 쪽만 긴급 배너 후보
         VoteDetail detail = VoteDetail.of(

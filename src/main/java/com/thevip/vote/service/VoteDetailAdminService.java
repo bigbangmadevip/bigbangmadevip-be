@@ -2,7 +2,6 @@ package com.thevip.vote.service;
 
 import com.thevip.global.exception.BusinessException;
 import com.thevip.global.exception.ErrorCode;
-import com.thevip.platform.repository.PlatformRepository;
 import com.thevip.vote.dto.VoteDetailAdminRequest;
 import com.thevip.vote.dto.VoteDetailAdminResponse;
 import com.thevip.vote.entity.VoteDetail;
@@ -18,19 +17,18 @@ import org.springframework.transaction.annotation.Transactional;
 public class VoteDetailAdminService {
 
     private final VoteDetailRepository voteDetailRepository;
-    private final PlatformRepository platformRepository;
 
     @Transactional(readOnly = true)
     public List<VoteDetailAdminResponse> list() {
         return voteDetailRepository.findAll().stream()
                 .sorted(Comparator.comparing(VoteDetail::getCreatedAt).reversed())
-                .map(this::toResponse)
+                .map(VoteDetailAdminResponse::from)
                 .toList();
     }
 
     @Transactional(readOnly = true)
     public VoteDetailAdminResponse get(Long id) {
-        return toResponse(getEntity(id));
+        return VoteDetailAdminResponse.from(getEntity(id));
     }
 
     @Transactional
@@ -39,7 +37,7 @@ public class VoteDetailAdminService {
                 request.eventStartAt(), request.eventEndAt());
         voteDetailRepository.save(detail);
         applyRequest(detail, request);
-        return toResponse(detail);
+        return VoteDetailAdminResponse.from(detail);
     }
 
     @Transactional
@@ -48,12 +46,12 @@ public class VoteDetailAdminService {
         detail.updateCore(request.category(), request.title(), request.rewardDescription(),
                 request.eventStartAt(), request.eventEndAt());
         applyRequest(detail, request);
-        return toResponse(detail);
+        return VoteDetailAdminResponse.from(detail);
     }
 
     private void applyRequest(VoteDetail detail, VoteDetailAdminRequest request) {
         detail.updateMusicShowId(request.musicShowId());
-        detail.replacePlatformIds(platformRepository.resolveIdsByCodes(nullSafe(request.platformCodes())));
+        detail.replacePlatformIds(nullSafe(request.platformIds()));
         detail.updatePlatformUrl(request.platformUrl());
         detail.replaceChecklist(nullSafe(request.checklist()));
         detail.replaceImageUrls(nullSafe(request.imageUrls()));
@@ -77,10 +75,6 @@ public class VoteDetailAdminService {
                     .forEach(other -> other.updateMenuUrgent(false));
         }
         detail.updateMenuUrgent(menuUrgent);
-    }
-
-    private VoteDetailAdminResponse toResponse(VoteDetail detail) {
-        return VoteDetailAdminResponse.from(detail, platformRepository.findCodesByIds(detail.getPlatformIds()));
     }
 
     private VoteDetail getEntity(Long id) {

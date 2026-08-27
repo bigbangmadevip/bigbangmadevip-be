@@ -34,10 +34,10 @@ public class MusicDataInitializer implements ApplicationRunner {
 
         Platform melon = platformRepository.findByName("멜론")
                 .orElseGet(() -> platformRepository.save(
-                        Platform.of("멜론", "melon", PlatformType.MUSIC, PlatformRegion.DOMESTIC, null)));
+                        Platform.of("멜론", PlatformType.MUSIC, PlatformRegion.DOMESTIC, null)));
         Platform bugs = platformRepository.findByName("벅스(Bugs)")
                 .orElseGet(() -> platformRepository.save(
-                        Platform.of("벅스(Bugs)", "bugs", PlatformType.MUSIC, PlatformRegion.DOMESTIC, null)));
+                        Platform.of("벅스(Bugs)", PlatformType.MUSIC, PlatformRegion.DOMESTIC, null)));
 
         MusicDetail detail = MusicDetail.of(
                 MusicCategory.DOWNLOAD,

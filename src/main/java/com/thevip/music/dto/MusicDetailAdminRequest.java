@@ -11,7 +11,7 @@ public record MusicDetailAdminRequest(
         @NotNull MusicCategory category,
         @NotBlank @Size(max = 100) String title,
         @Size(max = 100) String songName,
-        List<String> platformCodes,
+        List<Long> platformIds,
         LocalDateTime eventStartAt,
         LocalDateTime eventEndAt,
         List<String> checklist,

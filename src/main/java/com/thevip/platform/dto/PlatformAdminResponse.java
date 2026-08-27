@@ -5,7 +5,6 @@ import com.thevip.platform.entity.Platform;
 public record PlatformAdminResponse(
         Long id,
         String name,
-        String code,
         String type,
         String region,
         String iconUrl,
@@ -15,7 +14,6 @@ public record PlatformAdminResponse(
         return new PlatformAdminResponse(
                 platform.getId(),
                 platform.getName(),
-                platform.getCode(),
                 platform.getType().name(),
                 platform.getRegion().name(),
                 platform.getIconUrl(),

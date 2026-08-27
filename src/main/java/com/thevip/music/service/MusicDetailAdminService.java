@@ -6,7 +6,6 @@ import com.thevip.music.dto.MusicDetailAdminRequest;
 import com.thevip.music.dto.MusicDetailAdminResponse;
 import com.thevip.music.entity.MusicDetail;
 import com.thevip.music.repository.MusicDetailRepository;
-import com.thevip.platform.repository.PlatformRepository;
 import java.util.Comparator;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -18,19 +17,18 @@ import org.springframework.transaction.annotation.Transactional;
 public class MusicDetailAdminService {
 
     private final MusicDetailRepository musicDetailRepository;
-    private final PlatformRepository platformRepository;
 
     @Transactional(readOnly = true)
     public List<MusicDetailAdminResponse> list() {
         return musicDetailRepository.findAll().stream()
                 .sorted(Comparator.comparing(MusicDetail::getCreatedAt).reversed())
-                .map(this::toResponse)
+                .map(MusicDetailAdminResponse::from)
                 .toList();
     }
 
     @Transactional(readOnly = true)
     public MusicDetailAdminResponse get(Long id) {
-        return toResponse(getEntity(id));
+        return MusicDetailAdminResponse.from(getEntity(id));
     }
 
     @Transactional
@@ -39,7 +37,7 @@ public class MusicDetailAdminService {
                 request.eventStartAt(), request.eventEndAt());
         musicDetailRepository.save(detail);
         applyRequest(detail, request);
-        return toResponse(detail);
+        return MusicDetailAdminResponse.from(detail);
     }
 
     @Transactional
@@ -48,11 +46,11 @@ public class MusicDetailAdminService {
         detail.updateCore(request.category(), request.title(), request.songName(), request.eventStartAt(),
                 request.eventEndAt());
         applyRequest(detail, request);
-        return toResponse(detail);
+        return MusicDetailAdminResponse.from(detail);
     }
 
     private void applyRequest(MusicDetail detail, MusicDetailAdminRequest request) {
-        detail.replacePlatformIds(platformRepository.resolveIdsByCodes(nullSafe(request.platformCodes())));
+        detail.replacePlatformIds(nullSafe(request.platformIds()));
         detail.replaceChecklist(nullSafe(request.checklist()));
         detail.replaceImageUrls(nullSafe(request.imageUrls()));
         detail.replaceGuideIds(nullSafe(request.guideIds()));
@@ -70,10 +68,6 @@ public class MusicDetailAdminService {
                     .forEach(other -> other.updateMenuUrgent(false));
         }
         detail.updateMenuUrgent(menuUrgent);
-    }
-
-    private MusicDetailAdminResponse toResponse(MusicDetail detail) {
-        return MusicDetailAdminResponse.from(detail, platformRepository.findCodesByIds(detail.getPlatformIds()));
     }
 
     private MusicDetail getEntity(Long id) {

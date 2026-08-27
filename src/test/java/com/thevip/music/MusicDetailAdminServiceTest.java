@@ -9,7 +9,6 @@ import com.thevip.music.entity.MusicCategory;
 import com.thevip.music.entity.MusicDetail;
 import com.thevip.music.repository.MusicDetailRepository;
 import com.thevip.music.service.MusicDetailAdminService;
-import com.thevip.platform.repository.PlatformRepository;
 import java.util.List;
 import java.util.Optional;
 import org.junit.jupiter.api.Test;
@@ -20,7 +19,6 @@ class MusicDetailAdminServiceTest {
     @Test
     void 긴급배너를_켜면_기존에_켜져있던_다른_상세는_꺼진다() {
         MusicDetailRepository musicDetailRepository = mock(MusicDetailRepository.class);
-        PlatformRepository platformRepository = mock(PlatformRepository.class);
         MusicDetail existingUrgent = MusicDetail.of(MusicCategory.STREAMING, "기존 긴급", null, null, null);
         existingUrgent.updateMenuUrgent(true);
         ReflectionTestUtils.setField(existingUrgent, "id", 1L);
@@ -31,7 +29,7 @@ class MusicDetailAdminServiceTest {
         when(musicDetailRepository.findById(2L)).thenReturn(Optional.of(newDetail));
         when(musicDetailRepository.findByMenuUrgentTrue()).thenReturn(List.of(existingUrgent));
 
-        MusicDetailAdminService service = new MusicDetailAdminService(musicDetailRepository, platformRepository);
+        MusicDetailAdminService service = new MusicDetailAdminService(musicDetailRepository);
         MusicDetailAdminRequest request = new MusicDetailAdminRequest(
                 MusicCategory.STREAMING, "새 긴급", null, null, null, null, null, null, null,
                 true, "새 긴급 배너", true, null);

@@ -12,7 +12,7 @@ public record VoteDetailAdminRequest(
         @NotBlank @Size(max = 100) String title,
         Long musicShowId,
         String rewardDescription,
-        List<String> platformCodes,
+        List<Long> platformIds,
         String platformUrl,
         LocalDateTime eventStartAt,
         LocalDateTime eventEndAt,

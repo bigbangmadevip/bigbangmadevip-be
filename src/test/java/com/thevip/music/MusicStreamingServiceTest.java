@@ -42,7 +42,7 @@ class MusicStreamingServiceTest {
         when(linkRepository.findByActiveTrueOrderByPlatformIdAscSortOrderAsc())
                 .thenReturn(List.of(androidLink1, androidLink2, iphoneLink));
 
-        Platform melon = Platform.of("멜론", "melon", PlatformType.MUSIC, PlatformRegion.DOMESTIC, null);
+        Platform melon = Platform.of("멜론", PlatformType.MUSIC, PlatformRegion.DOMESTIC, null);
         when(platformRepository.findById(1L)).thenReturn(Optional.of(melon));
 
         MusicStreamingService service = new MusicStreamingService(

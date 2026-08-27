@@ -21,12 +21,6 @@ public class Platform {
     @Column(nullable = false, length = 50)
     private String name;
 
-    // 어드민 API가 platformId(auto-increment) 대신 참조용으로 쓰는 안정적인 식별자(예: "melon").
-    // id는 등록 순서에 따라 환경마다 달라질 수 있어 프론트가 하드코딩하기 위험하지만, code는 등록
-    // 시점에 직접 정하는 값이라 환경/순서와 무관하게 항상 같다.
-    @Column(nullable = false, unique = true, length = 30)
-    private String code;
-
     // 음원 상세/원클릭 스트리밍용 플랫폼인지, 투표 상세용 플랫폼인지 구분. 한 플랫폼이 둘 다 겸하는
     // 경우는 아직 없어서 단일 값으로 둔다.
     @Enumerated(EnumType.STRING)
@@ -43,10 +37,9 @@ public class Platform {
     @Column(nullable = false)
     private boolean active;
 
-    public static Platform of(String name, String code, PlatformType type, PlatformRegion region, String iconUrl) {
+    public static Platform of(String name, PlatformType type, PlatformRegion region, String iconUrl) {
         Platform platform = new Platform();
         platform.name = name;
-        platform.code = code;
         platform.type = type;
         platform.region = region;
         platform.iconUrl = iconUrl;
@@ -54,9 +47,8 @@ public class Platform {
         return platform;
     }
 
-    public void update(String name, String code, PlatformType type, PlatformRegion region, String iconUrl) {
+    public void update(String name, PlatformType type, PlatformRegion region, String iconUrl) {
         this.name = name;
-        this.code = code;
         this.type = type;
         this.region = region;
         this.iconUrl = iconUrl;
