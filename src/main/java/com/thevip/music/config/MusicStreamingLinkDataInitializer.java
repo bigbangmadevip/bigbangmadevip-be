@@ -33,10 +33,10 @@ public class MusicStreamingLinkDataInitializer implements ApplicationRunner {
 
         Platform melon = platformRepository.findByName("멜론")
                 .orElseGet(() -> platformRepository.save(
-                        Platform.of("멜론", PlatformType.MUSIC, PlatformRegion.DOMESTIC, null)));
+                        Platform.of("멜론", "melon", PlatformType.MUSIC, PlatformRegion.DOMESTIC, null)));
         Platform genie = platformRepository.findByName("지니")
                 .orElseGet(() -> platformRepository.save(
-                        Platform.of("지니", PlatformType.MUSIC, PlatformRegion.DOMESTIC, null)));
+                        Platform.of("지니", "genie", PlatformType.MUSIC, PlatformRegion.DOMESTIC, null)));
 
         musicStreamingLinkRepository.save(MusicStreamingLink.of(
                 melon.getId(), OperatingSystem.ANDROID, "멜론 앱으로 스트리밍", "melonapp://streaming", 0));

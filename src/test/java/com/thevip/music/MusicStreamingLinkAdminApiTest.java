@@ -38,7 +38,7 @@ class MusicStreamingLinkAdminApiTest {
     @Test
     void MUSIC_ADMIN은_플랫폼_전체_링크를_한번에_등록하고_다시_요청하면_교체된다() throws Exception {
         Long platformId = platformRepository.save(
-                Platform.of("멜론", PlatformType.MUSIC, PlatformRegion.DOMESTIC, null)).getId();
+                Platform.of("멜론", "melon-test", PlatformType.MUSIC, PlatformRegion.DOMESTIC, null)).getId();
 
         mockMvc.perform(put("/api/v1/admin/music/streaming-links/platforms/" + platformId)
                         .with(loginAs("MUSIC_ADMIN"))
@@ -95,7 +95,7 @@ class MusicStreamingLinkAdminApiTest {
     @Test
     void active를_생략하면_true가_기본값이고_명시하면_그대로_반영된다() throws Exception {
         Long platformId = platformRepository.save(
-                Platform.of("지니", PlatformType.MUSIC, PlatformRegion.DOMESTIC, null)).getId();
+                Platform.of("지니", "genie-test", PlatformType.MUSIC, PlatformRegion.DOMESTIC, null)).getId();
 
         String created = mockMvc.perform(put("/api/v1/admin/music/streaming-links/platforms/" + platformId)
                         .with(loginAs("MUSIC_ADMIN"))

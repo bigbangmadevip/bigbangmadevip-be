@@ -32,7 +32,7 @@ class VoteDetailAdminApiTest {
             {
               "category": "MUSIC_SHOW",
               "title": "어드민 생성 테스트",
-              "platformIds": [],
+              "platformCodes": [],
               "checklist": [],
               "imageUrls": [],
               "guideIds": [],
@@ -64,7 +64,7 @@ class VoteDetailAdminApiTest {
                 {
                   "category": "MUSIC_SHOW",
                   "title": "수정된 제목",
-                  "platformIds": [],
+                  "platformCodes": [],
                   "checklist": [],
                   "imageUrls": [],
                   "guideIds": [],
@@ -80,6 +80,55 @@ class VoteDetailAdminApiTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.title").value("수정된 제목"))
                 .andExpect(jsonPath("$.data.active").value(false));
+    }
+
+    @Test
+    void platformCodes로_등록하면_응답에_같은_code로_돌아온다() throws Exception {
+        String body = """
+                {
+                  "category": "MUSIC_SHOW",
+                  "title": "플랫폼 코드 테스트",
+                  "platformCodes": ["higher"],
+                  "checklist": [],
+                  "imageUrls": [],
+                  "guideIds": [],
+                  "menuUrgent": false,
+                  "active": true,
+                  "pushEnabled": false
+                }""";
+
+        mockMvc.perform(post("/api/v1/admin/vote/details")
+                        .with(loginAs("VOTE_ADMIN"))
+                        .with(SecurityMockMvcRequestPostProcessors.csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(body))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.platformCodes.length()").value(1))
+                .andExpect(jsonPath("$.data.platformCodes[0]").value("higher"));
+    }
+
+    @Test
+    void 존재하지_않는_platformCode면_404() throws Exception {
+        String body = """
+                {
+                  "category": "MUSIC_SHOW",
+                  "title": "잘못된 코드 테스트",
+                  "platformCodes": ["not-a-real-platform"],
+                  "checklist": [],
+                  "imageUrls": [],
+                  "guideIds": [],
+                  "menuUrgent": false,
+                  "active": true,
+                  "pushEnabled": false
+                }""";
+
+        mockMvc.perform(post("/api/v1/admin/vote/details")
+                        .with(loginAs("VOTE_ADMIN"))
+                        .with(SecurityMockMvcRequestPostProcessors.csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(body))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.error.code").value("C004"));
     }
 
     @Test

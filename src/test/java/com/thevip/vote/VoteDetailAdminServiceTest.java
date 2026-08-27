@@ -7,6 +7,7 @@ import static org.mockito.Mockito.when;
 import com.thevip.vote.dto.VoteDetailAdminRequest;
 import com.thevip.vote.entity.VoteCategory;
 import com.thevip.vote.entity.VoteDetail;
+import com.thevip.platform.repository.PlatformRepository;
 import com.thevip.vote.repository.VoteDetailRepository;
 import com.thevip.vote.service.VoteDetailAdminService;
 import java.util.List;
@@ -19,6 +20,7 @@ class VoteDetailAdminServiceTest {
     @Test
     void 긴급배너를_켜면_기존에_켜져있던_다른_상세는_꺼진다() {
         VoteDetailRepository voteDetailRepository = mock(VoteDetailRepository.class);
+        PlatformRepository platformRepository = mock(PlatformRepository.class);
         VoteDetail existingUrgent = VoteDetail.of(VoteCategory.MUSIC_SHOW, "기존 긴급", null, null, null);
         existingUrgent.updateMenuUrgent(true);
         ReflectionTestUtils.setField(existingUrgent, "id", 1L);
@@ -29,7 +31,7 @@ class VoteDetailAdminServiceTest {
         when(voteDetailRepository.findById(2L)).thenReturn(Optional.of(newDetail));
         when(voteDetailRepository.findByMenuUrgentTrue()).thenReturn(List.of(existingUrgent));
 
-        VoteDetailAdminService service = new VoteDetailAdminService(voteDetailRepository);
+        VoteDetailAdminService service = new VoteDetailAdminService(voteDetailRepository, platformRepository);
         VoteDetailAdminRequest request = new VoteDetailAdminRequest(
                 VoteCategory.MUSIC_SHOW, // category
                 "새 긴급", // title

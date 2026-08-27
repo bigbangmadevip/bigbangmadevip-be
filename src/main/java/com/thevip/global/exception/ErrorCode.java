@@ -17,7 +17,9 @@ public enum ErrorCode {
     CHEERING_ALREADY_PARTICIPATED(HttpStatus.CONFLICT, "CH001", "이미 완료한 응원입니다."),
 
     ROLE_REQUEST_ALREADY_PENDING(HttpStatus.CONFLICT, "RR001", "이미 대기 중인 권한 신청이 있습니다."),
-    ROLE_REQUEST_ALREADY_RESOLVED(HttpStatus.CONFLICT, "RR002", "이미 처리된 권한 신청입니다.");
+    ROLE_REQUEST_ALREADY_RESOLVED(HttpStatus.CONFLICT, "RR002", "이미 처리된 권한 신청입니다."),
+
+    PLATFORM_CODE_ALREADY_EXISTS(HttpStatus.CONFLICT, "P001", "이미 사용 중인 플랫폼 코드입니다.");
 
     private final HttpStatus status;
     private final String code;

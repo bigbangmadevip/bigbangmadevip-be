@@ -31,6 +31,7 @@ class PlatformAdminApiTest {
     private static final String REQUEST_BODY = """
             {
               "name": "어드민 플랫폼 생성 테스트",
+              "code": "test-platform",
               "type": "MUSIC",
               "region": "DOMESTIC",
               "active": true
@@ -58,6 +59,7 @@ class PlatformAdminApiTest {
                         .content("""
                                 {
                                   "name": "수정된 플랫폼",
+                                  "code": "test-platform",
                                   "type": "VOTE",
                                   "region": "GLOBAL",
                                   "active": false
@@ -65,6 +67,38 @@ class PlatformAdminApiTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.name").value("수정된 플랫폼"))
                 .andExpect(jsonPath("$.data.active").value(false));
+    }
+
+    @Test
+    void 이미_사용중인_code로_생성하면_409() throws Exception {
+        mockMvc.perform(post("/api/v1/admin/platforms")
+                        .with(loginAs("MUSIC_ADMIN"))
+                        .with(SecurityMockMvcRequestPostProcessors.csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "name": "첫 번째 플랫폼",
+                                  "code": "duplicate-code",
+                                  "type": "MUSIC",
+                                  "region": "DOMESTIC",
+                                  "active": true
+                                }"""))
+                .andExpect(status().isOk());
+
+        mockMvc.perform(post("/api/v1/admin/platforms")
+                        .with(loginAs("MUSIC_ADMIN"))
+                        .with(SecurityMockMvcRequestPostProcessors.csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("""
+                                {
+                                  "name": "두 번째 플랫폼",
+                                  "code": "duplicate-code",
+                                  "type": "MUSIC",
+                                  "region": "DOMESTIC",
+                                  "active": true
+                                }"""))
+                .andExpect(status().isConflict())
+                .andExpect(jsonPath("$.error.code").value("P001"));
     }
 
     @Test

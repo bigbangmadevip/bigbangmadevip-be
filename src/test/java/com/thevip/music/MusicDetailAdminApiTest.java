@@ -33,7 +33,7 @@ class MusicDetailAdminApiTest {
               "category": "STREAMING",
               "title": "어드민 생성 테스트",
               "songName": "테스트곡",
-              "platformIds": [],
+              "platformCodes": [],
               "checklist": [],
               "imageUrls": [],
               "guideIds": [],
@@ -64,7 +64,7 @@ class MusicDetailAdminApiTest {
                 {
                   "category": "STREAMING",
                   "title": "수정된 제목",
-                  "platformIds": [],
+                  "platformCodes": [],
                   "checklist": [],
                   "imageUrls": [],
                   "guideIds": [],
@@ -79,6 +79,54 @@ class MusicDetailAdminApiTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.title").value("수정된 제목"))
                 .andExpect(jsonPath("$.data.active").value(false));
+    }
+
+    @Test
+    void platformCodes로_등록하면_응답에_같은_code로_돌아온다() throws Exception {
+        String body = """
+                {
+                  "category": "STREAMING",
+                  "title": "플랫폼 코드 테스트",
+                  "platformCodes": ["melon", "bugs"],
+                  "checklist": [],
+                  "imageUrls": [],
+                  "guideIds": [],
+                  "menuUrgent": false,
+                  "active": true
+                }""";
+
+        mockMvc.perform(post("/api/v1/admin/music/details")
+                        .with(loginAs("MUSIC_ADMIN"))
+                        .with(SecurityMockMvcRequestPostProcessors.csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(body))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.platformCodes.length()").value(2))
+                .andExpect(jsonPath("$.data.platformCodes[0]").value("melon"))
+                .andExpect(jsonPath("$.data.platformCodes[1]").value("bugs"));
+    }
+
+    @Test
+    void 존재하지_않는_platformCode면_404() throws Exception {
+        String body = """
+                {
+                  "category": "STREAMING",
+                  "title": "잘못된 코드 테스트",
+                  "platformCodes": ["not-a-real-platform"],
+                  "checklist": [],
+                  "imageUrls": [],
+                  "guideIds": [],
+                  "menuUrgent": false,
+                  "active": true
+                }""";
+
+        mockMvc.perform(post("/api/v1/admin/music/details")
+                        .with(loginAs("MUSIC_ADMIN"))
+                        .with(SecurityMockMvcRequestPostProcessors.csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(body))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.error.code").value("C004"));
     }
 
     @Test

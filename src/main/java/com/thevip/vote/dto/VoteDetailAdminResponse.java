@@ -11,7 +11,7 @@ public record VoteDetailAdminResponse(
         String title,
         Long musicShowId,
         String rewardDescription,
-        List<Long> platformIds,
+        List<String> platformCodes,
         String platformUrl,
         LocalDateTime eventStartAt,
         LocalDateTime eventEndAt,
@@ -32,14 +32,15 @@ public record VoteDetailAdminResponse(
 
     // @ElementCollection 필드는 지연 로딩이라, 트랜잭션이 열려 있는 이 시점에 리스트로
     // 미리 소비해둬야 한다(응답 직렬화 시점엔 세션이 이미 닫혀 있어 LazyInitializationException).
-    public static VoteDetailAdminResponse from(VoteDetail detail) {
+    // platformCodes는 서비스에서 PlatformRepository로 미리 변환해서 넘겨준다.
+    public static VoteDetailAdminResponse from(VoteDetail detail, List<String> platformCodes) {
         return new VoteDetailAdminResponse(
                 detail.getId(),
                 detail.getCategory().name(),
                 detail.getTitle(),
                 detail.getMusicShowId(),
                 detail.getRewardDescription(),
-                detail.getPlatformIds().stream().filter(Objects::nonNull).toList(),
+                platformCodes,
                 detail.getPlatformUrl(),
                 detail.getEventStartAt(),
                 detail.getEventEndAt(),

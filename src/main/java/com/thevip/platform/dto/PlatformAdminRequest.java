@@ -8,6 +8,7 @@ import jakarta.validation.constraints.Size;
 
 public record PlatformAdminRequest(
         @NotBlank @Size(max = 50) String name,
+        @NotBlank @Size(max = 30) String code,
         @NotNull PlatformType type,
         @NotNull PlatformRegion region,
         String iconUrl,
