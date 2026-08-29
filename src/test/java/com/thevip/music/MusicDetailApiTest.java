@@ -50,6 +50,14 @@ class MusicDetailApiTest {
     }
 
     @Test
+    void 로그인하지_않아도_조회할_수_있다() throws Exception {
+        Long detailId = musicDetailRepository.findAll().get(0).getId();
+
+        mockMvc.perform(get("/api/v1/music/detail/" + detailId))
+                .andExpect(status().isOk());
+    }
+
+    @Test
     void 존재하지_않는_상세를_조회하면_404가_반환된다() throws Exception {
         memberService.findOrCreate(Provider.KAKAO, "50002", "존재안함테스트");
 

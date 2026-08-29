@@ -71,6 +71,12 @@ class ScheduleApiTest {
                 .andExpect(jsonPath("$.data.day.items.length()").value(2));
     }
 
+    @Test
+    void 로그인하지_않아도_조회할_수_있다() throws Exception {
+        mockMvc.perform(get("/api/v1/schedule"))
+                .andExpect(status().isOk());
+    }
+
     private RequestPostProcessor loginAs(String kakaoId) {
         ClientRegistration kakao = ClientRegistration.withRegistrationId("kakao")
                 .clientId("test")

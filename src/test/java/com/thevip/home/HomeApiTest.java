@@ -76,6 +76,14 @@ class HomeApiTest {
     }
 
     @Test
+    void 비로그인_상태에서도_홈을_조회할_수_있고_응원_완료_항목은_없다() throws Exception {
+        mockMvc.perform(get("/api/v1/home"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.completedCheeringCount").value(0))
+                .andExpect(jsonPath("$.data.cheeringItems[0].completed").value(false));
+    }
+
+    @Test
     void 이미_참여한_항목을_다시_참여하면_409가_반환된다() throws Exception {
         memberService.findOrCreate(Provider.KAKAO, "30002", "재참여");
         Long itemId = cheeringItemRepository.findByActiveTrueOrderBySortOrder().get(0).getId();

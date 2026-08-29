@@ -29,7 +29,9 @@ public class HomeService {
         List<HomeUrgentResponse> urgentDetails = homeUrgentService.getCurrentUrgent();
         List<HomeScheduleItemResponse> todaySchedule = homeTodayScheduleService.getTodaySchedule();
         List<CheeringCatalogItem> catalog = cheeringCatalogService.getActiveCatalog();
-        Set<Long> completedItemIds = new HashSet<>(cheeringService.getCompletedItemIds(memberId));
+        Set<Long> completedItemIds = memberId == null
+                ? Set.of()
+                : new HashSet<>(cheeringService.getCompletedItemIds(memberId));
 
         List<CheeringItemResponse> items = catalog.stream()
                 .map(item -> CheeringItemResponse.from(item, completedItemIds.contains(item.id())))

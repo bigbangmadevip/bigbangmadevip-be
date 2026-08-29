@@ -71,6 +71,17 @@ public class SecurityConfig {
                         .frameOptions(frame -> frame.sameOrigin()))
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers("/", "/health", "/h2-console/**", "/s/**").permitAll()
+                        // 단순 조회 API는 로그인 없이도 열람 가능해야 한다. 개인화 데이터(응원 완료 여부 등)가
+                        // 섞인 /api/v1/home은 비로그인 시 컨트롤러에서 빈 값으로 처리한다.
+                        .requestMatchers(HttpMethod.GET,
+                                "/api/v1/home",
+                                "/api/v1/music/streaming", "/api/v1/music/detail/**",
+                                "/api/v1/music/notices", "/api/v1/music/notices/**",
+                                "/api/v1/vote/today", "/api/v1/vote/detail/**",
+                                "/api/v1/vote/schedules", "/api/v1/vote/schedules/**",
+                                "/api/v1/vote/notices", "/api/v1/vote/notices/**",
+                                "/api/v1/schedule", "/api/v1/schedule/months/**", "/api/v1/schedule/days/**")
+                        .permitAll()
                         // 이 셋은 요청 목록/승인/반려의 실제 대상 제한(MASTER는 전부, MUSIC_ADMIN/VOTE_ADMIN은
                         // 자기 도메인 신청만)은 컨트롤러 진입 후 서비스 레이어에서 건별로 판단한다. 여기서는
                         // 일반 USER를 걸러내는 정도만 담당.
