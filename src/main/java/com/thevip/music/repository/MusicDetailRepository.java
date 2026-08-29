@@ -12,6 +12,9 @@ public interface MusicDetailRepository extends JpaRepository<MusicDetail, Long> 
     // 메뉴(음원)당 긴급 배너는 최대 1개만 켜져 있어야 하는 불변식을 어드민 서비스가 강제할 때 쓴다.
     List<MusicDetail> findByMenuUrgentTrue();
 
+    // 예약발송 대상 조회용. 즉시발송(pushSendAt == null)은 등록/수정 시점에 바로 처리되므로 여기 대상이 아니다.
+    List<MusicDetail> findByPushEnabledTrueAndPushSendAtLessThanEqualAndPushSentAtIsNull(LocalDateTime now);
+
     // active=true여도 scheduledAt이 미래면 아직 예약 대기중이라 제외한다 (배치 없이 조회 시점 계산).
     // 총공은 [eventStartAt, eventEndAt] 구간 안에 있을 때만 노출한다. eventStartAt은 시각까지가
     // 아니라 날짜만 본다 — 시작일이 오늘이면 몇 시로 등록했든 오늘 0시부터 바로 노출된다

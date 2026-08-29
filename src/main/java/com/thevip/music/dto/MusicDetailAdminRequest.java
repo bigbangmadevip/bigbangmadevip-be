@@ -20,5 +20,9 @@ public record MusicDetailAdminRequest(
         boolean menuUrgent,
         @Size(max = 26) String urgentContent,
         boolean active,
-        LocalDateTime scheduledAt) {
+        LocalDateTime scheduledAt,
+        boolean pushEnabled,
+        LocalDateTime pushSendAt,
+        @Size(max = 26) String pushTitle,
+        @Size(max = 26) String pushBody) {
 }

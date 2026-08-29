@@ -19,6 +19,12 @@ spring:
     console:
       enabled: false
 
+# 서버의 $HOME/config/.env에 FIREBASE_SERVICE_ACCOUNT_KEY_BASE64를 채워 넣는다. AWS 설정과 달리
+# 필수값으로 두지 않는다 - 값이 없으면(아직 .env에 안 채운 배포 시점 등) 앱은 정상 기동하고
+# 푸시 발송만 조용히 건너뛴다.
+firebase:
+  service-account-key-base64: ${FIREBASE_SERVICE_ACCOUNT_KEY_BASE64:}
+
 # 로컬 개발용 SQL 디버그 로깅(application.yml)을 운영에서는 끈다. 매 쿼리를 로그로 찍는 건
 # 트래픽 늘어난 상태에서 부하로 작용할 수 있다.
 logging:

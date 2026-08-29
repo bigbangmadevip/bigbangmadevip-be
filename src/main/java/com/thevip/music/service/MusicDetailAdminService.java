@@ -6,6 +6,7 @@ import com.thevip.music.dto.MusicDetailAdminRequest;
 import com.thevip.music.dto.MusicDetailAdminResponse;
 import com.thevip.music.entity.MusicDetail;
 import com.thevip.music.repository.MusicDetailRepository;
+import com.thevip.push.service.PushNotificationService;
 import java.util.Comparator;
 import java.util.List;
 import lombok.RequiredArgsConstructor;
@@ -17,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class MusicDetailAdminService {
 
     private final MusicDetailRepository musicDetailRepository;
+    private final PushNotificationService pushNotificationService;
 
     @Transactional(readOnly = true)
     public List<MusicDetailAdminResponse> list() {
@@ -57,7 +59,21 @@ public class MusicDetailAdminService {
         detail.updateUrgentContent(request.urgentContent());
         detail.updateActive(request.active());
         detail.updateScheduledAt(request.scheduledAt());
+        detail.updatePushEnabled(request.pushEnabled());
+        detail.updatePushSendAt(request.pushSendAt());
+        detail.updatePushTitle(request.pushTitle());
+        detail.updatePushBody(request.pushBody());
         applyMenuUrgent(detail, request.menuUrgent());
+        sendImmediatePushIfDue(detail);
+    }
+
+    // pushSendAt이 비어있으면 "즉시발송" — 아직 안 보낸 상태(pushSentAt == null)일 때만 한 번 보낸다.
+    // 이미 보낸 뒤 다른 필드를 수정해서 update()가 다시 호출돼도 재발송하지 않는다.
+    private void sendImmediatePushIfDue(MusicDetail detail) {
+        if (detail.isPushEnabled() && detail.getPushSendAt() == null && detail.getPushSentAt() == null) {
+            pushNotificationService.sendToAllUsers(detail.getPushTitle(), detail.getPushBody());
+            detail.markPushSent();
+        }
     }
 
     // 메뉴(음원)당 긴급 배너는 최대 1개만 켜져 있어야 하는 불변식을 여기서 강제한다.

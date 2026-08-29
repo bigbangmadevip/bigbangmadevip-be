@@ -20,6 +20,11 @@ public record MusicDetailAdminResponse(
         String urgentContent,
         boolean active,
         LocalDateTime scheduledAt,
+        boolean pushEnabled,
+        LocalDateTime pushSendAt,
+        String pushTitle,
+        String pushBody,
+        LocalDateTime pushSentAt,
         LocalDateTime createdAt,
         LocalDateTime updatedAt) {
 
@@ -41,6 +46,11 @@ public record MusicDetailAdminResponse(
                 detail.getUrgentContent(),
                 detail.isActive(),
                 detail.getScheduledAt(),
+                detail.isPushEnabled(),
+                detail.getPushSendAt(),
+                detail.getPushTitle(),
+                detail.getPushBody(),
+                detail.getPushSentAt(),
                 detail.getCreatedAt(),
                 detail.getUpdatedAt());
     }

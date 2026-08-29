@@ -38,7 +38,8 @@ class MusicDetailAdminApiTest {
               "imageUrls": [],
               "guideIds": [],
               "menuUrgent": false,
-              "active": true
+              "active": true,
+              "pushEnabled": false
             }""";
 
     @Test
@@ -69,7 +70,8 @@ class MusicDetailAdminApiTest {
                   "imageUrls": [],
                   "guideIds": [],
                   "menuUrgent": false,
-                  "active": false
+                  "active": false,
+                  "pushEnabled": false
                 }""";
         mockMvc.perform(put("/api/v1/admin/music/details/" + id)
                         .with(loginAs("MUSIC_ADMIN"))

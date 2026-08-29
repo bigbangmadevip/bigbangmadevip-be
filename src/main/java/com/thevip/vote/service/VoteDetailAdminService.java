@@ -4,6 +4,7 @@ import com.thevip.global.exception.BusinessException;
 import com.thevip.global.exception.ErrorCode;
 import com.thevip.vote.dto.VoteDetailAdminRequest;
 import com.thevip.vote.dto.VoteDetailAdminResponse;
+import com.thevip.push.service.PushNotificationService;
 import com.thevip.vote.entity.VoteDetail;
 import com.thevip.vote.repository.VoteDetailRepository;
 import java.util.Comparator;
@@ -17,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class VoteDetailAdminService {
 
     private final VoteDetailRepository voteDetailRepository;
+    private final PushNotificationService pushNotificationService;
 
     @Transactional(readOnly = true)
     public List<VoteDetailAdminResponse> list() {
@@ -65,6 +67,16 @@ public class VoteDetailAdminService {
         detail.updatePushTitle(request.pushTitle());
         detail.updatePushBody(request.pushBody());
         applyMenuUrgent(detail, request.menuUrgent());
+        sendImmediatePushIfDue(detail);
+    }
+
+    // pushSendAt이 비어있으면 "즉시발송" — 아직 안 보낸 상태(pushSentAt == null)일 때만 한 번 보낸다.
+    // 이미 보낸 뒤 다른 필드를 수정해서 update()가 다시 호출돼도 재발송하지 않는다.
+    private void sendImmediatePushIfDue(VoteDetail detail) {
+        if (detail.isPushEnabled() && detail.getPushSendAt() == null && detail.getPushSentAt() == null) {
+            pushNotificationService.sendToAllUsers(detail.getPushTitle(), detail.getPushBody());
+            detail.markPushSent();
+        }
     }
 
     // 메뉴(투표)당 긴급 배너는 최대 1개만 켜져 있어야 하는 불변식을 여기서 강제한다.

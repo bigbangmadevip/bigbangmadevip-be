@@ -90,6 +90,22 @@ public class MusicDetail {
     // 배치 없이 조회 시점에 계산하는 방식(MusicDetailRepository 참고).
     private LocalDateTime scheduledAt;
 
+    // 푸시 알림 발송 여부. 실제 발송(FCM 연동 등)은 아직 없고, 설정값만 저장해둔다.
+    @Column(nullable = false)
+    private boolean pushEnabled;
+
+    // null이면 "게시 즉시" 발송, 값이 있으면 그 시각에 발송(예정) — scheduledAt과 같은 방식.
+    private LocalDateTime pushSendAt;
+
+    @Column(length = 26)
+    private String pushTitle;
+
+    @Column(length = 26)
+    private String pushBody;
+
+    // 실제 발송이 끝난 시각. 즉시발송/예약발송 모두 이 값으로 중복 발송을 막는다(null이면 미발송).
+    private LocalDateTime pushSentAt;
+
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
@@ -168,6 +184,26 @@ public class MusicDetail {
 
     public void updateScheduledAt(LocalDateTime scheduledAt) {
         this.scheduledAt = scheduledAt;
+    }
+
+    public void updatePushEnabled(boolean pushEnabled) {
+        this.pushEnabled = pushEnabled;
+    }
+
+    public void updatePushSendAt(LocalDateTime pushSendAt) {
+        this.pushSendAt = pushSendAt;
+    }
+
+    public void updatePushTitle(String pushTitle) {
+        this.pushTitle = pushTitle;
+    }
+
+    public void updatePushBody(String pushBody) {
+        this.pushBody = pushBody;
+    }
+
+    public void markPushSent() {
+        this.pushSentAt = LocalDateTime.now();
     }
 
     @PreUpdate

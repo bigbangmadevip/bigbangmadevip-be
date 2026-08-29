@@ -110,6 +110,9 @@ public class VoteDetail {
     @Column(length = 26)
     private String pushBody;
 
+    // 실제 발송이 끝난 시각. 즉시발송/예약발송 모두 이 값으로 중복 발송을 막는다(null이면 미발송).
+    private LocalDateTime pushSentAt;
+
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
@@ -216,6 +219,10 @@ public class VoteDetail {
 
     public void updatePushBody(String pushBody) {
         this.pushBody = pushBody;
+    }
+
+    public void markPushSent() {
+        this.pushSentAt = LocalDateTime.now();
     }
 
     @PreUpdate
