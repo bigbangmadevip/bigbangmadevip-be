@@ -67,6 +67,13 @@ public class MemberService {
     }
 
     @Transactional
+    public void updateFcmToken(Long memberId, String fcmToken) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND, "회원을 찾을 수 없습니다."));
+        member.updateFcmToken(fcmToken);
+    }
+
+    @Transactional
     public void withdraw(Long memberId) {
         cheeringRepository.deleteByMemberId(memberId);
         memberRepository.deleteById(memberId);

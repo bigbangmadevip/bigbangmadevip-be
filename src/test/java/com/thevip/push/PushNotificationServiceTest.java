@@ -13,4 +13,12 @@ class PushNotificationServiceTest {
 
         service.sendToAllUsers("제목", "본문");
     }
+
+    @Test
+    void Firebase_키가_설정되지_않으면_예외없이_구독을_건너뛴다() {
+        PushNotificationService service = new PushNotificationService();
+        ReflectionTestUtils.setField(service, "serviceAccountKeyBase64", "");
+
+        service.subscribeToAllUsers("token-abc");
+    }
 }

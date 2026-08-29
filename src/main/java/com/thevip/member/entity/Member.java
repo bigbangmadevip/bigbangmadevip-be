@@ -55,6 +55,10 @@ public class Member {
 
     private LocalDateTime termsAgreedAt;
 
+    // 푸시 발송은 all_users 토픽 브로드캐스트로 하지만, 회원별 토큰 자체는 우리 쪽에서도 들고 있는다.
+    @Column(length = 255)
+    private String fcmToken;
+
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
@@ -89,5 +93,9 @@ public class Member {
 
     public void updateRole(Role role) {
         this.role = role;
+    }
+
+    public void updateFcmToken(String fcmToken) {
+        this.fcmToken = fcmToken;
     }
 }

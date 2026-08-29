@@ -95,6 +95,35 @@ class MeApiTest {
     }
 
     @Test
+    void fcm_토큰을_등록하면_저장된다() throws Exception {
+        Member member = memberService.findOrCreate(Provider.KAKAO, "20007", "푸시테스트");
+
+        mockMvc.perform(patch("/api/v1/me/fcm-token")
+                        .with(loginAs("20007"))
+                        .with(SecurityMockMvcRequestPostProcessors.csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"fcmToken\":\"test-token-value\"}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.success").value(true));
+
+        Member updated = memberRepository.findById(member.getId()).orElseThrow();
+        assertThat(updated.getFcmToken()).isEqualTo("test-token-value");
+    }
+
+    @Test
+    void 빈_fcm_토큰으로_등록하면_400이_내려간다() throws Exception {
+        memberService.findOrCreate(Provider.KAKAO, "20008", "푸시빈값테스트");
+
+        mockMvc.perform(patch("/api/v1/me/fcm-token")
+                        .with(loginAs("20008"))
+                        .with(SecurityMockMvcRequestPostProcessors.csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"fcmToken\":\"\"}"))
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.error.code").value("C001"));
+    }
+
+    @Test
     void 빈_닉네임으로_수정하면_400이_내려간다() throws Exception {
         memberService.findOrCreate(Provider.KAKAO, "20003", "카카오닉네임");
 

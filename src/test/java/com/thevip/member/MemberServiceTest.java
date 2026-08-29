@@ -79,6 +79,16 @@ class MemberServiceTest {
     }
 
     @Test
+    void FCM_토큰을_저장한다() {
+        Member member = memberService.findOrCreate(Provider.KAKAO, "10005", "푸시테스트");
+
+        memberService.updateFcmToken(member.getId(), "token-abc");
+
+        Member updated = memberService.getByProviderId(Provider.KAKAO, "10005");
+        assertThat(updated.getFcmToken()).isEqualTo("token-abc");
+    }
+
+    @Test
     void 가입_직후에는_약관동의_전이고_동의하면_동의시각이_기록된다() {
         Member member = memberService.findOrCreate(Provider.KAKAO, "10003", "종식");
         assertThat(member.isTermsAgreed()).isFalse();

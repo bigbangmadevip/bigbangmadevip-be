@@ -2,9 +2,11 @@ package com.thevip.member.controller;
 
 import com.thevip.global.response.ApiResponse;
 import com.thevip.member.dto.MemberResponse;
+import com.thevip.member.dto.UpdateFcmTokenRequest;
 import com.thevip.member.dto.UpdateNicknameRequest;
 import com.thevip.member.entity.Member;
 import com.thevip.member.service.MemberService;
+import com.thevip.push.service.PushNotificationService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
@@ -24,6 +26,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class MemberController {
 
     private final MemberService memberService;
+    private final PushNotificationService pushNotificationService;
 
     @GetMapping("/api/v1/me")
     public ApiResponse<MemberResponse> me(OAuth2AuthenticationToken authentication) {
@@ -37,6 +40,17 @@ public class MemberController {
         Member member = memberService.getCurrentMember(authentication);
         Member updated = memberService.updateNickname(member.getId(), request.nickname());
         return ApiResponse.success(MemberResponse.from(updated));
+    }
+
+    // 알림 수신에 동의해서 FCM 토큰을 발급받으면 프론트가 이 API로 넘겨준다. 서버는 Member에 보관하고
+    // 동시에 all_users 토픽에 구독시킨다(실제 발송은 이 토큰이 아니라 토픽으로 나간다).
+    @PatchMapping("/api/v1/me/fcm-token")
+    public ApiResponse<Void> updateFcmToken(
+            @Valid @RequestBody UpdateFcmTokenRequest request, OAuth2AuthenticationToken authentication) {
+        Member member = memberService.getCurrentMember(authentication);
+        memberService.updateFcmToken(member.getId(), request.fcmToken());
+        pushNotificationService.subscribeToAllUsers(request.fcmToken());
+        return ApiResponse.success();
     }
 
     @PostMapping("/api/v1/me/terms-agreement")
