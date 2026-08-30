@@ -63,9 +63,9 @@ class MeApiTest {
                 .andExpect(jsonPath("$.data.nickname").value("종식"))
                 .andExpect(jsonPath("$.data.role").value("USER"))
                 .andExpect(jsonPath("$.data.termsAgreed").value(false))
-                .andExpect(jsonPath("$.data.urgentPushEnabled").value(org.hamcrest.Matchers.nullValue()))
-                .andExpect(jsonPath("$.data.musicPushEnabled").value(org.hamcrest.Matchers.nullValue()))
-                .andExpect(jsonPath("$.data.votePushEnabled").value(org.hamcrest.Matchers.nullValue()));
+                .andExpect(jsonPath("$.data.urgentPushEnabled").value(false))
+                .andExpect(jsonPath("$.data.musicPushEnabled").value(false))
+                .andExpect(jsonPath("$.data.votePushEnabled").value(false));
     }
 
     @Test

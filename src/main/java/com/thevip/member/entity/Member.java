@@ -79,6 +79,10 @@ public class Member {
         member.nickname = name;
         member.role = Role.USER;
         member.termsAgreed = false;
+        // 임시로 false 고정 - null(동의 화면 안 봄) 기본값은 추후 다시 적용 예정.
+        member.urgentPushEnabled = false;
+        member.musicPushEnabled = false;
+        member.votePushEnabled = false;
         member.createdAt = LocalDateTime.now();
         return member;
     }

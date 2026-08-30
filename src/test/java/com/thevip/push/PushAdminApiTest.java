@@ -44,6 +44,15 @@ class PushAdminApiTest {
     }
 
     @Test
+    void MASTER은_테스트_발송을_호출할_수_있다() throws Exception {
+        mockMvc.perform(post("/api/v1/admin/push/test")
+                        .with(loginAs("MASTER"))
+                        .with(SecurityMockMvcRequestPostProcessors.csrf())
+                        .param("topic", "MUSIC"))
+                .andExpect(status().isOk());
+    }
+
+    @Test
     void 일반_유저는_접근할_수_없다() throws Exception {
         mockMvc.perform(post("/api/v1/admin/push/test")
                         .with(loginAs("USER"))
