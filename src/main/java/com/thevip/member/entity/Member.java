@@ -59,14 +59,12 @@ public class Member {
     @Column(length = 255)
     private String fcmToken;
 
-    // 카테고리별 알림 수신 동의 여부. 기본값 false(추후 "한 번도 안 물어봄"을 구분하는 null 상태로 바뀔 예정).
-    @Column(nullable = false)
+    // 카테고리별 알림 수신 동의 여부. 기본값 false(추후 "한 번도 안 물어봄"을 구분하는 null 상태로 바뀔 예정이라
+    // NOT NULL 제약은 지금 걸어두지 않는다).
     private boolean urgentPushEnabled;
 
-    @Column(nullable = false)
     private boolean musicPushEnabled;
 
-    @Column(nullable = false)
     private boolean votePushEnabled;
 
     @Column(nullable = false, updatable = false)
