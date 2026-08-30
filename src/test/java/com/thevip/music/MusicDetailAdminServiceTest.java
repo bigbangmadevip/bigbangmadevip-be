@@ -2,6 +2,7 @@ package com.thevip.music;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.when;
@@ -12,6 +13,7 @@ import com.thevip.music.entity.MusicCategory;
 import com.thevip.music.entity.MusicDetail;
 import com.thevip.music.repository.MusicDetailRepository;
 import com.thevip.music.service.MusicDetailAdminService;
+import com.thevip.push.PushTopic;
 import com.thevip.push.service.PushNotificationService;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -57,7 +59,7 @@ class MusicDetailAdminServiceTest {
 
         MusicDetailAdminResponse response = service.create(request);
 
-        verify(pushNotificationService).sendToAllUsers("제목", "본문");
+        verify(pushNotificationService).send(PushTopic.MUSIC, false, "제목", "본문");
         assertThat(response.pushSentAt()).isNotNull();
     }
 
@@ -72,6 +74,47 @@ class MusicDetailAdminServiceTest {
                 false, null, true, null, true, LocalDateTime.now().plusHours(1), "제목", "본문");
 
         MusicDetailAdminResponse response = service.create(request);
+
+        verifyNoInteractions(pushNotificationService);
+        assertThat(response.pushSentAt()).isNull();
+    }
+
+    @Test
+    void 이미_발송된_상세라도_다시_저장하면_또_발송한다() {
+        MusicDetailRepository musicDetailRepository = mock(MusicDetailRepository.class);
+        PushNotificationService pushNotificationService = mock(PushNotificationService.class);
+        MusicDetailAdminService service = new MusicDetailAdminService(musicDetailRepository, pushNotificationService);
+
+        MusicDetailAdminRequest request = new MusicDetailAdminRequest(
+                MusicCategory.STREAMING, "즉시발송 총공", null, null, null, null, null, null, null,
+                false, null, true, null, true, null, "제목", "본문");
+        MusicDetail detail = MusicDetail.of(MusicCategory.STREAMING, "즉시발송 총공", null, null, null);
+        ReflectionTestUtils.setField(detail, "id", 1L);
+        when(musicDetailRepository.findById(1L)).thenReturn(Optional.of(detail));
+
+        service.update(1L, request);
+        MusicDetailAdminResponse response = service.update(1L, request);
+
+        verify(pushNotificationService, times(2)).send(PushTopic.MUSIC, false, "제목", "본문");
+        assertThat(response.pushSentAt()).isNotNull();
+    }
+
+    @Test
+    void 예약시각을_다시_저장하면_발송기록이_초기화돼_스케줄러가_다시_잡을_수_있다() {
+        MusicDetailRepository musicDetailRepository = mock(MusicDetailRepository.class);
+        PushNotificationService pushNotificationService = mock(PushNotificationService.class);
+        MusicDetailAdminService service = new MusicDetailAdminService(musicDetailRepository, pushNotificationService);
+
+        MusicDetail detail = MusicDetail.of(MusicCategory.STREAMING, "예약발송 총공", null, null, null);
+        detail.updatePushEnabled(true);
+        detail.markPushSent();
+        ReflectionTestUtils.setField(detail, "id", 1L);
+        when(musicDetailRepository.findById(1L)).thenReturn(Optional.of(detail));
+
+        MusicDetailAdminRequest request = new MusicDetailAdminRequest(
+                MusicCategory.STREAMING, "예약발송 총공", null, null, null, null, null, null, null,
+                false, null, true, null, true, LocalDateTime.now().plusHours(1), "제목", "본문");
+        MusicDetailAdminResponse response = service.update(1L, request);
 
         verifyNoInteractions(pushNotificationService);
         assertThat(response.pushSentAt()).isNull();

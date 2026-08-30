@@ -62,7 +62,9 @@ class MeApiTest {
                 .andExpect(jsonPath("$.data.nickname").value("종식"))
                 .andExpect(jsonPath("$.data.role").value("USER"))
                 .andExpect(jsonPath("$.data.termsAgreed").value(false))
-                .andExpect(jsonPath("$.data.pushEnabled").value(false));
+                .andExpect(jsonPath("$.data.urgentPushEnabled").value(false))
+                .andExpect(jsonPath("$.data.musicPushEnabled").value(false))
+                .andExpect(jsonPath("$.data.votePushEnabled").value(false));
     }
 
     @Test
@@ -112,18 +114,23 @@ class MeApiTest {
     }
 
     @Test
-    void fcm_토큰을_등록하면_이후_조회에서_pushEnabled가_true다() throws Exception {
-        memberService.findOrCreate(Provider.KAKAO, "20009", "푸시동의테스트");
+    void 알림_설정을_저장하면_이후_조회에_반영된다() throws Exception {
+        memberService.findOrCreate(Provider.KAKAO, "20009", "알림설정테스트");
 
-        mockMvc.perform(patch("/api/v1/me/fcm-token")
+        mockMvc.perform(patch("/api/v1/me/push-settings")
                         .with(loginAs("20009"))
                         .with(SecurityMockMvcRequestPostProcessors.csrf())
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content("{\"fcmToken\":\"test-token-value\"}"))
-                .andExpect(status().isOk());
+                        .content("{\"urgentPushEnabled\":true,\"musicPushEnabled\":true,\"votePushEnabled\":false}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.urgentPushEnabled").value(true))
+                .andExpect(jsonPath("$.data.musicPushEnabled").value(true))
+                .andExpect(jsonPath("$.data.votePushEnabled").value(false));
 
         mockMvc.perform(get("/api/v1/me").with(loginAs("20009")))
-                .andExpect(jsonPath("$.data.pushEnabled").value(true));
+                .andExpect(jsonPath("$.data.urgentPushEnabled").value(true))
+                .andExpect(jsonPath("$.data.musicPushEnabled").value(true))
+                .andExpect(jsonPath("$.data.votePushEnabled").value(false));
     }
 
     @Test

@@ -225,6 +225,10 @@ public class VoteDetail {
         this.pushSentAt = LocalDateTime.now();
     }
 
+    public void resetPushSent() {
+        this.pushSentAt = null;
+    }
+
     @PreUpdate
     protected void onUpdate() {
         this.updatedAt = LocalDateTime.now();

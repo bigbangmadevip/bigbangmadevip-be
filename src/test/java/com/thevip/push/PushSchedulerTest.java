@@ -43,10 +43,32 @@ class PushSchedulerTest {
         PushScheduler scheduler = new PushScheduler(musicDetailRepository, voteDetailRepository, pushNotificationService);
         scheduler.sendDuePush();
 
-        verify(pushNotificationService).sendToAllUsers("음원 제목", "음원 본문");
-        verify(pushNotificationService).sendToAllUsers("투표 제목", "투표 본문");
+        verify(pushNotificationService).send(PushTopic.MUSIC, false, "음원 제목", "음원 본문");
+        verify(pushNotificationService).send(PushTopic.VOTE, false, "투표 제목", "투표 본문");
         assertThat(dueMusic.getPushSentAt()).isNotNull();
         assertThat(dueVote.getPushSentAt()).isNotNull();
+    }
+
+    @Test
+    void 긴급으로_등록된_예약건은_urgent_플래그를_true로_보낸다() {
+        MusicDetailRepository musicDetailRepository = mock(MusicDetailRepository.class);
+        VoteDetailRepository voteDetailRepository = mock(VoteDetailRepository.class);
+        PushNotificationService pushNotificationService = mock(PushNotificationService.class);
+
+        MusicDetail urgentMusic = MusicDetail.of(MusicCategory.STREAMING, "긴급 예약 총공", null, null, null);
+        urgentMusic.updatePushEnabled(true);
+        urgentMusic.updatePushTitle("긴급 제목");
+        urgentMusic.updatePushBody("긴급 본문");
+        urgentMusic.updateMenuUrgent(true);
+        when(musicDetailRepository.findByPushEnabledTrueAndPushSendAtLessThanEqualAndPushSentAtIsNull(any()))
+                .thenReturn(List.of(urgentMusic));
+        when(voteDetailRepository.findByPushEnabledTrueAndPushSendAtLessThanEqualAndPushSentAtIsNull(any()))
+                .thenReturn(List.of());
+
+        PushScheduler scheduler = new PushScheduler(musicDetailRepository, voteDetailRepository, pushNotificationService);
+        scheduler.sendDuePush();
+
+        verify(pushNotificationService).send(PushTopic.MUSIC, true, "긴급 제목", "긴급 본문");
     }
 
     @Test

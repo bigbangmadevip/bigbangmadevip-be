@@ -3,7 +3,7 @@ package com.thevip.member.dto;
 import com.thevip.member.entity.Member;
 
 public record MemberResponse(Long id, String name, String nickname, String email, String provider, String role,
-        boolean termsAgreed, boolean pushEnabled) {
+        boolean termsAgreed, boolean urgentPushEnabled, boolean musicPushEnabled, boolean votePushEnabled) {
 
     public static MemberResponse from(Member member) {
         return new MemberResponse(
@@ -14,6 +14,8 @@ public record MemberResponse(Long id, String name, String nickname, String email
                 member.getProvider().name(),
                 member.getRole().name(),
                 member.isTermsAgreed(),
-                member.getFcmToken() != null);
+                member.isUrgentPushEnabled(),
+                member.isMusicPushEnabled(),
+                member.isVotePushEnabled());
     }
 }

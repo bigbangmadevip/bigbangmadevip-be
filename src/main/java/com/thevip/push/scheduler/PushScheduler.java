@@ -2,6 +2,7 @@ package com.thevip.push.scheduler;
 
 import com.thevip.music.entity.MusicDetail;
 import com.thevip.music.repository.MusicDetailRepository;
+import com.thevip.push.PushTopic;
 import com.thevip.push.service.PushNotificationService;
 import com.thevip.vote.entity.VoteDetail;
 import com.thevip.vote.repository.VoteDetailRepository;
@@ -27,12 +28,12 @@ public class PushScheduler {
         LocalDateTime now = LocalDateTime.now();
         for (MusicDetail detail : musicDetailRepository
                 .findByPushEnabledTrueAndPushSendAtLessThanEqualAndPushSentAtIsNull(now)) {
-            pushNotificationService.sendToAllUsers(detail.getPushTitle(), detail.getPushBody());
+            pushNotificationService.send(PushTopic.MUSIC, detail.isMenuUrgent(), detail.getPushTitle(), detail.getPushBody());
             detail.markPushSent();
         }
         for (VoteDetail detail : voteDetailRepository
                 .findByPushEnabledTrueAndPushSendAtLessThanEqualAndPushSentAtIsNull(now)) {
-            pushNotificationService.sendToAllUsers(detail.getPushTitle(), detail.getPushBody());
+            pushNotificationService.send(PushTopic.VOTE, detail.isMenuUrgent(), detail.getPushTitle(), detail.getPushBody());
             detail.markPushSent();
         }
     }

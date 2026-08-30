@@ -4,6 +4,7 @@ import com.thevip.global.exception.BusinessException;
 import com.thevip.global.exception.ErrorCode;
 import com.thevip.vote.dto.VoteDetailAdminRequest;
 import com.thevip.vote.dto.VoteDetailAdminResponse;
+import com.thevip.push.PushTopic;
 import com.thevip.push.service.PushNotificationService;
 import com.thevip.vote.entity.VoteDetail;
 import com.thevip.vote.repository.VoteDetailRepository;
@@ -67,14 +68,20 @@ public class VoteDetailAdminService {
         detail.updatePushTitle(request.pushTitle());
         detail.updatePushBody(request.pushBody());
         applyMenuUrgent(detail, request.menuUrgent());
-        sendImmediatePushIfDue(detail);
+        applyPush(detail);
     }
 
-    // pushSendAt이 비어있으면 "즉시발송" — 아직 안 보낸 상태(pushSentAt == null)일 때만 한 번 보낸다.
-    // 이미 보낸 뒤 다른 필드를 수정해서 update()가 다시 호출돼도 재발송하지 않는다.
-    private void sendImmediatePushIfDue(VoteDetail detail) {
-        if (detail.isPushEnabled() && detail.getPushSendAt() == null && detail.getPushSentAt() == null) {
-            pushNotificationService.sendToAllUsers(detail.getPushTitle(), detail.getPushBody());
+    // 등록/수정 시점에 pushEnabled가 켜져 있으면 이전에 보낸 적이 있어도 다시 발송 대상이 된다
+    // (이미 보낸 적 있는지는 응답의 pushSentAt으로 프론트가 보여주고, 그래도 켠 채로 저장하면 재발송).
+    // 즉시발송(pushSendAt 없음)은 이 자리에서 바로 보내고, 예약발송은 발송기록만 초기화해서
+    // 스케줄러가 (재)예약된 시각에 처리하게 한다.
+    private void applyPush(VoteDetail detail) {
+        if (!detail.isPushEnabled()) {
+            return;
+        }
+        detail.resetPushSent();
+        if (detail.getPushSendAt() == null) {
+            pushNotificationService.send(PushTopic.VOTE, detail.isMenuUrgent(), detail.getPushTitle(), detail.getPushBody());
             detail.markPushSent();
         }
     }

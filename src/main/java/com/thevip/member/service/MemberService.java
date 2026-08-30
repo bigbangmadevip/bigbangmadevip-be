@@ -74,6 +74,15 @@ public class MemberService {
     }
 
     @Transactional
+    public Member updatePushSettings(
+            Long memberId, boolean urgentPushEnabled, boolean musicPushEnabled, boolean votePushEnabled) {
+        Member member = memberRepository.findById(memberId)
+                .orElseThrow(() -> new BusinessException(ErrorCode.NOT_FOUND, "회원을 찾을 수 없습니다."));
+        member.updatePushSettings(urgentPushEnabled, musicPushEnabled, votePushEnabled);
+        return member;
+    }
+
+    @Transactional
     public void withdraw(Long memberId) {
         cheeringRepository.deleteByMemberId(memberId);
         memberRepository.deleteById(memberId);

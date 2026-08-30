@@ -55,9 +55,19 @@ public class Member {
 
     private LocalDateTime termsAgreedAt;
 
-    // 푸시 발송은 all_users 토픽 브로드캐스트로 하지만, 회원별 토큰 자체는 우리 쪽에서도 들고 있는다.
+    // 회원별 FCM 토큰. 발송 자체는 카테고리 토픽으로 나가지만, 토픽 구독/해제 시 이 토큰이 필요해서 보관한다.
     @Column(length = 255)
     private String fcmToken;
+
+    // 카테고리별 알림 수신 동의 여부. 기본값 false(추후 "한 번도 안 물어봄"을 구분하는 null 상태로 바뀔 예정).
+    @Column(nullable = false)
+    private boolean urgentPushEnabled;
+
+    @Column(nullable = false)
+    private boolean musicPushEnabled;
+
+    @Column(nullable = false)
+    private boolean votePushEnabled;
 
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
@@ -97,5 +107,11 @@ public class Member {
 
     public void updateFcmToken(String fcmToken) {
         this.fcmToken = fcmToken;
+    }
+
+    public void updatePushSettings(boolean urgentPushEnabled, boolean musicPushEnabled, boolean votePushEnabled) {
+        this.urgentPushEnabled = urgentPushEnabled;
+        this.musicPushEnabled = musicPushEnabled;
+        this.votePushEnabled = votePushEnabled;
     }
 }

@@ -29,13 +29,15 @@ class PushAdminApiTest {
     void MUSIC_ADMIN이나_VOTE_ADMIN은_테스트_발송을_호출할_수_있다() throws Exception {
         mockMvc.perform(post("/api/v1/admin/push/test")
                         .with(loginAs("MUSIC_ADMIN"))
-                        .with(SecurityMockMvcRequestPostProcessors.csrf()))
+                        .with(SecurityMockMvcRequestPostProcessors.csrf())
+                        .param("topic", "MUSIC"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.success").value(true));
 
         mockMvc.perform(post("/api/v1/admin/push/test")
                         .with(loginAs("VOTE_ADMIN"))
                         .with(SecurityMockMvcRequestPostProcessors.csrf())
+                        .param("topic", "VOTE")
                         .param("title", "커스텀 제목")
                         .param("body", "커스텀 본문"))
                 .andExpect(status().isOk());
@@ -45,7 +47,8 @@ class PushAdminApiTest {
     void 일반_유저는_접근할_수_없다() throws Exception {
         mockMvc.perform(post("/api/v1/admin/push/test")
                         .with(loginAs("USER"))
-                        .with(SecurityMockMvcRequestPostProcessors.csrf()))
+                        .with(SecurityMockMvcRequestPostProcessors.csrf())
+                        .param("topic", "URGENT"))
                 .andExpect(status().isForbidden());
     }
 
