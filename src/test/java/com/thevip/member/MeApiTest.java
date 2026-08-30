@@ -28,6 +28,7 @@ import org.springframework.security.oauth2.client.registration.ClientRegistratio
 import org.springframework.security.oauth2.core.AuthorizationGrantType;
 import org.springframework.security.oauth2.core.user.DefaultOAuth2User;
 import org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.RequestPostProcessor;
 
@@ -62,9 +63,20 @@ class MeApiTest {
                 .andExpect(jsonPath("$.data.nickname").value("종식"))
                 .andExpect(jsonPath("$.data.role").value("USER"))
                 .andExpect(jsonPath("$.data.termsAgreed").value(false))
-                .andExpect(jsonPath("$.data.urgentPushEnabled").value(false))
-                .andExpect(jsonPath("$.data.musicPushEnabled").value(false))
-                .andExpect(jsonPath("$.data.votePushEnabled").value(false));
+                .andExpect(jsonPath("$.data.urgentPushEnabled").value(org.hamcrest.Matchers.nullValue()))
+                .andExpect(jsonPath("$.data.musicPushEnabled").value(org.hamcrest.Matchers.nullValue()))
+                .andExpect(jsonPath("$.data.votePushEnabled").value(org.hamcrest.Matchers.nullValue()));
+    }
+
+    @Test
+    void 알림_설정값이_DB에서_null이어도_조회가_깨지지_않는다() throws Exception {
+        Member member = memberService.findOrCreate(Provider.KAKAO, "20010", "널테스트");
+        ReflectionTestUtils.setField(member, "musicPushEnabled", null);
+        memberRepository.saveAndFlush(member);
+
+        mockMvc.perform(get("/api/v1/me").with(loginAs("20010")))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.data.musicPushEnabled").value(org.hamcrest.Matchers.nullValue()));
     }
 
     @Test

@@ -51,9 +51,9 @@ public class MemberController {
             @Valid @RequestBody UpdateFcmTokenRequest request, OAuth2AuthenticationToken authentication) {
         Member member = memberService.getCurrentMember(authentication);
         memberService.updateFcmToken(member.getId(), request.fcmToken());
-        applyTopicSubscription(request.fcmToken(), PushTopic.URGENT, member.isUrgentPushEnabled());
-        applyTopicSubscription(request.fcmToken(), PushTopic.MUSIC, member.isMusicPushEnabled());
-        applyTopicSubscription(request.fcmToken(), PushTopic.VOTE, member.isVotePushEnabled());
+        applyTopicSubscription(request.fcmToken(), PushTopic.URGENT, Boolean.TRUE.equals(member.getUrgentPushEnabled()));
+        applyTopicSubscription(request.fcmToken(), PushTopic.MUSIC, Boolean.TRUE.equals(member.getMusicPushEnabled()));
+        applyTopicSubscription(request.fcmToken(), PushTopic.VOTE, Boolean.TRUE.equals(member.getVotePushEnabled()));
         return ApiResponse.success();
     }
 

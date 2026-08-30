@@ -59,13 +59,14 @@ public class Member {
     @Column(length = 255)
     private String fcmToken;
 
-    // 카테고리별 알림 수신 동의 여부. 기본값 false(추후 "한 번도 안 물어봄"을 구분하는 null 상태로 바뀔 예정이라
-    // NOT NULL 제약은 지금 걸어두지 않는다).
-    private boolean urgentPushEnabled;
+    // 카테고리별 알림 수신 동의 여부. null이면 "동의 화면을 한 번도 안 봄" - 가입 시 초기화하지 않아
+    // 기본값이 null로 남는다(프론트는 null이면 동의 화면을 띄운다). 동의 화면에서 설정을 마치면
+    // updatePushSettings로 true/false가 채워진다.
+    private Boolean urgentPushEnabled;
 
-    private boolean musicPushEnabled;
+    private Boolean musicPushEnabled;
 
-    private boolean votePushEnabled;
+    private Boolean votePushEnabled;
 
     @Column(nullable = false, updatable = false)
     private LocalDateTime createdAt;
