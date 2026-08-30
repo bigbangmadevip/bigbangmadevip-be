@@ -61,7 +61,8 @@ class MeApiTest {
                 .andExpect(jsonPath("$.data.name").value("종식"))
                 .andExpect(jsonPath("$.data.nickname").value("종식"))
                 .andExpect(jsonPath("$.data.role").value("USER"))
-                .andExpect(jsonPath("$.data.termsAgreed").value(false));
+                .andExpect(jsonPath("$.data.termsAgreed").value(false))
+                .andExpect(jsonPath("$.data.pushEnabled").value(false));
     }
 
     @Test
@@ -108,6 +109,21 @@ class MeApiTest {
 
         Member updated = memberRepository.findById(member.getId()).orElseThrow();
         assertThat(updated.getFcmToken()).isEqualTo("test-token-value");
+    }
+
+    @Test
+    void fcm_토큰을_등록하면_이후_조회에서_pushEnabled가_true다() throws Exception {
+        memberService.findOrCreate(Provider.KAKAO, "20009", "푸시동의테스트");
+
+        mockMvc.perform(patch("/api/v1/me/fcm-token")
+                        .with(loginAs("20009"))
+                        .with(SecurityMockMvcRequestPostProcessors.csrf())
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"fcmToken\":\"test-token-value\"}"))
+                .andExpect(status().isOk());
+
+        mockMvc.perform(get("/api/v1/me").with(loginAs("20009")))
+                .andExpect(jsonPath("$.data.pushEnabled").value(true));
     }
 
     @Test
