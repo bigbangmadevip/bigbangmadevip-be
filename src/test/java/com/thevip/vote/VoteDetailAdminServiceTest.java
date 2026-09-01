@@ -44,7 +44,7 @@ class VoteDetailAdminServiceTest {
                 null, // musicShowId
                 null, // rewardDescription
                 null, // platformIds
-                null, // platformLink
+                null, // platformUrl
                 null, // eventStartAt
                 null, // eventEndAt
                 null, // checklist

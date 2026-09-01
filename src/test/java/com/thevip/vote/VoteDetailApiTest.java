@@ -43,7 +43,7 @@ class VoteDetailApiTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.title").value("인기가요 생방송 투표"))
                 .andExpect(jsonPath("$.data.platformNames").value(org.hamcrest.Matchers.contains("하이어(Higher)")))
-                .andExpect(jsonPath("$.data.platformLink").value(org.hamcrest.Matchers.contains("https://example.com/vote")))
+                .andExpect(jsonPath("$.data.platformUrl").value(org.hamcrest.Matchers.contains("https://example.com/vote")))
                 .andExpect(jsonPath("$.data.ctaButtonLabel").value("투표하러 가기"))
                 .andExpect(jsonPath("$.data.checklist.length()").value(1));
     }

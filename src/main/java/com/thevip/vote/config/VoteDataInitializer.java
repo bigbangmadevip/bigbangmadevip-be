@@ -43,7 +43,7 @@ public class VoteDataInitializer implements ApplicationRunner {
                 null, LocalDate.now().atTime(23, 59));
         detail.addPlatformId(platform.getId());
         detail.addChecklistItem("하루 최대 투표 가능 횟수 확인");
-        detail.replacePlatformLink(List.of("https://example.com/vote"));
+        detail.replacePlatformUrl(List.of("https://example.com/vote"));
         detail.updateCtaButtonLabel("투표하러 가기");
         voteDetailRepository.save(detail);
     }
