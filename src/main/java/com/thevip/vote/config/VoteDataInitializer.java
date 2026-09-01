@@ -8,6 +8,7 @@ import com.thevip.vote.entity.VoteCategory;
 import com.thevip.vote.entity.VoteDetail;
 import com.thevip.vote.repository.VoteDetailRepository;
 import java.time.LocalDate;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
@@ -42,7 +43,7 @@ public class VoteDataInitializer implements ApplicationRunner {
                 null, LocalDate.now().atTime(23, 59));
         detail.addPlatformId(platform.getId());
         detail.addChecklistItem("하루 최대 투표 가능 횟수 확인");
-        detail.updatePlatformUrl("https://example.com/vote");
+        detail.replacePlatformLink(List.of("https://example.com/vote"));
         detail.updateCtaButtonLabel("투표하러 가기");
         voteDetailRepository.save(detail);
     }

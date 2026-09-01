@@ -50,8 +50,13 @@ public class VoteDetail {
     @Column(name = "platform_id")
     private List<Long> platformIds = new ArrayList<>();
 
-    @Column(columnDefinition = "TEXT")
-    private String platformUrl;
+    // 플랫폼별 투표 링크 목록. platformNames와 매칭되는 게 아니라 독립적인 리스트 - ctaButtonLabel 하나를
+    // 공용으로 쓰고 이 개수만큼 버튼을 렌더링하는 방식.
+    @ElementCollection
+    @CollectionTable(name = "vote_detail_platform_link", joinColumns = @JoinColumn(name = "vote_detail_id"))
+    @OrderColumn(name = "sort_order")
+    @Column(name = "url", columnDefinition = "TEXT")
+    private List<String> platformLink = new ArrayList<>();
 
     private LocalDateTime eventStartAt;
 
@@ -181,8 +186,9 @@ public class VoteDetail {
         this.active = active;
     }
 
-    public void updatePlatformUrl(String platformUrl) {
-        this.platformUrl = platformUrl;
+    public void replacePlatformLink(List<String> platformLink) {
+        this.platformLink.clear();
+        this.platformLink.addAll(platformLink);
     }
 
     public void updateMusicShowId(Long musicShowId) {

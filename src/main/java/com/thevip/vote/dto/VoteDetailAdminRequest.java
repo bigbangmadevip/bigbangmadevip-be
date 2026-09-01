@@ -13,7 +13,7 @@ public record VoteDetailAdminRequest(
         Long musicShowId,
         String rewardDescription,
         List<Long> platformIds,
-        String platformUrl,
+        List<String> platformLink,
         LocalDateTime eventStartAt,
         LocalDateTime eventEndAt,
         List<String> checklist,

@@ -33,7 +33,7 @@ class VoteDetailServiceTest {
         detail.addPlatformId(1L);
         detail.addChecklistItem("체크1");
         detail.addGuideId(10L);
-        detail.updatePlatformUrl("https://example.com/vote");
+        detail.replacePlatformLink(List.of("https://example.com/vote"));
         detail.updateCtaButtonLabel("투표하러 가기");
         when(voteDetailRepository.findById(1L)).thenReturn(Optional.of(detail));
         when(voteDetailPlatformResolver.resolveNames(detail)).thenReturn(List.of("뮤빗"));
@@ -46,7 +46,7 @@ class VoteDetailServiceTest {
         assertThat(result.title()).isEqualTo("테스트 투표");
         assertThat(result.platformNames()).containsExactly("뮤빗");
         assertThat(result.checklist()).containsExactly("체크1");
-        assertThat(result.platformUrl()).isEqualTo("https://example.com/vote");
+        assertThat(result.platformLink()).containsExactly("https://example.com/vote");
         assertThat(result.ctaButtonLabel()).isEqualTo("투표하러 가기");
         assertThat(result.guides()).hasSize(1);
         assertThat(result.guides().get(0).title()).isEqualTo("뮤빗 투표 방법");

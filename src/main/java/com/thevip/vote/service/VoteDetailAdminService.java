@@ -55,7 +55,7 @@ public class VoteDetailAdminService {
     private void applyRequest(VoteDetail detail, VoteDetailAdminRequest request) {
         detail.updateMusicShowId(request.musicShowId());
         detail.replacePlatformIds(nullSafe(request.platformIds()));
-        detail.updatePlatformUrl(request.platformUrl());
+        detail.replacePlatformLink(nullSafe(request.platformLink()));
         detail.replaceChecklist(nullSafe(request.checklist()));
         detail.replaceImageUrls(nullSafe(request.imageUrls()));
         detail.replaceGuideIds(nullSafe(request.guideIds()));
