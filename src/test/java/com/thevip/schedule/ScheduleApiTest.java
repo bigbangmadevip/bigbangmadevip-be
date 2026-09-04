@@ -54,8 +54,8 @@ class ScheduleApiTest {
         mockMvc.perform(get("/api/v1/schedule/days/" + today).with(loginAs("80002")))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.data.items.length()").value(2))
-                .andExpect(jsonPath("$.data.items[0].menuType").value("MUSIC"))
-                .andExpect(jsonPath("$.data.items[1].menuType").value("VOTE"));
+                .andExpect(jsonPath("$.data.items[0].menuType").value("VOTE"))
+                .andExpect(jsonPath("$.data.items[1].menuType").value("MUSIC"));
     }
 
     @Test

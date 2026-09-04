@@ -20,6 +20,6 @@ public record ScheduleItemResponse(
 
     public static ScheduleItemResponse fromVote(VoteDetail detail, List<String> platformNames) {
         return new ScheduleItemResponse(MenuType.VOTE, detail.getId(), detail.getTitle(),
-                detail.getEventEndAt(), platformNames);
+                detail.getEventStartAt(), platformNames);
     }
 }

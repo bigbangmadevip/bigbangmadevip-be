@@ -94,8 +94,10 @@ public class ScheduleService {
                     voteDetailPlatformResolver.resolveNames(detail))));
         }
 
+        // 투표는 eventStartAt이 없을 수 있다("시작 제약 없음" - findActiveOverlapping/
+        // findActiveByDeadlineInRange 참고) - 이미 시작된 것으로 보고 맨 앞에 오도록 처리한다.
         List<ScheduleItemResponse> sorted = items.stream()
-                .sorted(Comparator.comparing(ScheduleItemResponse::time))
+                .sorted(Comparator.comparing(ScheduleItemResponse::time, Comparator.nullsFirst(Comparator.naturalOrder())))
                 .toList();
         return new ScheduleDayResponse(date, sorted);
     }

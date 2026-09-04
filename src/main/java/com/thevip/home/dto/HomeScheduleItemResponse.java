@@ -14,11 +14,11 @@ public record HomeScheduleItemResponse(
 
     public static HomeScheduleItemResponse fromMusic(MusicDetail detail, List<String> platformNames) {
         return new HomeScheduleItemResponse(MenuType.MUSIC, detail.getId(), detail.getTitle(),
-                detail.getEventEndAt(), platformNames);
+                detail.getEventStartAt(), platformNames);
     }
 
     public static HomeScheduleItemResponse fromVote(VoteDetail detail, List<String> platformNames) {
         return new HomeScheduleItemResponse(MenuType.VOTE, detail.getId(), detail.getTitle(),
-                detail.getEventEndAt(), platformNames);
+                detail.getEventStartAt(), platformNames);
     }
 }
