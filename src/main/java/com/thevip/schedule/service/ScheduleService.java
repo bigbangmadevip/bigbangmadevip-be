@@ -14,6 +14,7 @@ import com.thevip.vote.repository.VoteDetailRepository;
 import com.thevip.vote.service.VoteDetailPlatformResolver;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -94,12 +95,18 @@ public class ScheduleService {
                     voteDetailPlatformResolver.resolveNames(detail))));
         }
 
-        // 투표는 eventStartAt이 없을 수 있다("시작 제약 없음" - findActiveOverlapping/
-        // findActiveByDeadlineInRange 참고) - 이미 시작된 것으로 보고 맨 앞에 오도록 처리한다.
+        // 투표는 며칠 전에 시작해서 오늘까지 진행 중인 것도 대상에 포함되는데(findActiveOverlapping),
+        // eventStartAt은 그 원래 시작 날짜를 그대로 갖고 있다. 날짜까지 그대로 비교하면 오래전에
+        // 시작한 투표가 무조건 앞으로 밀려버리므로, 날짜는 무시하고 시:분만 비교한다. eventStartAt이
+        // 없는("시작 제약 없음") 항목은 이미 시작된 것으로 보고 맨 앞에 오도록 처리한다.
         List<ScheduleItemResponse> sorted = items.stream()
-                .sorted(Comparator.comparing(ScheduleItemResponse::time, Comparator.nullsFirst(Comparator.naturalOrder())))
+                .sorted(Comparator.comparing(item -> toComparableTime(item.time())))
                 .toList();
         return new ScheduleDayResponse(date, sorted);
+    }
+
+    private static LocalTime toComparableTime(LocalDateTime time) {
+        return time == null ? LocalTime.MIN : time.toLocalTime();
     }
 
     // EVERY_DAY 모드에서, 투표가 시작일부터 마감일까지 매일 진행 중이라고 보고 걸치는 날짜를 전부 펼친다.

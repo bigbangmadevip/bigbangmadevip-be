@@ -141,6 +141,35 @@ class ScheduleServiceTest {
     }
 
     @Test
+    void 며칠_전에_시작한_투표도_날짜_무시하고_시간대로만_정렬된다() {
+        MusicDetailRepository musicDetailRepository = mock(MusicDetailRepository.class);
+        VoteDetailRepository voteDetailRepository = mock(VoteDetailRepository.class);
+        PlatformRepository platformRepository = mock(PlatformRepository.class);
+        VoteDetailPlatformResolver voteDetailPlatformResolver = mock(VoteDetailPlatformResolver.class);
+
+        // 투표는 나흘 전(8/5) 18시에 시작해서 8/9까지 진행 중, 음원은 조회일(8/9) 9시에 시작.
+        // eventStartAt이 원래 시작 날짜(8/5)를 그대로 갖고 있어도, 날짜는 무시하고 시:분만 비교하므로
+        // 9시인 음원이 18시인 투표보다 먼저 나와야 한다.
+        MusicDetail music = MusicDetail.of(MusicCategory.DOWNLOAD, "오늘 아침 총공", null,
+                LocalDateTime.of(2026, 8, 9, 9, 0), null);
+        when(musicDetailRepository.findActiveInRange(any(), any(), any())).thenReturn(List.of(music));
+
+        VoteDetail vote = VoteDetail.of(VoteCategory.MUSIC_SHOW, "며칠째 진행 중인 투표", null,
+                LocalDateTime.of(2026, 8, 5, 18, 0), LocalDateTime.of(2026, 8, 9, 23, 59));
+        when(voteDetailRepository.findActiveOverlapping(any(), any(), any())).thenReturn(List.of(vote));
+        when(platformRepository.findNamesByIds(any())).thenReturn(List.of());
+        when(voteDetailPlatformResolver.resolveNames(vote)).thenReturn(List.of());
+
+        ScheduleService service = new ScheduleService(musicDetailRepository, voteDetailRepository, platformRepository,
+                voteDetailPlatformResolver);
+        ScheduleDayResponse result = service.getDay(LocalDate.of(2026, 8, 9), ScheduleCategory.ALL, VoteDisplayMode.EVERY_DAY);
+
+        assertThat(result.items()).hasSize(2);
+        assertThat(result.items().get(0).title()).isEqualTo("오늘 아침 총공");
+        assertThat(result.items().get(1).title()).isEqualTo("며칠째 진행 중인 투표");
+    }
+
+    @Test
     void DEADLINE_ONLY_모드면_일별_조회도_마감일_기준_쿼리를_쓴다() {
         MusicDetailRepository musicDetailRepository = mock(MusicDetailRepository.class);
         VoteDetailRepository voteDetailRepository = mock(VoteDetailRepository.class);
