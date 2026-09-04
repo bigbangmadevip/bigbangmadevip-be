@@ -7,6 +7,7 @@ import com.thevip.platform.repository.PlatformRepository;
 import com.thevip.vote.entity.VoteDetail;
 import com.thevip.vote.repository.VoteDetailRepository;
 import com.thevip.vote.service.VoteDetailPlatformResolver;
+import java.time.Clock;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -22,6 +23,8 @@ import org.springframework.transaction.annotation.Transactional;
  * 시작시간 순으로 최대 MAX_ITEMS개 노출한다. 음원/투표 둘 다 "시작시간"이라는 동일한 기준으로
  * 비교하되(HomeScheduleItemResponse.fromMusic/fromVote 참고), 날짜는 무시하고 시:분만 비교한다 —
  * 며칠째 진행 중인 총공도 매일 같은 시간대 일정처럼 그 시간대 자리에 노출돼야 하기 때문이다.
+ * 현재 시:분보다 이미 지난 시작시간은 목록에서 뺀다 - 단, 시작시간이 없는 항목은 "이미 시작됨"으로
+ * 보므로 지난 것으로 취급하지 않는다.
  */
 @Service
 @RequiredArgsConstructor
@@ -33,11 +36,12 @@ public class HomeTodayScheduleService {
     private final VoteDetailRepository voteDetailRepository;
     private final PlatformRepository platformRepository;
     private final VoteDetailPlatformResolver voteDetailPlatformResolver;
+    private final Clock clock;
 
     @Transactional(readOnly = true)
     public List<HomeScheduleItemResponse> getTodaySchedule() {
-        LocalDateTime now = LocalDateTime.now();
-        LocalDateTime startOfTomorrow = LocalDate.now().plusDays(1).atStartOfDay();
+        LocalDateTime now = LocalDateTime.now(clock);
+        LocalDateTime startOfTomorrow = LocalDate.now(clock).plusDays(1).atStartOfDay();
 
         List<MusicDetail> musicDetails = musicDetailRepository.findTodayExposed(now, startOfTomorrow);
         List<VoteDetail> voteDetails = voteDetailRepository.findTodayExposed(now, startOfTomorrow);
@@ -49,7 +53,9 @@ public class HomeTodayScheduleService {
                 .map(detail -> HomeScheduleItemResponse.fromVote(detail,
                         voteDetailPlatformResolver.resolveNames(detail)));
 
+        LocalTime nowTime = now.toLocalTime();
         return Stream.concat(musicItems, voteItems)
+                .filter(item -> item.time() == null || !item.time().toLocalTime().isBefore(nowTime))
                 .sorted(Comparator.comparing(item -> toComparableTime(item.time())))
                 .limit(MAX_ITEMS)
                 .toList();

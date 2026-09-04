@@ -16,12 +16,18 @@ import com.thevip.vote.entity.VoteCategory;
 import com.thevip.vote.entity.VoteDetail;
 import com.thevip.vote.repository.VoteDetailRepository;
 import com.thevip.vote.service.VoteDetailPlatformResolver;
+import java.time.Clock;
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.stream.IntStream;
 import org.junit.jupiter.api.Test;
 
 class HomeTodayScheduleServiceTest {
+
+    // 시:분만 비교하는 정렬/필터가 실제 시각(자정 근처 등)에 흔들리지 않도록 낮 12시로 고정해둔다.
+    private static final LocalDateTime NOW = LocalDateTime.of(2026, 8, 8, 12, 0);
+    private static final Clock CLOCK = Clock.fixed(NOW.atZone(ZoneId.systemDefault()).toInstant(), ZoneId.systemDefault());
 
     @Test
     void 음원만_노출이면_음원_하나짜리_리스트를_반환한다() {
@@ -31,7 +37,7 @@ class HomeTodayScheduleServiceTest {
         VoteDetailPlatformResolver voteDetailPlatformResolver = mock(VoteDetailPlatformResolver.class);
 
         MusicDetail detail = MusicDetail.of(MusicCategory.DOWNLOAD, "테스트 총공", null,
-                LocalDateTime.now(), LocalDateTime.now().plusHours(1));
+                NOW.plusMinutes(1), NOW.plusHours(1));
         detail.addPlatformId(1L);
         detail.updateUrgentContent("긴급 배너 문구");
         when(musicDetailRepository.findTodayExposed(any(), any())).thenReturn(List.of(detail));
@@ -39,7 +45,7 @@ class HomeTodayScheduleServiceTest {
         when(platformRepository.findNamesByIds(List.of(1L))).thenReturn(List.of("멜론"));
 
         HomeTodayScheduleService service = new HomeTodayScheduleService(
-                musicDetailRepository, voteDetailRepository, platformRepository, voteDetailPlatformResolver);
+                musicDetailRepository, voteDetailRepository, platformRepository, voteDetailPlatformResolver, CLOCK);
         List<HomeScheduleItemResponse> result = service.getTodaySchedule();
 
         assertThat(result).hasSize(1);
@@ -56,7 +62,7 @@ class HomeTodayScheduleServiceTest {
         VoteDetailPlatformResolver voteDetailPlatformResolver = mock(VoteDetailPlatformResolver.class);
 
         MusicDetail detail = MusicDetail.of(MusicCategory.DOWNLOAD, "멜론, 벅스 flac 16bit 다운", null,
-                LocalDateTime.now(), LocalDateTime.now().plusHours(1));
+                NOW.plusMinutes(1), NOW.plusHours(1));
         detail.addPlatformId(1L);
         detail.addPlatformId(2L);
         detail.updateUrgentContent("멜론, 벅스 flac 16bit 다운");
@@ -65,7 +71,7 @@ class HomeTodayScheduleServiceTest {
         when(platformRepository.findNamesByIds(List.of(1L, 2L))).thenReturn(List.of("멜론", "벅스(Bugs)"));
 
         HomeTodayScheduleService service = new HomeTodayScheduleService(
-                musicDetailRepository, voteDetailRepository, platformRepository, voteDetailPlatformResolver);
+                musicDetailRepository, voteDetailRepository, platformRepository, voteDetailPlatformResolver, CLOCK);
         List<HomeScheduleItemResponse> result = service.getTodaySchedule();
 
         assertThat(result).hasSize(1);
@@ -79,11 +85,12 @@ class HomeTodayScheduleServiceTest {
         PlatformRepository platformRepository = mock(PlatformRepository.class);
         VoteDetailPlatformResolver voteDetailPlatformResolver = mock(VoteDetailPlatformResolver.class);
 
+        // 지난 시작시간은 필터로 빠지므로, 시간대는 항상 NOW 기준 미래인 상대값으로 둔다.
         MusicDetail music = MusicDetail.of(MusicCategory.DOWNLOAD, "음원", null,
-                LocalDateTime.of(2026, 8, 8, 20, 30), LocalDateTime.of(2026, 8, 8, 21, 0));
+                NOW.plusHours(4), NOW.plusHours(5));
         music.addPlatformId(1L);
         VoteDetail vote = VoteDetail.of(VoteCategory.MUSIC_SHOW, "투표", null,
-                LocalDateTime.of(2026, 8, 8, 10, 0), LocalDateTime.of(2026, 8, 8, 23, 59));
+                NOW.plusHours(2), NOW.plusHours(6));
         vote.addPlatformId(1L);
         when(musicDetailRepository.findTodayExposed(any(), any())).thenReturn(List.of(music));
         when(voteDetailRepository.findTodayExposed(any(), any())).thenReturn(List.of(vote));
@@ -91,7 +98,7 @@ class HomeTodayScheduleServiceTest {
         when(voteDetailPlatformResolver.resolveNames(vote)).thenReturn(List.of("멜론"));
 
         HomeTodayScheduleService service = new HomeTodayScheduleService(
-                musicDetailRepository, voteDetailRepository, platformRepository, voteDetailPlatformResolver);
+                musicDetailRepository, voteDetailRepository, platformRepository, voteDetailPlatformResolver, CLOCK);
         List<HomeScheduleItemResponse> result = service.getTodaySchedule();
 
         assertThat(result).hasSize(2);
@@ -107,10 +114,10 @@ class HomeTodayScheduleServiceTest {
         VoteDetailPlatformResolver voteDetailPlatformResolver = mock(VoteDetailPlatformResolver.class);
 
         MusicDetail music = MusicDetail.of(MusicCategory.DOWNLOAD, "음원", null,
-                LocalDateTime.of(2026, 8, 8, 0, 1), LocalDateTime.of(2026, 8, 8, 21, 0));
+                NOW.plusHours(1), NOW.plusHours(2));
         music.addPlatformId(1L);
         VoteDetail vote = VoteDetail.of(VoteCategory.MUSIC_SHOW, "투표", null,
-                null, LocalDateTime.of(2026, 8, 8, 23, 59));
+                null, NOW.plusHours(3));
         vote.addPlatformId(1L);
         when(musicDetailRepository.findTodayExposed(any(), any())).thenReturn(List.of(music));
         when(voteDetailRepository.findTodayExposed(any(), any())).thenReturn(List.of(vote));
@@ -118,7 +125,7 @@ class HomeTodayScheduleServiceTest {
         when(voteDetailPlatformResolver.resolveNames(vote)).thenReturn(List.of("멜론"));
 
         HomeTodayScheduleService service = new HomeTodayScheduleService(
-                musicDetailRepository, voteDetailRepository, platformRepository, voteDetailPlatformResolver);
+                musicDetailRepository, voteDetailRepository, platformRepository, voteDetailPlatformResolver, CLOCK);
         List<HomeScheduleItemResponse> result = service.getTodaySchedule();
 
         assertThat(result).hasSize(2);
@@ -133,19 +140,19 @@ class HomeTodayScheduleServiceTest {
         PlatformRepository platformRepository = mock(PlatformRepository.class);
         VoteDetailPlatformResolver voteDetailPlatformResolver = mock(VoteDetailPlatformResolver.class);
 
-        // 음원은 3일 전 9시에 시작해서 아직 진행 중, 투표는 오늘 8시에 시작. 날짜는 무시하고
-        // 시:분만 비교하므로 시작일과 무관하게 8시인 투표가 9시인 음원보다 먼저 나와야 한다.
+        // 음원은 3일 전에 시작해서 아직 진행 중, 투표는 오늘 시작. 날짜는 무시하고 시:분만
+        // 비교하므로 시작일과 무관하게 시간이 더 이른 투표가 음원보다 먼저 나와야 한다.
         MusicDetail music = MusicDetail.of(MusicCategory.DOWNLOAD, "며칠째 진행 중인 총공", null,
-                LocalDateTime.of(2026, 8, 5, 9, 0), LocalDateTime.of(2026, 8, 20, 23, 59));
+                NOW.plusHours(3).minusDays(3), NOW.plusDays(20));
         VoteDetail vote = VoteDetail.of(VoteCategory.MUSIC_SHOW, "오늘 시작한 투표", null,
-                LocalDateTime.of(2026, 8, 8, 8, 0), LocalDateTime.of(2026, 8, 8, 23, 59));
+                NOW.plusHours(1), NOW.plusHours(10));
         when(musicDetailRepository.findTodayExposed(any(), any())).thenReturn(List.of(music));
         when(voteDetailRepository.findTodayExposed(any(), any())).thenReturn(List.of(vote));
         when(platformRepository.findNamesByIds(any())).thenReturn(List.of());
         when(voteDetailPlatformResolver.resolveNames(vote)).thenReturn(List.of());
 
         HomeTodayScheduleService service = new HomeTodayScheduleService(
-                musicDetailRepository, voteDetailRepository, platformRepository, voteDetailPlatformResolver);
+                musicDetailRepository, voteDetailRepository, platformRepository, voteDetailPlatformResolver, CLOCK);
         List<HomeScheduleItemResponse> result = service.getTodaySchedule();
 
         assertThat(result).extracting(HomeScheduleItemResponse::menuType)
@@ -162,7 +169,7 @@ class HomeTodayScheduleServiceTest {
         when(voteDetailRepository.findTodayExposed(any(), any())).thenReturn(List.of());
 
         HomeTodayScheduleService service = new HomeTodayScheduleService(
-                musicDetailRepository, voteDetailRepository, platformRepository, voteDetailPlatformResolver);
+                musicDetailRepository, voteDetailRepository, platformRepository, voteDetailPlatformResolver, CLOCK);
 
         assertThat(service.getTodaySchedule()).isEmpty();
     }
@@ -174,7 +181,7 @@ class HomeTodayScheduleServiceTest {
         PlatformRepository platformRepository = mock(PlatformRepository.class);
         VoteDetailPlatformResolver voteDetailPlatformResolver = mock(VoteDetailPlatformResolver.class);
 
-        LocalDateTime base = LocalDateTime.of(2026, 8, 8, 0, 0);
+        LocalDateTime base = NOW.plusHours(1);
         List<MusicDetail> details = IntStream.range(0, 6)
                 .mapToObj(i -> {
                     MusicDetail detail = MusicDetail.of(MusicCategory.DOWNLOAD, "총공" + i, null,
@@ -188,7 +195,7 @@ class HomeTodayScheduleServiceTest {
         when(platformRepository.findNamesByIds(List.of(1L))).thenReturn(List.of("멜론"));
 
         HomeTodayScheduleService service = new HomeTodayScheduleService(
-                musicDetailRepository, voteDetailRepository, platformRepository, voteDetailPlatformResolver);
+                musicDetailRepository, voteDetailRepository, platformRepository, voteDetailPlatformResolver, CLOCK);
         List<HomeScheduleItemResponse> result = service.getTodaySchedule();
 
         assertThat(result).hasSize(5);

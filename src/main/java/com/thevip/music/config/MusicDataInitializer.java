@@ -7,7 +7,7 @@ import com.thevip.platform.entity.Platform;
 import com.thevip.platform.entity.PlatformRegion;
 import com.thevip.platform.entity.PlatformType;
 import com.thevip.platform.repository.PlatformRepository;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import lombok.RequiredArgsConstructor;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
@@ -43,8 +43,8 @@ public class MusicDataInitializer implements ApplicationRunner {
                 MusicCategory.DOWNLOAD,
                 "오늘 저녁 8시 30분 멜론 개별곡 다운로드 총공",
                 "타이틀 곡 <봄여름가을겨울>",
-                LocalDate.now().atTime(20, 30),
-                LocalDate.now().atTime(23, 59));
+                LocalDateTime.now().plusHours(1),
+                LocalDateTime.now().plusHours(3));
         detail.addPlatformId(melon.getId());
         detail.addPlatformId(bugs.getId());
         detail.addChecklistItem("Too Bad, Home sweet Home, Live Fast Die Slow 스트리밍 필수");
