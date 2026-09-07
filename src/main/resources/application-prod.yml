@@ -46,3 +46,9 @@ app:
   # 점 없이 써도 서브도메인 전체에 매칭됨). 로컬/ngrok에서는 이 값이 없어야(비어있어야) 쿠키가
   # 정상적으로 내려간다 — SecurityConfig 참고.
   cookie-domain: bigbangmadevip.com
+
+# 서버의 $HOME/config/.env에 YOUTUBE_API_KEY/YOUTUBE_VIDEO_ID를 채워 넣는다. 값이 없으면 앱은
+# 정상 기동하고 조회수 갱신만 건너뛴다.
+youtube:
+  api-key: ${YOUTUBE_API_KEY:}
+  video-id: ${YOUTUBE_VIDEO_ID:}

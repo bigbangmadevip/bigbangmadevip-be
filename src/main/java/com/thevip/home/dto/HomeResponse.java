@@ -9,5 +9,7 @@ public record HomeResponse(
         List<HomeScheduleItemResponse> todaySchedule,
         long totalCheeringCount,
         long completedCheeringCount,
-        List<CheeringItemResponse> cheeringItems) {
+        List<CheeringItemResponse> cheeringItems,
+        Long youtubeViewCount,
+        Long biigStreamCount) {
 }

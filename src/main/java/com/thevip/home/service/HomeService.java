@@ -8,6 +8,8 @@ import com.thevip.cheering.service.CheeringStatsService;
 import com.thevip.home.dto.HomeResponse;
 import com.thevip.home.dto.HomeScheduleItemResponse;
 import com.thevip.home.dto.HomeUrgentResponse;
+import com.thevip.streaming.service.BiigStreamCountService;
+import com.thevip.youtube.service.YoutubeViewCountService;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -23,6 +25,8 @@ public class HomeService {
     private final CheeringService cheeringService;
     private final HomeUrgentService homeUrgentService;
     private final HomeTodayScheduleService homeTodayScheduleService;
+    private final YoutubeViewCountService youtubeViewCountService;
+    private final BiigStreamCountService biigStreamCountService;
 
     public HomeResponse getHome(Long memberId) {
         long participantCount = cheeringStatsService.getTodayParticipantCount();
@@ -37,8 +41,11 @@ public class HomeService {
                 .map(item -> CheeringItemResponse.from(item, completedItemIds.contains(item.id())))
                 .toList();
         long completedCheeringCount = items.stream().filter(CheeringItemResponse::completed).count();
+        Long youtubeViewCount = youtubeViewCountService.getViewCount();
+        Long biigStreamCount = biigStreamCountService.getCount();
 
         return new HomeResponse(
-                participantCount, urgentDetails, todaySchedule, items.size(), completedCheeringCount, items);
+                participantCount, urgentDetails, todaySchedule, items.size(), completedCheeringCount, items,
+                youtubeViewCount, biigStreamCount);
     }
 }
