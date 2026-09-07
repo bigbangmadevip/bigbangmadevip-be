@@ -1,6 +1,7 @@
 package com.thevip.home.dto;
 
 import com.thevip.cheering.dto.CheeringItemResponse;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public record HomeResponse(
@@ -11,5 +12,6 @@ public record HomeResponse(
         long completedCheeringCount,
         List<CheeringItemResponse> cheeringItems,
         Long youtubeViewCount,
-        Long biigStreamCount) {
+        Long biigStreamCount,
+        LocalDateTime statsUpdatedAt) {
 }

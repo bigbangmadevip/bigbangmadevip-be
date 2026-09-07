@@ -10,6 +10,7 @@ import com.thevip.home.dto.HomeScheduleItemResponse;
 import com.thevip.home.dto.HomeUrgentResponse;
 import com.thevip.streaming.service.BiigStreamCountService;
 import com.thevip.youtube.service.YoutubeViewCountService;
+import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -43,9 +44,12 @@ public class HomeService {
         long completedCheeringCount = items.stream().filter(CheeringItemResponse::completed).count();
         Long youtubeViewCount = youtubeViewCountService.getViewCount();
         Long biigStreamCount = biigStreamCountService.getCount();
+        // youtubeViewCount/biigStreamCount 둘 다 매시 정각에 갱신되는 값이라 기준 시각은 하나로
+        // 묶어서 내려준다. biigStreamCount는 외부 API 호출 없이 항상 갱신에 성공하므로 이 값을 쓴다.
+        LocalDateTime statsUpdatedAt = biigStreamCountService.getUpdatedAt();
 
         return new HomeResponse(
                 participantCount, urgentDetails, todaySchedule, items.size(), completedCheeringCount, items,
-                youtubeViewCount, biigStreamCount);
+                youtubeViewCount, biigStreamCount, statsUpdatedAt);
     }
 }

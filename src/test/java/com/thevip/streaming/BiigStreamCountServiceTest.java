@@ -50,6 +50,7 @@ class BiigStreamCountServiceTest {
         service.refresh();
 
         assertThat(service.getCount()).isEqualTo(1896);
+        assertThat(service.getUpdatedAt()).isEqualTo(LocalDateTime.of(2026, 9, 7, 22, 0));
     }
 
     private static Clock fixedClockAt(int year, int month, int day, int hour, int minute) {

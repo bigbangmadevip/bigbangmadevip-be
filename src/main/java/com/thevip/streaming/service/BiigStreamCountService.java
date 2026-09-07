@@ -1,5 +1,6 @@
 package com.thevip.streaming.service;
 
+import jakarta.annotation.PostConstruct;
 import java.time.Clock;
 import java.time.Duration;
 import java.time.LocalDate;
@@ -47,14 +48,23 @@ public class BiigStreamCountService {
     private final Clock clock;
 
     private volatile Long count;
+    private volatile LocalDateTime updatedAt;
 
     public Long getCount() {
         return count;
     }
 
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    // 배포(재기동) 직후 정각까지 기다리지 않도록 시작 시점에 한 번 즉시 계산해둔다.
+    @PostConstruct
     @Scheduled(cron = "0 0 * * * *")
     public void refresh() {
-        count = calculate(LocalDateTime.now(clock));
+        LocalDateTime now = LocalDateTime.now(clock);
+        count = calculate(now);
+        updatedAt = now;
     }
 
     public long calculate(LocalDateTime now) {

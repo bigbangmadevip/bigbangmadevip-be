@@ -1,5 +1,6 @@
 package com.thevip.youtube.service;
 
+import jakarta.annotation.PostConstruct;
 import java.util.List;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -12,6 +13,8 @@ import org.springframework.web.client.RestClientException;
 // YouTube API를 호출하면 무료 할당량(10,000 units/day)을 금방 소진하므로, 스케줄러가 미리
 // 가져온 값을 그대로 내려준다. API 키/영상 ID가 설정되지 않으면 조용히 갱신을 건너뛴다
 // (firebase.service-account-key-base64와 동일한 패턴 - PushNotificationService 참고).
+// 갱신 기준 시각(statsUpdatedAt)은 홈 응답에서 BiigStreamCountService 것을 함께 쓴다 - 외부
+// API 호출 없이 항상 갱신에 성공해 더 신뢰할 수 있다.
 @Service
 @Slf4j
 public class YoutubeViewCountService {
@@ -32,6 +35,8 @@ public class YoutubeViewCountService {
         return viewCount;
     }
 
+    // 배포(재기동) 직후 정각까지 기다리지 않도록 시작 시점에 한 번 즉시 갱신해둔다.
+    @PostConstruct
     @Scheduled(cron = "0 0 * * * *")
     public void refresh() {
         if (apiKey.isBlank() || videoId.isBlank()) {

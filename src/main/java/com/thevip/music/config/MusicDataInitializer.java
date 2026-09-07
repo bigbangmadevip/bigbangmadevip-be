@@ -39,12 +39,19 @@ public class MusicDataInitializer implements ApplicationRunner {
                 .orElseGet(() -> platformRepository.save(
                         Platform.of("벅스(Bugs)", PlatformType.MUSIC, PlatformRegion.DOMESTIC, null)));
 
+        // eventStartAt은 "오늘 안"이어야 findVisibleMenuUrgent/findTodayExposed에 노출된다(날짜만 확인).
+        // 자정 근처에 테스트를 돌리면 now+1h가 내일로 넘어가버려 노출 대상에서 빠지므로, 오늘 자정을
+        // 넘기지 않도록 23:59:59로 clamp한다.
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime todayEnd = now.toLocalDate().atTime(23, 59, 59);
+        LocalDateTime eventStartAt = now.plusHours(1).isAfter(todayEnd) ? todayEnd : now.plusHours(1);
+
         MusicDetail detail = MusicDetail.of(
                 MusicCategory.DOWNLOAD,
                 "오늘 저녁 8시 30분 멜론 개별곡 다운로드 총공",
                 "타이틀 곡 <봄여름가을겨울>",
-                LocalDateTime.now().plusHours(1),
-                LocalDateTime.now().plusHours(3));
+                eventStartAt,
+                now.plusHours(3));
         detail.addPlatformId(melon.getId());
         detail.addPlatformId(bugs.getId());
         detail.addChecklistItem("Too Bad, Home sweet Home, Live Fast Die Slow 스트리밍 필수");
