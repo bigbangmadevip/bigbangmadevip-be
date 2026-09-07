@@ -8,7 +8,7 @@ import com.thevip.cheering.service.CheeringStatsService;
 import com.thevip.home.dto.HomeResponse;
 import com.thevip.home.dto.HomeScheduleItemResponse;
 import com.thevip.home.dto.HomeUrgentResponse;
-import com.thevip.streaming.service.BiigStreamCountService;
+import com.thevip.streaming.service.TitleStreamCountService;
 import com.thevip.youtube.service.YoutubeViewCountService;
 import java.time.LocalDateTime;
 import java.util.HashSet;
@@ -27,7 +27,7 @@ public class HomeService {
     private final HomeUrgentService homeUrgentService;
     private final HomeTodayScheduleService homeTodayScheduleService;
     private final YoutubeViewCountService youtubeViewCountService;
-    private final BiigStreamCountService biigStreamCountService;
+    private final TitleStreamCountService titleStreamCountService;
 
     public HomeResponse getHome(Long memberId) {
         long participantCount = cheeringStatsService.getTodayParticipantCount();
@@ -43,13 +43,13 @@ public class HomeService {
                 .toList();
         long completedCheeringCount = items.stream().filter(CheeringItemResponse::completed).count();
         Long youtubeViewCount = youtubeViewCountService.getViewCount();
-        Long biigStreamCount = biigStreamCountService.getCount();
-        // youtubeViewCount/biigStreamCount 둘 다 매시 정각에 갱신되는 값이라 기준 시각은 하나로
-        // 묶어서 내려준다. biigStreamCount는 외부 API 호출 없이 항상 갱신에 성공하므로 이 값을 쓴다.
-        LocalDateTime statsUpdatedAt = biigStreamCountService.getUpdatedAt();
+        Long titleStreamCount = titleStreamCountService.getCount();
+        // youtubeViewCount/titleStreamCount 둘 다 매시 정각에 갱신되는 값이라 기준 시각은 하나로
+        // 묶어서 내려준다. titleStreamCount는 외부 API 호출 없이 항상 갱신에 성공하므로 이 값을 쓴다.
+        LocalDateTime statsUpdatedAt = titleStreamCountService.getUpdatedAt();
 
         return new HomeResponse(
                 participantCount, urgentDetails, todaySchedule, items.size(), completedCheeringCount, items,
-                youtubeViewCount, biigStreamCount, statsUpdatedAt);
+                youtubeViewCount, titleStreamCount, statsUpdatedAt);
     }
 }

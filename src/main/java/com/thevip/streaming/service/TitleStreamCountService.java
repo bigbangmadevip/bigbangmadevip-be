@@ -11,39 +11,41 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
-// "BiiG" 총공 스트리밍 리스트(18곡)를 처음부터 반복재생한다고 가정하고, 매일 08시/18시/23시에
-// 재생 위치가 리스트 1번 트랙(BiiG)으로 돌아가는 리셋 스케줄을 반영해 시작 시점(ANCHOR)부터
-// 현재까지 BiiG이 몇 번 재생됐는지 시뮬레이션한다. 실시간 카운팅이 아니라 매시 정각에 갱신해
+// 타이틀곡 총공 스트리밍 리스트(18곡)를 처음부터 반복재생한다고 가정하고, 매일 08시/18시/23시에
+// 재생 위치가 리스트 1번 트랙(타이틀곡)으로 돌아가는 리셋 스케줄을 반영해 시작 시점(ANCHOR)부터
+// 현재까지 타이틀곡이 몇 번 재생됐는지 시뮬레이션한다. 실시간 카운팅이 아니라 매시 정각에 갱신해
 // 캐싱한 값을 내려준다 - 다음 갱신 전까지는 같은 값을 유지한다.
+// 컴백마다 타이틀곡/리스트가 바뀌므로 TRACKS는 그때그때 갱신해야 한다.
 @Service
 @RequiredArgsConstructor
-public class BiigStreamCountService {
+public class TitleStreamCountService {
 
     private static final LocalDateTime ANCHOR = LocalDateTime.of(2026, 8, 19, 18, 30, 0);
     private static final int[] RESET_HOURS = {8, 18, 23};
+    private static final String TITLE_TRACK_NAME = "BiiG";
 
     private static final List<Track> TRACKS = List.of(
-            new Track("BiiG", 165),
+            new Track(TITLE_TRACK_NAME, 165),
             new Track("HOME SWEET HOME", 212),
             new Track("거짓말", 229),
             new Track("하루하루", 256),
-            new Track("BiiG", 165),
+            new Track(TITLE_TRACK_NAME, 165),
             new Track("LIVE FAST DIE SLOW", 181),
             new Track("HOME SWEET HOME", 212),
             new Track("붉은 노을", 208),
             new Track("봄여름가을겨울", 189),
-            new Track("BiiG", 165),
+            new Track(TITLE_TRACK_NAME, 165),
             new Track("BANG BANG BANG", 220),
             new Track("한도초과", 192),
             new Track("TOO BAD", 154),
-            new Track("BiiG", 165),
+            new Track(TITLE_TRACK_NAME, 165),
             new Track("LIVE FAST DIE SLOW", 181),
             new Track("HOME SWEET HOME", 212),
             new Track("WE LIKE 2 PARTY", 195),
             new Track("마지막 인사", 231));
 
     private static final int LOOP_SECONDS = TRACKS.stream().mapToInt(Track::durationSeconds).sum();
-    private static final List<Integer> BIIG_OFFSETS = biigOffsets();
+    private static final List<Integer> TITLE_TRACK_OFFSETS = titleTrackOffsets();
 
     private final Clock clock;
 
@@ -73,17 +75,17 @@ public class BiigStreamCountService {
         while (cursor.isBefore(now)) {
             LocalDateTime nextReset = nextResetAfter(cursor);
             LocalDateTime segmentEnd = nextReset.isBefore(now) ? nextReset : now;
-            total += biigCountInSpan(Duration.between(cursor, segmentEnd).getSeconds());
+            total += titleTrackCountInSpan(Duration.between(cursor, segmentEnd).getSeconds());
             cursor = segmentEnd;
         }
         return total;
     }
 
-    private long biigCountInSpan(long spanSeconds) {
+    private long titleTrackCountInSpan(long spanSeconds) {
         long fullLoops = spanSeconds / LOOP_SECONDS;
         long remainder = spanSeconds % LOOP_SECONDS;
-        long partial = BIIG_OFFSETS.stream().filter(offset -> offset <= remainder).count();
-        return fullLoops * BIIG_OFFSETS.size() + partial;
+        long partial = TITLE_TRACK_OFFSETS.stream().filter(offset -> offset <= remainder).count();
+        return fullLoops * TITLE_TRACK_OFFSETS.size() + partial;
     }
 
     private static LocalDateTime nextResetAfter(LocalDateTime time) {
@@ -97,11 +99,11 @@ public class BiigStreamCountService {
         return day.plusDays(1).atTime(RESET_HOURS[0], 0);
     }
 
-    private static List<Integer> biigOffsets() {
+    private static List<Integer> titleTrackOffsets() {
         List<Integer> offsets = new ArrayList<>();
         int offset = 0;
         for (Track track : TRACKS) {
-            if (track.name().equals("BiiG")) {
+            if (track.name().equals(TITLE_TRACK_NAME)) {
                 offsets.add(offset);
             }
             offset += track.durationSeconds();

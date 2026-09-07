@@ -12,6 +12,6 @@ public record HomeResponse(
         long completedCheeringCount,
         List<CheeringItemResponse> cheeringItems,
         Long youtubeViewCount,
-        Long biigStreamCount,
+        Long titleStreamCount,
         LocalDateTime statsUpdatedAt) {
 }
