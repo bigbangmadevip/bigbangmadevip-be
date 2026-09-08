@@ -62,7 +62,6 @@ public class VoteDetailAdminService {
         detail.updateCtaButtonLabel(request.ctaButtonLabel());
         detail.updateUrgentContent(request.urgentContent());
         detail.updateActive(request.active());
-        detail.updateScheduledAt(request.scheduledAt());
         detail.updatePushEnabled(request.pushEnabled());
         detail.updatePushSendAt(request.pushSendAt());
         detail.updatePushTitle(request.pushTitle());

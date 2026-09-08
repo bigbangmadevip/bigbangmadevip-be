@@ -40,7 +40,7 @@ class MusicDetailAdminServiceTest {
                 new MusicDetailAdminService(musicDetailRepository, mock(PushNotificationService.class));
         MusicDetailAdminRequest request = new MusicDetailAdminRequest(
                 MusicCategory.STREAMING, "새 긴급", null, null, null, null, null, null, null,
-                true, "새 긴급 배너", true, null, false, null, null, null);
+                true, "새 긴급 배너", true, false, null, null, null);
         service.update(2L, request);
 
         assertThat(existingUrgent.isMenuUrgent()).isFalse();
@@ -55,7 +55,7 @@ class MusicDetailAdminServiceTest {
 
         MusicDetailAdminRequest request = new MusicDetailAdminRequest(
                 MusicCategory.STREAMING, "즉시발송 총공", null, null, null, null, null, null, null,
-                false, null, true, null, true, null, "제목", "본문");
+                false, null, true, true, null, "제목", "본문");
 
         MusicDetailAdminResponse response = service.create(request);
 
@@ -71,7 +71,7 @@ class MusicDetailAdminServiceTest {
 
         MusicDetailAdminRequest request = new MusicDetailAdminRequest(
                 MusicCategory.STREAMING, "예약발송 총공", null, null, null, null, null, null, null,
-                false, null, true, null, true, LocalDateTime.now().plusHours(1), "제목", "본문");
+                false, null, true, true, LocalDateTime.now().plusHours(1), "제목", "본문");
 
         MusicDetailAdminResponse response = service.create(request);
 
@@ -87,7 +87,7 @@ class MusicDetailAdminServiceTest {
 
         MusicDetailAdminRequest request = new MusicDetailAdminRequest(
                 MusicCategory.STREAMING, "즉시발송 총공", null, null, null, null, null, null, null,
-                false, null, true, null, true, null, "제목", "본문");
+                false, null, true, true, null, "제목", "본문");
         MusicDetail detail = MusicDetail.of(MusicCategory.STREAMING, "즉시발송 총공", null, null, null);
         ReflectionTestUtils.setField(detail, "id", 1L);
         when(musicDetailRepository.findById(1L)).thenReturn(Optional.of(detail));
@@ -113,7 +113,7 @@ class MusicDetailAdminServiceTest {
 
         MusicDetailAdminRequest request = new MusicDetailAdminRequest(
                 MusicCategory.STREAMING, "예약발송 총공", null, null, null, null, null, null, null,
-                false, null, true, null, true, LocalDateTime.now().plusHours(1), "제목", "본문");
+                false, null, true, true, LocalDateTime.now().plusHours(1), "제목", "본문");
         MusicDetailAdminResponse response = service.update(1L, request);
 
         verifyNoInteractions(pushNotificationService);

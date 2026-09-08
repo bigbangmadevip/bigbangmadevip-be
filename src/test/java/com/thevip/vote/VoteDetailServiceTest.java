@@ -63,19 +63,4 @@ class VoteDetailServiceTest {
 
         assertThatThrownBy(() -> service.getDetail(999L)).isInstanceOf(BusinessException.class);
     }
-
-    @Test
-    void 예약시각이_지나지_않았으면_예외가_발생한다() {
-        VoteDetailRepository voteDetailRepository = mock(VoteDetailRepository.class);
-        VoteDetailPlatformResolver voteDetailPlatformResolver = mock(VoteDetailPlatformResolver.class);
-        GuideRepository guideRepository = mock(GuideRepository.class);
-
-        VoteDetail detail = VoteDetail.of(VoteCategory.MUSIC_SHOW, "테스트 투표", null, null, null);
-        detail.updateScheduledAt(LocalDateTime.now().plusDays(1));
-        when(voteDetailRepository.findById(1L)).thenReturn(Optional.of(detail));
-
-        VoteDetailService service = new VoteDetailService(voteDetailRepository, voteDetailPlatformResolver, guideRepository);
-
-        assertThatThrownBy(() -> service.getDetail(1L)).isInstanceOf(BusinessException.class);
-    }
 }

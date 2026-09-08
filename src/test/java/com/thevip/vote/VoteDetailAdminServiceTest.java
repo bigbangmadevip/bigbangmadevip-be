@@ -54,7 +54,6 @@ class VoteDetailAdminServiceTest {
                 true, // menuUrgent
                 "새 긴급 배너", // urgentContent
                 true, // active
-                null, // scheduledAt
                 false, // pushEnabled
                 null, // pushSendAt
                 null, // pushTitle
@@ -74,7 +73,7 @@ class VoteDetailAdminServiceTest {
 
         VoteDetailAdminRequest request = new VoteDetailAdminRequest(
                 VoteCategory.MUSIC_SHOW, "즉시발송 투표", null, null, null, null, null, null,
-                null, null, null, null, false, null, true, null,
+                null, null, null, null, false, null, true,
                 true, null, "제목", "본문");
 
         VoteDetailAdminResponse response = service.create(request);
@@ -92,7 +91,7 @@ class VoteDetailAdminServiceTest {
 
         VoteDetailAdminRequest request = new VoteDetailAdminRequest(
                 VoteCategory.MUSIC_SHOW, "예약발송 투표", null, null, null, null, null, null,
-                null, null, null, null, false, null, true, null,
+                null, null, null, null, false, null, true,
                 true, LocalDateTime.now().plusHours(1), "제목", "본문");
 
         VoteDetailAdminResponse response = service.create(request);
@@ -114,7 +113,7 @@ class VoteDetailAdminServiceTest {
 
         VoteDetailAdminRequest request = new VoteDetailAdminRequest(
                 VoteCategory.MUSIC_SHOW, "즉시발송 투표", null, null, null, null, null, null,
-                null, null, null, null, false, null, true, null,
+                null, null, null, null, false, null, true,
                 true, null, "제목", "본문");
 
         service.update(1L, request);
@@ -139,7 +138,7 @@ class VoteDetailAdminServiceTest {
 
         VoteDetailAdminRequest request = new VoteDetailAdminRequest(
                 VoteCategory.MUSIC_SHOW, "예약발송 투표", null, null, null, null, null, null,
-                null, null, null, null, false, null, true, null,
+                null, null, null, null, false, null, true,
                 true, LocalDateTime.now().plusHours(1), "제목", "본문");
         VoteDetailAdminResponse response = service.update(1L, request);
 

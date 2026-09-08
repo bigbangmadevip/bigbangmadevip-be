@@ -59,7 +59,6 @@ public class MusicDetailAdminService {
         detail.replaceGuideIds(nullSafe(request.guideIds()));
         detail.updateUrgentContent(request.urgentContent());
         detail.updateActive(request.active());
-        detail.updateScheduledAt(request.scheduledAt());
         detail.updatePushEnabled(request.pushEnabled());
         detail.updatePushSendAt(request.pushSendAt());
         detail.updatePushTitle(request.pushTitle());

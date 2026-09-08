@@ -1,5 +1,6 @@
 package com.thevip.vote.repository;
 
+import com.thevip.vote.entity.VoteCategory;
 import com.thevip.vote.entity.VoteDetail;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -15,21 +16,17 @@ public interface VoteDetailRepository extends JpaRepository<VoteDetail, Long> {
     // 예약발송 대상 조회용. 즉시발송(pushSendAt == null)은 등록/수정 시점에 바로 처리되므로 여기 대상이 아니다.
     List<VoteDetail> findByPushEnabledTrueAndPushSendAtLessThanEqualAndPushSentAtIsNull(LocalDateTime now);
 
-    // active=true여도 scheduledAt이 미래면 아직 예약 대기중이라 제외한다 (배치 없이 조회 시점 계산).
     // eventEndAt이 지나면(마감되면) 어드민이 안 끄더라도 배너에서 자동으로 빠진다.
     @Query("SELECT v FROM VoteDetail v WHERE v.menuUrgent = true AND v.active = true "
-            + "AND (v.scheduledAt IS NULL OR v.scheduledAt <= :now) "
             + "AND v.eventEndAt >= :now")
     List<VoteDetail> findVisibleMenuUrgent(@Param("now") LocalDateTime now);
 
-    // active=true여도 scheduledAt이 미래면 아직 예약 대기중이라 제외한다 (배치 없이 조회 시점 계산).
     // 투표는 [eventStartAt, eventEndAt] 구간 안에 있을 때만(=오늘이 그 구간에 포함될 때만) 노출한다.
     // eventStartAt은 시각까지가 아니라 날짜만 본다 — 시작일이 오늘이면 몇 시로 등록했든 오늘 0시부터
     // 바로 노출된다 (startOfTomorrow 이전이면 통과). eventStartAt이 없으면 시작 제약 없음으로 본다.
     // todayExposed 필드는 더 이상 이 조회에서 쓰지 않는다 — 게시 여부(active)만으로 노출을
     // 판단한다 (필드 자체는 남겨둠).
     @Query("SELECT v FROM VoteDetail v WHERE v.active = true "
-            + "AND (v.scheduledAt IS NULL OR v.scheduledAt <= :now) "
             + "AND (v.eventStartAt IS NULL OR v.eventStartAt < :startOfTomorrow) "
             + "AND v.eventEndAt >= :now "
             + "ORDER BY v.eventEndAt ASC")
@@ -38,35 +35,40 @@ public interface VoteDetailRepository extends JpaRepository<VoteDetail, Long> {
 
     // "일정" 탭 캘린더/일별 리스트용(EVERY_DAY 모드). todayExposed와 무관하게 활성 상태인 항목 전부를
     // 대상으로 하고, 지난 일정도 조회할 수 있어야 해서 만료 여부는 걸러내지 않는다. 투표는
-    // [eventStartAt(없으면 scheduledAt, 그것도 없으면 createdAt), eventEndAt] 구간을 "진행 중"으로 보고,
-    // 이 구간이 요청한 [rangeStart, rangeEnd) 범위와 겹치는 항목을 반환한다
-    // (구간을 날짜별로 펼치는 건 서비스에서).
+    // [eventStartAt(없으면 createdAt), eventEndAt] 구간을 "진행 중"으로 보고, 이 구간이 요청한
+    // [rangeStart, rangeEnd) 범위와 겹치는 항목을 반환한다 (구간을 날짜별로 펼치는 건 서비스에서).
     @Query("SELECT v FROM VoteDetail v WHERE v.active = true "
-            + "AND (v.scheduledAt IS NULL OR v.scheduledAt <= :now) "
-            + "AND COALESCE(v.eventStartAt, v.scheduledAt, v.createdAt) < :rangeEnd "
+            + "AND COALESCE(v.eventStartAt, v.createdAt) < :rangeEnd "
             + "AND v.eventEndAt >= :rangeStart "
             + "ORDER BY v.eventEndAt ASC")
-    List<VoteDetail> findActiveOverlapping(@Param("now") LocalDateTime now,
-            @Param("rangeStart") LocalDateTime rangeStart, @Param("rangeEnd") LocalDateTime rangeEnd);
+    List<VoteDetail> findActiveOverlapping(@Param("rangeStart") LocalDateTime rangeStart,
+            @Param("rangeEnd") LocalDateTime rangeEnd);
 
     // "일정" 탭 캘린더/일별 리스트용(DEADLINE_ONLY 모드). 시작일과 무관하게 마감일(eventEndAt) 하루에만
     // 노출하고 싶을 때 쓴다. MusicDetail.findActiveInRange와 동일한 형태(단일 시점 기준 범위 조회).
     @Query("SELECT v FROM VoteDetail v WHERE v.active = true "
-            + "AND (v.scheduledAt IS NULL OR v.scheduledAt <= :now) "
             + "AND v.eventEndAt >= :rangeStart AND v.eventEndAt < :rangeEnd "
             + "ORDER BY v.eventEndAt ASC")
-    List<VoteDetail> findActiveByDeadlineInRange(@Param("now") LocalDateTime now,
-            @Param("rangeStart") LocalDateTime rangeStart, @Param("rangeEnd") LocalDateTime rangeEnd);
+    List<VoteDetail> findActiveByDeadlineInRange(@Param("rangeStart") LocalDateTime rangeStart,
+            @Param("rangeEnd") LocalDateTime rangeEnd);
 
     // 투표 메뉴 "오늘의 투표" 탭용. todayExposed(홈 전용 개념)와 무관하게, 지금 진행 중인(시작했고
     // 마감 안 지난) 투표 전부를 마감 임박순으로 반환한다. eventStartAt은 시각까지가 아니라 날짜만
     // 본다 — 시작일이 오늘이면 몇 시로 등록했든 오늘 0시부터 바로 노출된다. eventStartAt이 없으면
     // 시작 제약 없음으로 본다.
     @Query("SELECT v FROM VoteDetail v WHERE v.active = true "
-            + "AND (v.scheduledAt IS NULL OR v.scheduledAt <= :now) "
             + "AND (v.eventStartAt IS NULL OR v.eventStartAt < :startOfTomorrow) "
             + "AND v.eventEndAt >= :now "
             + "ORDER BY v.eventEndAt ASC")
     List<VoteDetail> findActiveOngoing(@Param("now") LocalDateTime now,
             @Param("startOfTomorrow") LocalDateTime startOfTomorrow);
+
+    // 홈 화면 "오늘의 응원" 카드용. findActiveOngoing과 동일한 노출 규칙에 카테고리 조건만 추가한다.
+    @Query("SELECT v FROM VoteDetail v WHERE v.active = true "
+            + "AND v.category = :category "
+            + "AND (v.eventStartAt IS NULL OR v.eventStartAt < :startOfTomorrow) "
+            + "AND v.eventEndAt >= :now "
+            + "ORDER BY v.eventEndAt ASC")
+    List<VoteDetail> findActiveOngoingByCategory(@Param("category") VoteCategory category,
+            @Param("now") LocalDateTime now, @Param("startOfTomorrow") LocalDateTime startOfTomorrow);
 }

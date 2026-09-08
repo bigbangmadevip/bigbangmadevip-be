@@ -50,20 +50,19 @@ public class ScheduleService {
         LocalDate monthEnd = yearMonth.atEndOfMonth();
         LocalDateTime rangeStart = monthStart.atStartOfDay();
         LocalDateTime rangeEnd = monthEnd.plusDays(1).atStartOfDay();
-        LocalDateTime now = LocalDateTime.now();
 
         Map<LocalDate, int[]> counts = new TreeMap<>();
 
         if (category != ScheduleCategory.VOTE) {
-            musicDetailRepository.findActiveInRange(now, rangeStart, rangeEnd)
+            musicDetailRepository.findActiveInRange(rangeStart, rangeEnd)
                     .forEach(detail -> counts.computeIfAbsent(detail.getEventStartAt().toLocalDate(), d -> new int[2])[0]++);
         }
         if (category != ScheduleCategory.MUSIC) {
             if (voteDisplayMode == VoteDisplayMode.DEADLINE_ONLY) {
-                voteDetailRepository.findActiveByDeadlineInRange(now, rangeStart, rangeEnd)
+                voteDetailRepository.findActiveByDeadlineInRange(rangeStart, rangeEnd)
                         .forEach(detail -> counts.computeIfAbsent(detail.getEventEndAt().toLocalDate(), d -> new int[2])[1]++);
             } else {
-                voteDetailRepository.findActiveOverlapping(now, rangeStart, rangeEnd)
+                voteDetailRepository.findActiveOverlapping(rangeStart, rangeEnd)
                         .forEach(detail -> voteDaysInRange(detail, monthStart, monthEnd)
                                 .forEach(day -> counts.computeIfAbsent(day, d -> new int[2])[1]++));
             }
@@ -79,18 +78,17 @@ public class ScheduleService {
     public ScheduleDayResponse getDay(LocalDate date, ScheduleCategory category, VoteDisplayMode voteDisplayMode) {
         LocalDateTime rangeStart = date.atStartOfDay();
         LocalDateTime rangeEnd = date.plusDays(1).atStartOfDay();
-        LocalDateTime now = LocalDateTime.now();
 
         List<ScheduleItemResponse> items = new ArrayList<>();
         if (category != ScheduleCategory.VOTE) {
-            musicDetailRepository.findActiveInRange(now, rangeStart, rangeEnd)
+            musicDetailRepository.findActiveInRange(rangeStart, rangeEnd)
                     .forEach(detail -> items.add(ScheduleItemResponse.fromMusic(detail,
                             platformRepository.findNamesByIds(detail.getPlatformIds()))));
         }
         if (category != ScheduleCategory.MUSIC) {
             List<VoteDetail> votes = voteDisplayMode == VoteDisplayMode.DEADLINE_ONLY
-                    ? voteDetailRepository.findActiveByDeadlineInRange(now, rangeStart, rangeEnd)
-                    : voteDetailRepository.findActiveOverlapping(now, rangeStart, rangeEnd);
+                    ? voteDetailRepository.findActiveByDeadlineInRange(rangeStart, rangeEnd)
+                    : voteDetailRepository.findActiveOverlapping(rangeStart, rangeEnd);
             votes.forEach(detail -> items.add(ScheduleItemResponse.fromVote(detail,
                     voteDetailPlatformResolver.resolveNames(detail))));
         }
@@ -112,7 +110,7 @@ public class ScheduleService {
     // EVERY_DAY 모드에서, 투표가 시작일부터 마감일까지 매일 진행 중이라고 보고 걸치는 날짜를 전부 펼친다.
     private List<LocalDate> voteDaysInRange(VoteDetail detail, LocalDate rangeStart, LocalDate rangeEnd) {
         LocalDateTime spanStartAt = detail.getEventStartAt() != null ? detail.getEventStartAt()
-                : detail.getScheduledAt() != null ? detail.getScheduledAt() : detail.getCreatedAt();
+                : detail.getCreatedAt();
         LocalDate spanStart = spanStartAt.toLocalDate();
         LocalDate spanEnd = detail.getEventEndAt().toLocalDate();
 

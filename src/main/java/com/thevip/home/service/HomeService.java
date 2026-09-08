@@ -8,6 +8,7 @@ import com.thevip.cheering.service.CheeringStatsService;
 import com.thevip.home.dto.HomeResponse;
 import com.thevip.home.dto.HomeScheduleItemResponse;
 import com.thevip.home.dto.HomeUrgentResponse;
+import com.thevip.home.dto.HomeVoteUrlResponse;
 import com.thevip.streaming.service.TitleStreamCountService;
 import com.thevip.youtube.service.YoutubeViewCountService;
 import java.time.LocalDateTime;
@@ -26,6 +27,7 @@ public class HomeService {
     private final CheeringService cheeringService;
     private final HomeUrgentService homeUrgentService;
     private final HomeTodayScheduleService homeTodayScheduleService;
+    private final HomeVoteUrlService homeVoteUrlService;
     private final YoutubeViewCountService youtubeViewCountService;
     private final TitleStreamCountService titleStreamCountService;
 
@@ -42,6 +44,7 @@ public class HomeService {
                 .map(item -> CheeringItemResponse.from(item, completedItemIds.contains(item.id())))
                 .toList();
         long completedCheeringCount = items.stream().filter(CheeringItemResponse::completed).count();
+        List<HomeVoteUrlResponse> voteUrls = homeVoteUrlService.getOngoingMusicShowVoteUrls();
         Long youtubeViewCount = youtubeViewCountService.getViewCount();
         Long titleStreamCount = titleStreamCountService.getCount();
         // youtubeViewCount/titleStreamCount 둘 다 매시 정각에 갱신되는 값이라 기준 시각은 하나로
@@ -50,6 +53,6 @@ public class HomeService {
 
         return new HomeResponse(
                 participantCount, urgentDetails, todaySchedule, items.size(), completedCheeringCount, items,
-                youtubeViewCount, titleStreamCount, statsUpdatedAt);
+                voteUrls, youtubeViewCount, titleStreamCount, statsUpdatedAt);
     }
 }

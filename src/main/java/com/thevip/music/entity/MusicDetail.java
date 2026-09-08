@@ -86,15 +86,11 @@ public class MusicDetail {
     @Column(nullable = false)
     private boolean active;
 
-    // 지정하면 이 시각이 지나기 전까지는 active=true여도 노출 대상에서 제외한다 (예약 등록).
-    // 배치 없이 조회 시점에 계산하는 방식(MusicDetailRepository 참고).
-    private LocalDateTime scheduledAt;
-
     // 푸시 알림 발송 여부. 실제 발송(FCM 연동 등)은 아직 없고, 설정값만 저장해둔다.
     @Column(nullable = false)
     private boolean pushEnabled;
 
-    // null이면 "게시 즉시" 발송, 값이 있으면 그 시각에 발송(예정) — scheduledAt과 같은 방식.
+    // null이면 "게시 즉시" 발송, 값이 있으면 그 시각에 발송(예정).
     private LocalDateTime pushSendAt;
 
     @Column(length = 26)
@@ -180,10 +176,6 @@ public class MusicDetail {
 
     public void updateUrgentContent(String urgentContent) {
         this.urgentContent = urgentContent;
-    }
-
-    public void updateScheduledAt(LocalDateTime scheduledAt) {
-        this.scheduledAt = scheduledAt;
     }
 
     public void updatePushEnabled(boolean pushEnabled) {

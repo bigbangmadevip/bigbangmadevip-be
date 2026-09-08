@@ -59,19 +59,4 @@ class MusicDetailServiceTest {
 
         assertThatThrownBy(() -> service.getDetail(999L)).isInstanceOf(BusinessException.class);
     }
-
-    @Test
-    void 예약시각이_지나지_않았으면_예외가_발생한다() {
-        MusicDetailRepository musicDetailRepository = mock(MusicDetailRepository.class);
-        PlatformRepository platformRepository = mock(PlatformRepository.class);
-        GuideRepository guideRepository = mock(GuideRepository.class);
-
-        MusicDetail detail = MusicDetail.of(MusicCategory.DOWNLOAD, "테스트 총공", null, null, null);
-        detail.updateScheduledAt(LocalDateTime.now().plusDays(1));
-        when(musicDetailRepository.findById(1L)).thenReturn(Optional.of(detail));
-
-        MusicDetailService service = new MusicDetailService(musicDetailRepository, platformRepository, guideRepository);
-
-        assertThatThrownBy(() -> service.getDetail(1L)).isInstanceOf(BusinessException.class);
-    }
 }

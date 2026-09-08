@@ -23,7 +23,6 @@ public record VoteDetailAdminRequest(
         boolean menuUrgent,
         @Size(max = 26) String urgentContent,
         boolean active,
-        LocalDateTime scheduledAt,
         boolean pushEnabled,
         LocalDateTime pushSendAt,
         @Size(max = 26) String pushTitle,
